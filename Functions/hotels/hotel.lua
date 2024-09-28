@@ -157,8 +157,6 @@ local function verificarNovosObjetos()
     end
 end
 
-
-
 -- ENTIDADES ESP
 
 local entidades = { 
@@ -427,7 +425,7 @@ autoIn:AddToggle({
     Callback = function(state)
         autoInteractEnabled = state
         if autoInteractEnabled then
-            autoInteract()
+            coroutine.wrap(autoInteract)() 
         end
     end
 })
