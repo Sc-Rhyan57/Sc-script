@@ -31,7 +31,6 @@ local autoLootEnabled = false
 local autoInteractEnabled = false
 
 -- AUTO INTERACT
-
 local RunService = game:GetService("RunService")
 local autoInteractEnabled = false
 
@@ -44,9 +43,21 @@ local function autoInteract()
                 end
             end
         end
-        task.wait(0.5) -- Tempo de espera ajustado para uma interação mais rápida
+        task.wait(0.5) 
     end
 end
+
+autoIn:AddToggle({
+    Name = "Auto Interact",
+    Default = false,
+    Callback = function(state)
+        autoInteractEnabled = state
+        if autoInteractEnabled then
+            coroutine.wrap(autoInteract)() 
+        end
+    end
+})
+
 
 -- AUTO LOOT
 local autoLootEnabled = true
