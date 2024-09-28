@@ -48,7 +48,7 @@ local function autoInteract()
 end
 
 -- AUTO LOOT
-local autoLootEnabled = true
+local autoLootEnabled = false
 local lootItems = { "KeyObtain", "Nomedoarquivo2" }
 
 local function autoLoot()
@@ -59,10 +59,9 @@ local function autoLoot()
                 firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item, 0)
             end
         end
-        wait(1)
+        wait(0.3)
     end
 end
-
 
 -- MS ESP(@mstudio45) - thanks for the API!
 -- OBJETOS ESP
@@ -407,14 +406,13 @@ local autoIn = Window:MakeTab({
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
-
 autoIn:AddToggle({
     Name = "Auto Loot",
     Default = false,
     Callback = function(state)
         autoLootEnabled = state
         if autoLootEnabled then
-            autoLoot()
+            autoLoot() -- Inicia o loop
         end
     end
 })
