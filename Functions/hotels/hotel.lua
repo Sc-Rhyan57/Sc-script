@@ -56,13 +56,15 @@ local function autoLoot()
         for _, itemName in pairs(lootItems) do
             local item = workspace:FindFirstChild(itemName)
             if item and item:IsA("Model") and item:FindFirstChild("Lootable") then
+                print("Interagindo com o item:", itemName)
                 firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item, 0)
+            else
+                print("Item não encontrado ou não lootable:", itemName)
             end
         end
-        wait(0.3)
+        wait(1)
     end
 end
-
 -- MS ESP(@mstudio45) - thanks for the API!
 -- OBJETOS ESP
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
@@ -406,13 +408,14 @@ local autoIn = Window:MakeTab({
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
+
 autoIn:AddToggle({
     Name = "Auto Loot",
     Default = false,
     Callback = function(state)
         autoLootEnabled = state
-        if autoLootEnabled then
-            autoLoot() -- Inicia o loop
+        if state then
+            autoLoot()
         end
     end
 })
