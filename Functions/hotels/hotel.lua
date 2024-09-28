@@ -47,18 +47,6 @@ local function autoInteract()
     end
 end
 
-autoIn:AddToggle({
-    Name = "Auto Interact",
-    Default = false,
-    Callback = function(state)
-        autoInteractEnabled = state
-        if autoInteractEnabled then
-            coroutine.wrap(autoInteract)() 
-        end
-    end
-})
-
-
 -- AUTO LOOT
 local autoLootEnabled = true
 local lootItems = { "KeyObtain", "Nomedoarquivo2" }
