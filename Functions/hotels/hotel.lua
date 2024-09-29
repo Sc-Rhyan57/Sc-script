@@ -48,21 +48,29 @@ local function autoInteract()
 end
 
 -- AUTO LOOT
-local autoLootEnabled = false
-local lootItems = { "KeyObtain", "Nomedoarquivo2" }
 
-local function autoLoot()
-    while autoLootEnabled do
-        for _, itemName in pairs(lootItems) do
-            local item = workspace:FindFirstChild(itemName)
-            if item and item:IsA("Model") and item:FindFirstChild("Lootable") then
-                print("Interagindo com o item:", itemName)
-                firetouchinterest(game.Players.LocalPlayer.Character.HumanoidRootPart, item, 0)
-            else
-                print("Item não encontrado ou não lootable:", itemName)
+local function AutoLoot()
+    for _, comodo in pairs(workspace.CurrentRooms:GetChildren()) do
+        if not comodo:FindFirstChild("Assets") then continue end
+
+        for _, v in pairs(comodo.Assets:GetChildren()) do
+            if v.Name == "ChestBox" or 
+               v.Name == "GoldPile" or 
+               v.Name == "Wardrobe" or 
+               v.Name == "Rooms_Locker" or 
+               v.Name == "ActivateEventPrompt" or
+               v.Name == "LootPrompt" or 
+               v.Name == "LeverPrompt" or 
+               v.Name == "SkullPrompt" or
+               v.Name == "UnlockPrompt" or
+               v.Name == "ValvePrompt" then
+
+                local prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
+                if prompt and prompt.Enabled then
+                    fireproximityprompt(prompt)
+                end
             end
         end
-        wait(1)
     end
 end
 -- MS ESP(@mstudio45) - thanks for the API!
@@ -513,13 +521,15 @@ local autoIn = Window:MakeTab({
     PremiumOnly = false
 })
 
-autoIn:AddToggle({
+abaAutoLoot:AddToggle({
     Name = "Auto Loot",
     Default = false,
-    Callback = function(state)
-        autoLootEnabled = state
-        if state then
-            autoLoot()
+    Callback = function(estado)
+        if estado then
+            while estado do
+                AutoLoot()
+                wait(1)
+            end
         end
     end
 })
