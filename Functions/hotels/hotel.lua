@@ -31,7 +31,7 @@ local autoLootEnabled = false
 local autoInteractEnabled = false
 local doorESPEnabled = false
 
-Tab:AddToggle({
+VisualsTab:AddToggle({
     Name = "Ativar ESP de Portas",
     Default = false,
     Callback = function(Value)
