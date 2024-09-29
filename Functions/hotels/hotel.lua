@@ -29,7 +29,6 @@ end
 
 local autoLootEnabled = false
 local autoInteractEnabled = false
-local doorESPEnabled = false
 
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
@@ -341,105 +340,6 @@ local function verificarNovoLoot()
 end
 -- DOORS ESP
 
-portasSkESP.Rainbow.Enable()
-portasSkESP.Tracers.Enable()
-
-local function roundSk(number, decimals)
-    local power = 10 ^ decimals
-    return math.floor(number * power) / power
-end
-
-local function removeOldESP(portasSkModel)
-    if portasSkModel:FindFirstChild("DOOR ESP : SeekerHub") then
-        portasSkModel["DOOR ESP : SeekerHub"]:Destroy()
-    end
-    if portasSkModel:FindFirstChild("DOOR LGD : SeekerHub") then
-        portasSkModel["DOOR LGD : SeekerHub"]:Destroy()
-    end
-end
-
-local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
-    removeOldESP(portasSkModel)
-    local portaESP = portasSkESP.ESP.Highlight({
-        Name = "Door " .. portasSkNumber .. portasSkState,
-        Model = portasSkModel,
-        FillColor = nil,
-        OutlineColor = Color3.fromRGB(255, 255, 255),
-        TextColor = Color3.fromRGB(241, 196, 15),
-        Tracer = { 
-            Enabled = true,
-            Color = Color3.fromRGB(255, 0, 0)
-        }
-    })
-
-    local bb = Instance.new('BillboardGui', portasSkModel)
-    bb.Adornee = portasSkModel
-    bb.ExtentsOffset = Vector3.new(0, 1, 0)
-    bb.AlwaysOnTop = true
-    bb.Size = UDim2.new(0, 6, 0, 6)
-    bb.StudsOffset = Vector3.new(0, 1, 0)
-    bb.Name = "DOOR LGD : SeekerHub"
-
-    local txtlbl = Instance.new('TextLabel', bb)
-    txtlbl.ZIndex = 10
-    txtlbl.BackgroundTransparency = 1
-    txtlbl.Position = UDim2.new(0, 0, 0, -45)
-    txtlbl.Size = UDim2.new(1, 0, 10, 0)
-    txtlbl.Font = Enum.Font.ArialBold
-    txtlbl.Text = "Door " .. portasSkNumber .. portasSkState
-    txtlbl.TextStrokeTransparency = 0.5
-    txtlbl.TextColor3 = Color3.fromRGB(241, 196, 15)
-
-    local txtlbl2 = Instance.new('TextLabel', bb)
-    txtlbl2.ZIndex = 10
-    txtlbl2.BackgroundTransparency = 1
-    txtlbl2.Position = UDim2.new(0, 0, 0, -15)
-    txtlbl2.Size = UDim2.new(1, 0, 10, 0)
-    txtlbl2.Font = Enum.Font.ArialBold
-    txtlbl2.Text = "? Studs"
-    txtlbl2.Name = "Dist"
-    txtlbl2.TextStrokeTransparency = 0.5
-    txtlbl2.TextColor3 = Color3.fromRGB(241, 196, 15)
-end
-
-spawn(function()
-    while wait(1) do
-        if doorESPEnabled then
-            local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
-            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local portasSkModel = room.Door.Door
-                    local portasSkState = ""
-                    local opened = room.Door:GetAttribute("Opened")
-                    local locked = room:GetAttribute("RequiresKey")
-
-                    if opened then
-                        portasSkState = " [🔓]"
-                        removeOldESP(portasSkModel)
-                        continue
-                    elseif locked then
-                        portasSkState = " [🔐]"
-                    else
-                        portasSkState = " [🔒]"
-                    end
-
-                    local portasSkNumber = tonumber(room.Name) or latestRoom + 1
-
-                    if portasSkNumber > latestRoom then
-                        if not portasSkModel:FindFirstChild("DOOR ESP : SeekerHub") then
-                            createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
-                        end
-
-                        if portasSkModel:FindFirstChild("DOOR LGD : SeekerHub") then
-                            local distLabel = portasSkModel["DOOR LGD : SeekerHub"].Dist
-                            distLabel.Text = roundSk((game.Players.LocalPlayer.Character.PrimaryPart.Position - portasSkModel.Position).magnitude, 1) .. " Studs"
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
 
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
@@ -456,22 +356,7 @@ local VisualsEsp = Window:MakeTab({
 })
 
 -- BOTÕES ORGANIZADOS POR rhyan57
--- DOORS ESL
-VisualsEsp:AddToggle({
-    Name = "ESP de Portas",
-    Default = false,
-    Callback = function(Value)
-        doorESPEnabled = Value
-        if not doorESPEnabled then
-            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local portasSkModel = room.Door.Door
-                    removeOldESP(portasSkModel)
-                end
-            end
-        end
-    end
-})
+-- DOORS ESP
 
 -- ENTIDADES ESP
 VisualsEsp:AddToggle({
