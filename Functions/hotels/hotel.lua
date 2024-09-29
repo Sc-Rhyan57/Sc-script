@@ -340,7 +340,9 @@ local function verificarNovoLoot()
 end
 -- DOORS ESP
 -- ESP para portas
+-- New Esp Sicripti
 local doorESPEnabled = false
+local activeDoors = {}
 
 local function roundSk(number, decimals)
     local power = 10 ^ decimals
@@ -359,9 +361,6 @@ end
 local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
     removeOldESP(portasSkModel)
     
-    -- Ativar efeito Rainbow
-    ESPLibrary.Rainbow.Enable()
-
     -- Criar o ESP com Rainbow effect
     local portaESP = ESPLibrary.ESP.Highlight({
         Name = "DOOR ESP : SeekerHub",
@@ -394,44 +393,50 @@ local function desativarESPDoors()
             removeOldESP(portasSkModel)
         end
     end
+    activeDoors = {} -- Limpar portas ativas
 end
 
-spawn(function()
-    while wait(1) do
-        if doorESPEnabled then
-            local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
-            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local portasSkModel = room.Door.Door
-                    local portasSkState = ""
-                    local opened = room.Door:GetAttribute("Opened")
-                    local locked = room:GetAttribute("RequiresKey")
+local function updateDoorESP()
+    local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
+    for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+            local portasSkModel = room.Door.Door
+            local portasSkState = ""
+            local opened = room.Door:GetAttribute("Opened")
+            local locked = room:GetAttribute("RequiresKey")
+            
+            if opened then
+                portasSkState = " [Opened]"
+                removeOldESP(portasSkModel)
+                continue
+            elseif locked then
+                portasSkState = " [Locked]"
+            else
+                portasSkState = " [Closed]"
+            end
 
-                    if opened then
-                        portasSkState = " [Opened]"
-                        removeOldESP(portasSkModel)
-                        continue
-                    elseif locked then
-                        portasSkState = " [Locked]"
-                    else
-                        portasSkState = " [Closed]"
-                    end
+            local portasSkNumber = tonumber(room.Name) or latestRoom + 1
+            if portasSkNumber > latestRoom then
+                if not activeDoors[portasSkModel] then
+                    local espElements = createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
+                    activeDoors[portasSkModel] = espElements
+                end
 
-                    local portasSkNumber = tonumber(room.Name) or latestRoom + 1
+                local playerPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
+                local portaPos = portasSkModel.Position
+                local distance = (playerPos - portaPos).Magnitude
 
-                    if portasSkNumber > latestRoom then
-                        if not portasSkModel:FindFirstChild("DOOR ESP : SeekerHub") then
-                            createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
-                        end
-
-                        if portasSkModel:FindFirstChild("DOOR LGD : SeekerHub") then
-                            local distLabel = portasSkModel["DOOR LGD : SeekerHub"].Dist
-                            distLabel.Text = roundSk((game.Players.LocalPlayer.Character.PrimaryPart.Position - portasSkModel.Position).magnitude, 1) .. " Studs"
-                        end
-                    end
+                if activeDoors[portasSkModel] and activeDoors[portasSkModel].Billboard then
+                    activeDoors[portasSkModel].Billboard.Text = roundSk(distance, 1) .. " Studs"
                 end
             end
         end
+    end
+end
+
+game.ReplicatedStorage.GameData.LatestRoom.Changed:Connect(function()
+    if doorESPEnabled then
+        updateDoorESP()
     end
 end)
 
@@ -456,8 +461,10 @@ VisualsEsp:AddToggle({
     Default = false,
     Callback = function(Value)
         doorESPEnabled = Value
-        if not doorESPEnabled then
-            desativarESPDoors() -- Chama a função para desativar completamente o ESP
+        if doorESPEnabled then
+            updateDoorESP()
+        else
+            desativarESPDoors()
         end
     end
 })
