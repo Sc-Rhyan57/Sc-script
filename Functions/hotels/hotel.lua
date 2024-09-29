@@ -57,7 +57,7 @@ local function AutoLoot()
                 for _, v in pairs(assets:GetChildren()) do
                     if v.Name == "ChestBox" or 
                        v.Name == "GoldPile" or 
-                       v.Name == "Wardrobe" or 
+                       v.Name == "Crucifix" or 
                        v.Name == "KeyObtain" or 
                        v.Name == "Gold" or
                        v.Name == "LootPrompt" or 
@@ -74,7 +74,7 @@ local function AutoLoot()
                 end
             end
         end
-        wait(0.5)
+        wait(0.1)
     end
 end
 
