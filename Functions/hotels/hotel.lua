@@ -341,7 +341,6 @@ local function verificarNovoLoot()
 end
 -- DOORS ESP
 -- ESP para portas
-
 local function roundSk(number, decimals)
     local power = 10 ^ decimals
     return math.floor(number * power) / power
@@ -360,7 +359,7 @@ local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
     removeOldESP(portasSkModel)
     
     local portaESP = ESPLibrary.ESP.Highlight({
-        Name = "Door " .. portasSkNumber .. portasSkState,
+        Name = "DOOR ESP : SeekerHub",
         Model = portasSkModel,
         FillColor = nil,
         OutlineColor = Color3.fromRGB(255, 255, 255),
@@ -371,34 +370,15 @@ local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
         }
     })
     
-    local bb = Instance.new('BillboardGui', portasSkModel)
-    bb.Adornee = portasSkModel
-    bb.ExtentsOffset = Vector3.new(0, 1, 0)
-    bb.AlwaysOnTop = true
-    bb.Size = UDim2.new(0, 6, 0, 6)
-    bb.StudsOffset = Vector3.new(0, 1, 0)
-    bb.Name = "DOOR LGD : SeekerHub"
+    local portaBillboard = ESPLibrary.ESP.Billboard({
+        Name = "DOOR LGD : SeekerHub",
+        Model = portasSkModel,
+        MaxDistance = 5000,
+        Color = Color3.fromRGB(241, 196, 15),
+        Text = "Door " .. portasSkNumber .. portasSkState
+    })
 
-    local txtlbl = Instance.new('TextLabel', bb)
-    txtlbl.ZIndex = 10
-    txtlbl.BackgroundTransparency = 1
-    txtlbl.Position = UDim2.new(0, 0, 0, -45)
-    txtlbl.Size = UDim2.new(1, 0, 10, 0)
-    txtlbl.Font = Enum.Font.ArialBold
-    txtlbl.Text = "Door " .. portasSkNumber .. portasSkState
-    txtlbl.TextStrokeTransparency = 0.5
-    txtlbl.TextColor3 = Color3.fromRGB(241, 196, 15)
-
-    local txtlbl2 = Instance.new('TextLabel', bb)
-    txtlbl2.ZIndex = 10
-    txtlbl2.BackgroundTransparency = 1
-    txtlbl2.Position = UDim2.new(0, 0, 0, -15)
-    txtlbl2.Size = UDim2.new(1, 0, 10, 0)
-    txtlbl2.Font = Enum.Font.ArialBold
-    txtlbl2.Text = "? Studs"
-    txtlbl2.Name = "Dist"
-    txtlbl2.TextStrokeTransparency = 0.5
-    txtlbl2.TextColor3 = Color3.fromRGB(241, 196, 15)
+    return {Highlight = portaESP, Billboard = portaBillboard}
 end
 
 spawn(function()
@@ -471,7 +451,7 @@ VisualsEsp:AddToggle({
         end
     end
 })
--- ENTIDADES ESP
+-- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
     Default = false,
