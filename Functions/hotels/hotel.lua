@@ -458,7 +458,7 @@ local VisualsEsp = Window:MakeTab({
 -- BOTÕES ORGANIZADOS POR rhyan57
 -- DOORS ESL
 VisualsEsp:AddToggle({
-    Name = "Esp Portas",
+    Name = "ESP de Portas",
     Default = false,
     Callback = function(Value)
         doorESPEnabled = Value
