@@ -528,7 +528,7 @@ local autoIn = Window:MakeTab({
 })
 
 
-abaAutoLoot:AddToggle({
+autoIn:AddToggle({
     Name = "Ativar Auto Loot",
     Default = false,
     Callback = function(estado)
