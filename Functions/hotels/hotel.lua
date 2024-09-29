@@ -29,7 +29,6 @@ end
 
 local autoLootEnabled = false
 local autoInteractEnabled = false
-local autoLootAtivo = false
 
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
@@ -49,6 +48,7 @@ local function autoInteract()
 end
 
 -- AUTO LOOT
+local autoLootAtivo = false
 local function AutoLoot()
     while autoLootAtivo do
         for _, comodo in pairs(workspace.CurrentRooms:GetChildren()) do
