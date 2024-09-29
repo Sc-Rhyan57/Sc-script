@@ -59,7 +59,7 @@ local function AutoLoot()
                        v.Name == "GoldPile" or 
                        v.Name == "Wardrobe" or 
                        v.Name == "KeyObtain" or 
-                       v.Name == "ActivateEventPrompt" or
+                       v.Name == "Gold" or
                        v.Name == "LootPrompt" or 
                        v.Name == "LeverPrompt" or 
                        v.Name == "SkullPrompt" or
@@ -74,7 +74,7 @@ local function AutoLoot()
                 end
             end
         end
-        wait(1)
+        wait(0.5)
     end
 end
 
