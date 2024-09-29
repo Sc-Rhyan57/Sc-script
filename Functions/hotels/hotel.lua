@@ -29,7 +29,6 @@ end
 
 local autoLootEnabled = false
 local autoInteractEnabled = false
-local doorESPEnabled = false
 
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
@@ -341,6 +340,8 @@ local function verificarNovoLoot()
 end
 -- DOORS ESP
 -- ESP para portas
+local doorESPEnabled = false
+
 local function roundSk(number, decimals)
     local power = 10 ^ decimals
     return math.floor(number * power) / power
@@ -358,6 +359,10 @@ end
 local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
     removeOldESP(portasSkModel)
     
+    -- Ativar efeito Rainbow
+    ESPLibrary.Rainbow.Enable()
+
+    -- Criar o ESP com Rainbow effect
     local portaESP = ESPLibrary.ESP.Highlight({
         Name = "DOOR ESP : SeekerHub",
         Model = portasSkModel,
@@ -379,6 +384,16 @@ local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
     })
 
     return {Highlight = portaESP, Billboard = portaBillboard}
+end
+
+local function desativarESPDoors()
+    ESPLibrary.Rainbow.Disable() -- Desativa o efeito Rainbow
+    for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+            local portasSkModel = room.Door.Door
+            removeOldESP(portasSkModel)
+        end
+    end
 end
 
 spawn(function()
@@ -420,6 +435,17 @@ spawn(function()
     end
 end)
 
+VisualsEsp:AddToggle({
+    Name = "ESP de Portas",
+    Default = false,
+    Callback = function(Value)
+        doorESPEnabled = Value
+        if not doorESPEnabled then
+            desativarESPDoors() -- Chama a função para desativar completamente o ESP
+        end
+    end
+})
+
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
     Name = "Início",
@@ -436,21 +462,6 @@ local VisualsEsp = Window:MakeTab({
 
 -- BOTÕES ORGANIZADOS POR rhyan57
 -- DOORS ESP
-VisualsEsp:AddToggle({
-    Name = "ESP de Portas",
-    Default = false,
-    Callback = function(Value)
-        doorESPEnabled = Value
-        if not doorESPEnabled then
-            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local portasSkModel = room.Door.Door
-                    removeOldESP(portasSkModel)
-                end
-            end
-        end
-    end
-})
 -- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
