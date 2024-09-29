@@ -344,90 +344,94 @@ end
 local doorESPEnabled = false
 local activeDoors = {}
 
-local function roundSk(number, decimals)
-    local power = 10 ^ decimals
-    return math.floor(number * power) / power
+-- Função para arredondar números
+local function arredondar(numero, decimais)
+    local potencia = 10 ^ decimais
+    return math.floor(numero * potencia) / potencia
 end
 
-local function removeOldESP(portasSkModel)
-    if portasSkModel:FindFirstChild("DOOR ESP : SeekerHub") then
-        portasSkModel["DOOR ESP : SeekerHub"]:Destroy()
+-- Função para remover ESP antigo das portas
+local function removerESPAntigo(modeloPorta)
+    if modeloPorta:FindFirstChild("DOOR ESP") then
+        modeloPorta["DOOR ESP"]:Destroy()
     end
-    if portasSkModel:FindFirstChild("DOOR LGD : SeekerHub") then
-        portasSkModel["DOOR LGD : SeekerHub"]:Destroy()
+    if modeloPorta:FindFirstChild("DOOR LABEL") then
+        modeloPorta["DOOR LABEL"]:Destroy()
     end
 end
 
-local function createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
-    removeOldESP(portasSkModel)
+-- Função para criar ESP para uma porta com cores específicas
+local function criarESPParaPorta(modeloPorta, numeroPorta, estadoPorta)
+    removerESPAntigo(modeloPorta)
     
-    -- Criar o ESP com Rainbow effect
-    local portaESP = ESPLibrary.ESP.Highlight({
-        Name = "DOOR ESP : SeekerHub",
-        Model = portasSkModel,
-        FillColor = nil,
-        OutlineColor = Color3.fromRGB(255, 255, 255),
-        TextColor = Color3.fromRGB(241, 196, 15),
-        Tracer = { 
-            Enabled = true,
-            Color = Color3.fromRGB(255, 0, 0)
-        }
+    local corPorta = Color3.fromRGB(0, 255, 255) -- Cor ciano para diferenciar as portas
+
+    -- Criando o ESP visual
+    local espPorta = ESPLibrary.ESP.Highlight({
+        Name = "DOOR ESP",
+        Model = modeloPorta,
+        FillColor = corPorta,
+        OutlineColor = corPorta,
+        TextColor = corPorta,
     })
-    
-    local portaBillboard = ESPLibrary.ESP.Billboard({
-        Name = "DOOR LGD : SeekerHub",
-        Model = portasSkModel,
+
+    -- Adicionando legenda com Billboard
+    local legendaPorta = ESPLibrary.ESP.Billboard({
+        Name = "DOOR LABEL",
+        Model = modeloPorta,
         MaxDistance = 5000,
-        Color = Color3.fromRGB(241, 196, 15),
-        Text = "Door " .. portasSkNumber .. portasSkState
+        Color = corPorta,
+        Text = "Porta " .. numeroPorta .. estadoPorta
     })
 
-    return {Highlight = portaESP, Billboard = portaBillboard}
+    return {Highlight = espPorta, Billboard = legendaPorta}
 end
 
-local function desativarESPDoors()
+-- Função para desativar ESP das portas
+local function desativarESPPortas()
     ESPLibrary.Rainbow.Disable() -- Desativa o efeito Rainbow
-    for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-            local portasSkModel = room.Door.Door
-            removeOldESP(portasSkModel)
+    for _, sala in ipairs(workspace.CurrentRooms:GetChildren()) do
+        if sala:FindFirstChild("Door") and sala.Door:FindFirstChild("Door") then
+            local modeloPorta = sala.Door.Door
+            removerESPAntigo(modeloPorta)
         end
     end
-    activeDoors = {} -- Limpar portas ativas
+    activeDoors = {} -- Limpar tabela de portas ativas
 end
 
-local function updateDoorESP()
-    local latestRoom = game.ReplicatedStorage.GameData.LatestRoom.Value
-    for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-            local portasSkModel = room.Door.Door
-            local portasSkState = ""
-            local opened = room.Door:GetAttribute("Opened")
-            local locked = room:GetAttribute("RequiresKey")
-            
-            if opened then
-                portasSkState = " [Opened]"
-                removeOldESP(portasSkModel)
+-- Função para atualizar ESP das portas
+local function atualizarESPPortas()
+    local ultimaSala = game.ReplicatedStorage.GameData.LatestRoom.Value
+    for _, sala in ipairs(workspace.CurrentRooms:GetChildren()) do
+        if sala:FindFirstChild("Door") and sala.Door:FindFirstChild("Door") then
+            local modeloPorta = sala.Door.Door
+            local estadoPorta = ""
+            local aberta = sala.Door:GetAttribute("Opened")
+            local trancada = sala:GetAttribute("RequiresKey")
+
+            if aberta then
+                estadoPorta = " [Aberta]"
+                removerESPAntigo(modeloPorta)
                 continue
-            elseif locked then
-                portasSkState = " [Locked]"
+            elseif trancada then
+                estadoPorta = " [Trancada]"
             else
-                portasSkState = " [Closed]"
+                estadoPorta = " [Fechada]"
             end
 
-            local portasSkNumber = tonumber(room.Name) or latestRoom + 1
-            if portasSkNumber > latestRoom then
-                if not activeDoors[portasSkModel] then
-                    local espElements = createESPForPorta(portasSkModel, portasSkNumber, portasSkState)
-                    activeDoors[portasSkModel] = espElements
+            local numeroPorta = tonumber(sala.Name) or ultimaSala + 1
+            if numeroPorta > ultimaSala then
+                if not activeDoors[modeloPorta] then
+                    local elementosESP = criarESPParaPorta(modeloPorta, numeroPorta, estadoPorta)
+                    activeDoors[modeloPorta] = elementosESP
                 end
 
-                local playerPos = game.Players.LocalPlayer.Character.PrimaryPart.Position
-                local portaPos = portasSkModel.Position
-                local distance = (playerPos - portaPos).Magnitude
+                local posJogador = game.Players.LocalPlayer.Character.PrimaryPart.Position
+                local posPorta = modeloPorta.Position
+                local distancia = (posJogador - posPorta).Magnitude
 
-                if activeDoors[portasSkModel] and activeDoors[portasSkModel].Billboard then
-                    activeDoors[portasSkModel].Billboard.Text = roundSk(distance, 1) .. " Studs"
+                if activeDoors[modeloPorta] and activeDoors[modeloPorta].Billboard then
+                    activeDoors[modeloPorta].Billboard.Text = arredondar(distancia, 1) .. " Studs"
                 end
             end
         end
@@ -436,7 +440,7 @@ end
 
 game.ReplicatedStorage.GameData.LatestRoom.Changed:Connect(function()
     if doorESPEnabled then
-        updateDoorESP()
+        atualizarESPPortas()
     end
 end)
 
@@ -459,12 +463,12 @@ local VisualsEsp = Window:MakeTab({
 VisualsEsp:AddToggle({
     Name = "ESP de Portas",
     Default = false,
-    Callback = function(Value)
-        doorESPEnabled = Value
+    Callback = function(valor)
+        doorESPEnabled = valor
         if doorESPEnabled then
-            updateDoorESP()
+            atualizarESPPortas()
         else
-            desativarESPDoors()
+            desativarESPPortas()
         end
     end
 })
