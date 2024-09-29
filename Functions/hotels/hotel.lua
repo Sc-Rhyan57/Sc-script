@@ -435,17 +435,6 @@ spawn(function()
     end
 end)
 
-VisualsEsp:AddToggle({
-    Name = "ESP de Portas",
-    Default = false,
-    Callback = function(Value)
-        doorESPEnabled = Value
-        if not doorESPEnabled then
-            desativarESPDoors() -- Chama a função para desativar completamente o ESP
-        end
-    end
-})
-
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
     Name = "Início",
@@ -462,6 +451,16 @@ local VisualsEsp = Window:MakeTab({
 
 -- BOTÕES ORGANIZADOS POR rhyan57
 -- DOORS ESP
+VisualsEsp:AddToggle({
+    Name = "ESP de Portas",
+    Default = false,
+    Callback = function(Value)
+        doorESPEnabled = Value
+        if not doorESPEnabled then
+            desativarESPDoors() -- Chama a função para desativar completamente o ESP
+        end
+    end
+})
 -- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
