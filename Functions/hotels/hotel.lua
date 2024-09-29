@@ -31,23 +31,6 @@ local autoLootEnabled = false
 local autoInteractEnabled = false
 local doorESPEnabled = false
 
-VisualsTab:AddToggle({
-    Name = "Ativar ESP de Portas",
-    Default = false,
-    Callback = function(Value)
-        doorESPEnabled = Value
-        if not doorESPEnabled then
-            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local portasSkModel = room.Door.Door
-                    removeOldESP(portasSkModel)
-                end
-            end
-        end
-    end
-})
-
-
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
 local autoInteractEnabled = false
@@ -473,6 +456,23 @@ local VisualsEsp = Window:MakeTab({
 })
 
 -- BOTÕES ORGANIZADOS POR rhyan57
+-- DOORS ESL
+VisualsEsp:AddToggle({
+    Name = "Esp Portas",
+    Default = false,
+    Callback = function(Value)
+        doorESPEnabled = Value
+        if not doorESPEnabled then
+            for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+                    local portasSkModel = room.Door.Door
+                    removeOldESP(portasSkModel)
+                end
+            end
+        end
+    end
+})
+
 -- ENTIDADES ESP
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
