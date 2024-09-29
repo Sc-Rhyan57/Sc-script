@@ -29,6 +29,7 @@ end
 
 local autoLootEnabled = false
 local autoInteractEnabled = false
+local autoLootAtivo = false
 
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
@@ -48,31 +49,36 @@ local function autoInteract()
 end
 
 -- AUTO LOOT
-
 local function AutoLoot()
-    for _, comodo in pairs(workspace.CurrentRooms:GetChildren()) do
-        if not comodo:FindFirstChild("Assets") then continue end
+    while autoLootAtivo do
+        for _, comodo in pairs(workspace.CurrentRooms:GetChildren()) do
+            local assets = comodo:FindFirstChild("Assets")
+            if assets then
+                for _, v in pairs(assets:GetChildren()) do
+                    if v.Name == "ChestBox" or 
+                       v.Name == "GoldPile" or 
+                       v.Name == "Wardrobe" or 
+                       v.Name == "KeyObtain" or 
+                       v.Name == "ActivateEventPrompt" or
+                       v.Name == "LootPrompt" or 
+                       v.Name == "LeverPrompt" or 
+                       v.Name == "SkullPrompt" or
+                       v.Name == "UnlockPrompt" or
+                       v.Name == "ValvePrompt" then
 
-        for _, v in pairs(comodo.Assets:GetChildren()) do
-            if v.Name == "ChestBox" or 
-               v.Name == "GoldPile" or 
-               v.Name == "Wardrobe" or 
-               v.Name == "Rooms_Locker" or 
-               v.Name == "ActivateEventPrompt" or
-               v.Name == "LootPrompt" or 
-               v.Name == "LeverPrompt" or 
-               v.Name == "SkullPrompt" or
-               v.Name == "UnlockPrompt" or
-               v.Name == "ValvePrompt" then
-
-                local prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
-                if prompt and prompt.Enabled then
-                    fireproximityprompt(prompt)
+                        local prompt = v:FindFirstChildWhichIsA("ProximityPrompt")
+                        if prompt and prompt.Enabled then
+                            fireproximityprompt(prompt)
+                        end
+                    end
                 end
             end
         end
+        wait(1)
     end
 end
+
+
 -- MS ESP(@mstudio45) - thanks for the API!
 -- OBJETOS ESP
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
@@ -521,18 +527,18 @@ local autoIn = Window:MakeTab({
     PremiumOnly = false
 })
 
-autoIn:AddToggle({
-    Name = "Auto Loot",
+
+abaAutoLoot:AddToggle({
+    Name = "Ativar Auto Loot",
     Default = false,
     Callback = function(estado)
-        if estado then
-            while estado do
-                AutoLoot()
-                wait(1)
-            end
+        autoLootAtivo = estado
+        if autoLootAtivo then
+            task.spawn(AutoLoot)  -- Usa task.spawn para não travar o script principal
         end
     end
 })
+
 
 autoIn:AddToggle({
     Name = "Auto Interact",
