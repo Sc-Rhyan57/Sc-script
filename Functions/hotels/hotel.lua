@@ -521,7 +521,7 @@ local autoIn = Window:MakeTab({
     PremiumOnly = false
 })
 
-abaAutoLoot:AddToggle({
+autoIn:AddToggle({
     Name = "Auto Loot",
     Default = false,
     Callback = function(estado)
