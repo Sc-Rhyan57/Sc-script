@@ -581,14 +581,7 @@ VisualsEsp:AddToggle({
 
 VisualsEsp:AddParagraph("Local Player", "Funções visuais do jogador.")
 
-VisualsEsp:AddToggle({
-    Name = "Fullbright",
-    Default = false,
-    Callback = function(value)
-        Toggles.Fullbright.Value = value
-        Fullbright()
-    end
-})
+
 
 
 -- Funções de automação
