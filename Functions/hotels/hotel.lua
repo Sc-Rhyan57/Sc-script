@@ -625,7 +625,18 @@ VisualsEsp:AddToggle({
         end
     end
 })
-CreditsTab:AddParagraph("Local Player", "Funções visuais do jogador.")
+
+VisualsEsp:AddParagraph("Local Player", "Funções visuais do jogador.")
+
+VisualsEsp:AddToggle({
+    Name = "Fullbright",
+    Default = false,
+    Callback = function(value)
+        fullbrightEnabled = value
+        Fullbright()
+    end
+})
+
 -- Funções de automação
 local autoIn = Window:MakeTab({
     Name = "Automoção",
@@ -804,14 +815,6 @@ GameLocal:AddButton({
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Stats.lua"))()
         print("O botão stats foi ativo!")
        end
-})
-
-GameLocal:AddButton({
-    Name = "👁️ Brilho total",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/fullbright.lua"))()
-        print("O botão brilho total foi ativo!")
-    end
 })
 
 GameLocal:AddButton({
