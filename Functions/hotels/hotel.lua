@@ -490,61 +490,6 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 end
 
 -- FLY FUNÇÃO
-local flying = false
-local flySpeed = 50
-local flyConnection
-
-function Fly()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
-
-    if flying then
-        local bodyVelocity = Instance.new("BodyVelocity")
-        bodyVelocity.Velocity = Vector3.new(0, 0, 0)
-        bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
-        bodyVelocity.Parent = humanoidRootPart
-
-        flyConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            local camera = workspace.CurrentCamera
-            local moveDirection = Vector3.new(0, 0, 0)
-
-            if UserInputService:IsKeyDown(Enum.KeyCode.W) then
-                moveDirection = moveDirection + (camera.CFrame.LookVector * flySpeed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.S) then
-                moveDirection = moveDirection - (camera.CFrame.LookVector * flySpeed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.A) then
-                moveDirection = moveDirection - (camera.CFrame.RightVector * flySpeed)
-            end
-            if UserInputService:IsKeyDown(Enum.KeyCode.D) then
-                moveDirection = moveDirection + (camera.CFrame.RightVector * flySpeed)
-            end
-
-            bodyVelocity.Velocity = moveDirection
-        end)
-
-        OrionLib:MakeNotification({
-            Name = "Fly Ativado",
-            Content = "Você agora pode voar!",
-            Time = 5
-        })
-    else
-        if flyConnection then
-            flyConnection:Disconnect()
-            flyConnection = nil
-        end
-
-        humanoidRootPart:FindFirstChildOfClass("BodyVelocity"):Destroy()
-
-        OrionLib:MakeNotification({
-            Name = "Fly Desativado",
-            Content = "Você não está mais voando.",
-            Time = 5
-        })
-    end
-end
 --[ ORION LIB - MENU ]--
 
 -- Define um VisualsTab vazio
@@ -823,14 +768,6 @@ GameLocal:AddButton({
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Godmode.lua"))()
         print("O godmode foi ativo!")
-    end
-})
-GameLocal:AddToggle({
-    Name = "Fly",
-    Default = false,
-    Callback = function(value)
-        flying = value
-        Fly()
     end
 })
 
