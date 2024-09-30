@@ -450,22 +450,41 @@ function Noclip()
             end
         end)
 
-        OrionLib:MakeNotification({
-            Name = "Noclip Ativado",
-            Content = "Você pode atravessar objetos!",
-            Time = 5
-        })
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://8486683243"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Agora você pode atravessar paredes!",
+    Icon = "rbxassetid://17328930447",
+    Duration = 5
+})
+        
     else
         if noclipConnection then
             noclipConnection:Disconnect()
             noclipConnection = nil
         end
 
-        OrionLib:MakeNotification({
-            Name = "Noclip Desativado",
-            Content = "Noclip foi desativado.",
-            Time = 5
-        })
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://8486683243"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Noclip foi desativado!",
+    Icon = "rbxassetid://17328930447",
+    Duration = 5
+})
     end
 end
 --[ ORION LIB - MENU ]--
