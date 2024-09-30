@@ -490,6 +490,57 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 end
 
 -- FLY FUNÇÃO
+
+
+-- Fullbright
+local fullbrightEnabled = false
+
+function Fullbright()
+    local lighting = game:GetService("Lighting")
+
+    if fullbrightEnabled then
+        lighting.Ambient = Color3.new(1, 1, 1)
+        lighting.Brightness = 2
+        lighting.FogEnd = 1e10
+        lighting.GlobalShadows = false
+
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://8486683243"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Fullbright Ativo.",
+    Icon = "rbxassetid://17328930447",
+    Duration = 5
+})
+    else
+        lighting.Ambient = Color3.new(0, 0, 0)
+        lighting.Brightness = 1
+        lighting.FogEnd = 100000
+        lighting.GlobalShadows = true
+
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://8486683243"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Fullbright desativado.",
+    Icon = "rbxassetid://17328930447",
+    Duration = 5
+})
+    end
+end
+
 --[ ORION LIB - MENU ]--
 
 -- Define um VisualsTab vazio
@@ -505,7 +556,7 @@ local VisualsEsp = Window:MakeTab({
     Icon = "rbxassetid://6658334182",
     PremiumOnly = false
 })
-
+VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 -- BOTÕES ORGANIZADOS POR rhyan57
 -- DOORS ESP
 VisualsEsp:AddToggle({
@@ -574,7 +625,7 @@ VisualsEsp:AddToggle({
         end
     end
 })
-
+CreditsTab:AddParagraph("Local Player", "Funções visuais do jogador.")
 -- Funções de automação
 local autoIn = Window:MakeTab({
     Name = "Automoção",
