@@ -10,9 +10,9 @@ sound.Ended:Connect(function()
     sound:Destroy()
 end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "✨ Rseeker Hub V1",
-    Text = "🟢 Menu ativo com sucesso!",
-    Icon = "rbxassetid://13264701341",
+    Title = "🔔 Notificação | Rseeker System",
+    Text = "O Menu foi iniciado com sucesso!(Caso não tenha aparece nenhuma função eles está quebrado ou em manutenção! 🤝)",
+    Icon = "rbxassetid://76411928845479",
     Duration = 5
 })
 
