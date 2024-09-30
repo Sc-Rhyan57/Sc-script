@@ -493,21 +493,6 @@ end
 
 
 -- Fullbright
-local function Fullbright()
-    if Toggles.Fullbright.Value then
-        game:GetService("Lighting").Ambient = Color3.new(1, 1, 1) -- Define a iluminação para branco total
-    else
-        -- Restaura a iluminação ambiente para o padrão, dependendo da sala atual
-        if alive then
-            game:GetService("Lighting").Ambient = workspace.CurrentRooms[localPlayer:GetAttribute("CurrentRoom")]:GetAttribute("Ambient")
-        else
-            game:GetService("Lighting").Ambient = Color3.new(0, 0, 0) -- Volta para preto se o jogador não estiver vivo
-        end
-    end
-end
-
-
-
 
 
 --[ ORION LIB - MENU ]--
