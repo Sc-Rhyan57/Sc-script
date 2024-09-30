@@ -30,6 +30,7 @@ end
 local autoLootEnabled = false
 local autoInteractEnabled = false
 
+--[ Automoção ]--
 -- AUTO INTERACT
 local RunService = game:GetService("RunService")
 local autoInteractEnabled = false
@@ -78,7 +79,7 @@ local function AutoLoot()
     end
 end
 
-
+-- [ ESP, TRAÇOS ETC... ]--
 -- MS ESP(@mstudio45) - thanks for the API!
 -- OBJETOS ESP
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/mstudio45/MS-ESP/refs/heads/main/source.lua"))()
@@ -352,9 +353,8 @@ local function verificarNovoLoot()
         wait(5)
     end
 end
+
 -- DOORS ESP
--- ESP para portas
--- Função para arredondar números
 function round(number, decimals)
     local power = 10 ^ decimals
     return math.floor(number * power) / power
@@ -436,6 +436,39 @@ end)
 
 ESPLibrary.Rainbow.Set(true)
 
+--[ FUNÇÕES ]--
+local noclipEnabled = false
+local noclipConnection
+
+function Noclip()
+    if noclipEnabled then
+        noclipConnection = game:GetService("RunService").Stepped:Connect(function()
+            for _, v in pairs(game.Players.LocalPlayer.Character:GetDescendants()) do
+                if v:IsA("BasePart") and v.CanCollide then
+                    v.CanCollide = false
+                end
+            end
+        end)
+
+        OrionLib:MakeNotification({
+            Name = "Noclip Ativado",
+            Content = "Você pode atravessar objetos!",
+            Time = 5
+        })
+    else
+        if noclipConnection then
+            noclipConnection:Disconnect()
+            noclipConnection = nil
+        end
+
+        OrionLib:MakeNotification({
+            Name = "Noclip Desativado",
+            Content = "Noclip foi desativado.",
+            Time = 5
+        })
+    end
+end
+--[ ORION LIB - MENU ]--
 
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
@@ -716,11 +749,12 @@ GameLocal:AddButton({
     end
 })
 
-GameLocal:AddButton({
-    Name = "👻 Noclip",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/noclip.lua"))()
-        print("O botão nc foi clicado!")
+GameLocal:AddToggle({
+    Name = "Noclip",
+    Default = false,
+    Callback = function(value)
+        noclipEnabled = value
+        Noclip()
     end
 })
 
