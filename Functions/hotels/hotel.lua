@@ -2,7 +2,7 @@ local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com
 local Window = OrionLib:MakeWindow({IntroText = "RSeekerHUb 1.0.0", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://3458224686"
+sound.SoundId = "rbxassetid://4590657171"
 sound.Volume = 1
 sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 sound:Play()
