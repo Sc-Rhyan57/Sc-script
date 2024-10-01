@@ -489,12 +489,85 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     end
 end
 
--- FLY FUNÇÃO
 
 
 -- Fullbright
+--[ NOTIFICAÇÕES ]--
+-- Variáveis principais
+local entities = {"RushMoving"}
+local player = game.Players.LocalPlayer
+local notifiedEntities = {}
+local detectorEnabled = false
 
+local function playNotif(soundId)
+    local Notification = Instance.new("Sound")
+    Notification.Parent = game.SoundService
+    Notification.SoundId = soundId or "rbxassetid://4590656842"
+    Notification.Volume = 1
+    Notification.PlayOnRemove = true
+    Notification:Play()
+    task.delay(2, function() 
+        Notification:Destroy()
+    end)
+end
 
+local function sendNotification(title, text, icon)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Icon = icon,
+        Duration = 5
+    })
+end
+
+local function detectEntities()
+    workspace.ChildAdded:Connect(function(test)
+        if detectorEnabled and table.find(entities, test.Name) and not notifiedEntities[test] then
+            local success, position = pcall(function() return test:GetPivot().Position end)
+            if success and position then
+                local connection
+                connection = game:GetService("RunService").Heartbeat:Connect(function()
+                    if test:IsDescendantOf(workspace) then
+                        sendNotification("Rush surgiu", "Entre num armário!", "rbxassetid://120225720431210")
+                        playNotif()
+                        notifiedEntities[test] = true
+                        connection:Disconnect()
+                    else
+                        connection:Disconnect()
+                    end
+                end)
+            else
+                warn("[Seeker Logs] O objeto RushMoving não tem um Pivot válido.")
+            end
+
+            test.AncestryChanged:Connect(function(_, parent)
+                if not parent then
+                    notifiedEntities[test] = nil
+                end
+            end)
+        end
+    end)
+end
+
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://3458224686"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+sendNotification("🔔 Notificação", "👹 Avisos Rush Ativo!", "rbxassetid://13264701341")
+
+local function toggleDetector(state)
+    detectorEnabled = state
+    if detectorEnabled then
+        detectEntities()
+        sendNotification("🔔 Notificação", "O sistema de Notificação está ativo.", "rbxassetid://13264701341")
+    else
+        sendNotification("🔔 Notificação", "O sistema de Notificação foi desativado.", "rbxassetid://13264701341")
+    end
+end
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
@@ -650,10 +723,11 @@ local notifsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-notifsTab:AddButton({
-    Name = "⚠️ Rush Alert",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/NaSum/Sc/RushSum.lua"))()
+notifsTab:AddToggle({
+    Name = "Notificar Rush",
+    Default = false,
+    Callback = function(state)
+        toggleDetector(state)
     end
 })
 
