@@ -493,7 +493,6 @@ end
 
 -- Fullbright
 --[ NOTIFICAÇÕES ]--
--- Variáveis principais
 local entities = {"RushMoving"}
 local player = game.Players.LocalPlayer
 local notifiedEntities = {}
@@ -549,15 +548,6 @@ local function detectEntities()
     end)
 end
 
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://3458224686"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-sendNotification("🔔 Notificação", "👹 Avisos Rush Ativo!", "rbxassetid://13264701341")
 
 local function toggleDetector(state)
     detectorEnabled = state
