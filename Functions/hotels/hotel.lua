@@ -705,6 +705,26 @@ IitensTab:AddButton({
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/refs/heads/Fun%C3%A7%C3%B5es/Sc/GiveCrucifix.lua"))()
     end
 })
+-- Exploits
+local ExploitsTab = Window:MakeTab({
+    Name = "Exploits",
+    Icon = "rbxassetid://13264701341",
+    PremiumOnly = false
+})
+
+ExploitsTab:AddToggle({
+    Name = "Anti-Halt",
+    Default = false,
+    Callback = function(value)
+        local entityModules = game:GetService("ReplicatedStorage"):FindFirstChild("EntityModules")
+        if entityModules then
+            local haltModule = entityModules:FindFirstChild("Shade") or entityModules:FindFirstChild("_Shade")
+            if haltModule then
+                haltModule.Name = value and "_Shade" or "Shade"
+            end
+        end
+    end    
+})
 
 -- Aba de notificações
 local notifsTab = Window:MakeTab({
