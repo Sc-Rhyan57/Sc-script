@@ -266,17 +266,8 @@ end
 
 -- LOOT ESP
 local esp_loot = { 
-    {"KeyObtain", "Chave", Color3.fromRGB(0, 0, 255)},
-    {"LeverForGate", "Alavanca", Color3.fromRGB(0, 0, 255)},
-    {"ElectricalKeyObtain", "Chave elétrica", Color3.fromRGB(0, 0, 255)},
-    {"LiveHintBook", "Livro", Color3.fromRGB(0, 0, 255)},
-    {"LiveBreakerPolePickup", "Disjuntor", Color3.fromRGB(0, 0, 255)},
-    {"MinesGenerator", "Gerador", Color3.fromRGB(0, 0, 255)},
-    {"MinesGateButton", "Botão do portão", Color3.fromRGB(0, 0, 255)},
-    {"FuseObtain", "Fusível", Color3.fromRGB(0, 0, 255)},
-    {"MinesAnchor", "Torre", Color3.fromRGB(0, 0, 255)},
-    {"WaterPump", "Bomba de água", Color3.fromRGB(0, 0, 255)}
-}
+    {"droppedItem", "+", Color3.fromRGB(0, 0, 255)}
+    }
 
 local esp_loot_ativos = {}
 local esp_loot_ativado = false
