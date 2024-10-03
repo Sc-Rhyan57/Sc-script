@@ -711,28 +711,6 @@ local ExploitsTab = Window:MakeTab({
     Icon = "rbxassetid://13264701341",
     PremiumOnly = false
 })
-
-
-ExploitsTab:AddDropdown({
-    Name = "SpeedBypassMethod",
-    Default = "Massless",
-    Options = {"Massless", "Size"},
-    Callback = function(value)
-        Script.Functions.SpeedBypassMethod = value
-    end
-})
-
-ExploitsTab:AddSlider({
-    Name = "SpeedBypassDelay",
-    Default = 0.21,
-    Min = 0.2,
-    Max = 0.22,
-    Rounding = 2,
-    Callback = function(value)
-        Script.Functions.SpeedBypassDelay = value
-    end
-})
-
 ExploitsTab:AddToggle({
     Name = "SpeedBypass",
     Default = false,
