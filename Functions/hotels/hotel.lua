@@ -354,6 +354,9 @@ local function verificarNovoLoot()
 end
 
 -- DOORS ESP
+local doorESPEnabled = false
+local currentRoomNumber = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
+
 local function setupESPForDoors(door)
     local highlight = ESPLibrary.ESP.Highlight({
         Name = "Door",
@@ -369,13 +372,18 @@ local function setupESPForDoors(door)
     })
 end
 
+
+
 spawn(function()
-    while wait(0.2) do 
+    while wait(0.2) do
         if doorESPEnabled then
-            local currentRoom = game.Players.LocalPlayer:GetAttribute("CurrentRoom") or 0
+            -- Atualiza o número da sala atual
+            currentRoomNumber = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
+
             for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-                local roomNumber = tonumber(room.Name)
-                if roomNumber and roomNumber >= currentRoom then
+                local roomNumber = tonumber(room.Name) -- Converte o nome da sala para número
+
+                if roomNumber and roomNumber >= currentRoomNumber then -- Somente portas a partir da sala atual
                     if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
                         local door = room.Door.Door
 
@@ -417,6 +425,7 @@ spawn(function()
                             txtlbl2.TextColor3 = ESPColors.Door
                         end
 
+                        -- Calcula a distância do jogador até a porta
                         local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
                         bb.Dist.Text = round(distance, 1) .. " Studs"
                     end
@@ -425,8 +434,6 @@ spawn(function()
         end
     end
 end)
-
-ESPLibrary.Rainbow.Set(true)
 
 --[ FUNÇÕES ]--
 -- NOCLIP FUNÇÃO 
@@ -631,6 +638,7 @@ VisualsEsp:AddToggle({
     Callback = function(value)
         doorESPEnabled = value
         if not doorESPEnabled then
+            -- Remover o ESP das portas
             for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
                 if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
                     local door = room.Door.Door
