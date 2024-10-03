@@ -492,55 +492,7 @@ end
 
 
 -- ANTI LAG
-local function ActivateAntiLag()
 
-    game.Lighting.FogEnd = 1e10
-    game.Lighting.FogStart = 1e10
-
-    game.Lighting.Brightness = 2
-    game.Lighting.GlobalShadows = false
-    game.Lighting.EnvironmentDiffuseScale = 0
-    game.Lighting.EnvironmentSpecularScale = 0
-
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Anti Lag Ativo",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-end
-
-local function DeactivateAntiLag()
-    game.Lighting.FogEnd = 500
-    game.Lighting.FogStart = 0
-    game.Lighting.Brightness = 1
-    game.Lighting.GlobalShadows = true
-    game.Lighting.EnvironmentDiffuseScale = 1
-    game.Lighting.EnvironmentSpecularScale = 1
-
-    local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Anti Lag Desativado",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-end
     
 --[ NOTIFICAÇÕES ]--
 local entities = {"RushMoving"}
@@ -694,17 +646,6 @@ VisualsEsp:AddToggle({
 
 VisualsEsp:AddParagraph("Local Player", "Funções visuais do jogador.")
 
-VisualsEsp:AddToggle({
-    Name = "Anti-Lag",
-    Default = false,
-    Callback = function(value)
-        if value then
-            ActivateAntiLag()
-        else
-            DeactivateAntiLag()
-        end
-    end
-})
 
 -- Funções de automação
 local autoIn = Window:MakeTab({
