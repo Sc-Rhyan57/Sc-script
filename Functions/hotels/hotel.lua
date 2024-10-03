@@ -343,6 +343,7 @@ local function verificarNovoLoot()
         wait(5)
     end
 end
+
 -- DOORS ESP
 function round(number, decimals)
     local power = 10 ^ decimals
@@ -417,7 +418,6 @@ spawn(function()
                     local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
                     bb.Dist.Text = round(distance, 1) .. " Studs"
                 end
-
             end
         end
     end
@@ -425,6 +425,7 @@ end)
 
 
 ESPLibrary.Rainbow.Set(true)
+
 --[ FUNÇÕES ]--
 -- NOCLIP FUNÇÃO 
 local noclipEnabled = false
@@ -642,7 +643,6 @@ VisualsEsp:AddToggle({
         end
     end
 })
-
 -- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
