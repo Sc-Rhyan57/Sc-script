@@ -742,7 +742,7 @@ local function StartDeleteSeek()
     if not rootPart then
         OrionLib:MakeNotification({
             Name = "Erro",
-            Content = "HumanoidRootPart não encontrado!",
+            Content = "Barreira do Seek não encontrada!",
             Time = 5
         })
         return
