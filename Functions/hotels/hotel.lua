@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+alocal OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
 local Window = OrionLib:MakeWindow({IntroText = "RSeekerHUb 1.0.0", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 
 local sound = Instance.new("Sound")
@@ -712,9 +712,8 @@ local ExploitsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-local BypassGroup = ExploitsTab:AddRightGroupbox("Bypass")
 
-BypassGroup:AddDropdown({
+ExploitsTab:AddDropdown({
     Name = "SpeedBypassMethod",
     Default = "Massless",
     Options = {"Massless", "Size"},
@@ -723,7 +722,7 @@ BypassGroup:AddDropdown({
     end
 })
 
-BypassGroup:AddSlider({
+ExploitsTab:AddSlider({
     Name = "SpeedBypassDelay",
     Default = 0.21,
     Min = 0.2,
@@ -734,7 +733,7 @@ BypassGroup:AddSlider({
     end
 })
 
-BypassGroup:AddToggle({
+ExploitsTab:AddToggle({
     Name = "SpeedBypass",
     Default = false,
     Callback = function(value)
