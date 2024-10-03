@@ -742,6 +742,40 @@ local ByTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+--// Anti-Eyes \\--
+local AntiEyesConnection
+
+ByTab:AddToggle({
+    Name = "Anti-Eyes",
+    Default = false,
+    Callback = function(Value)
+        if Value then
+            local function applyAntiEyes(entity)
+                if entity.Name == "Eyes" or entity.Name == "BackdoorLookman" then
+                    if not isFools then
+                        remotesFolder.MotorReplication:FireServer(-649)
+                    else
+                        remotesFolder.MotorReplication:FireServer(0, -90, 0, false)
+                    end
+                end
+            end
+            
+            for _, entity in pairs(workspace:GetChildren()) do
+                applyAntiEyes(entity)
+            end
+            
+            AntiEyesConnection = workspace.ChildAdded:Connect(function(newChild)
+                applyAntiEyes(newChild)
+            end)
+        else
+            if AntiEyesConnection then
+                AntiEyesConnection:Disconnect()
+                AntiEyesConnection = nil
+            end
+        end
+    end
+})
+
 --//Anti Goggle\\--
 local antiGiggleEnabled = false
 
@@ -770,40 +804,6 @@ local function toggleAntiGiggle(state)
         end
     end
 end
-
---// Anti-Eyes \\--
-local AntiEyesConnection
-
-ByTab:AddToggle({
-    Name = "Anti-Eyes",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            local function applyAntiEyes(entity)
-                if entity.Name == "Eyes" or entity.Name == "BackdoorLookman" then
-                    if not isFools then
-                        remotesFolder.MotorReplication:FireServer(-649)
-                    else
-                        remotesFolder.MotorReplication:FireServer(0, -90, 0, false)
-                    end
-                end
-            end
-            
-            for _, entity in pairs(workspace:GetChildren()) do
-                applyAntiEyes(entity)
-            end
-            AntiEyesConnection = workspace.ChildAdded:Connect(function(newChild)
-                applyAntiEyes(newChild)
-            end)
-        else
-            if AntiEyesConnection then
-                AntiEyesConnection:Disconnect()
-                AntiEyesConnection = nil
-            end
-        end
-    end
-})
-
 
 -- Define uma aba para itens
 local ItensTab = Window:MakeTab({
