@@ -352,9 +352,16 @@ local function verificarNovoLoot()
         wait(5)
     end
 end
+-- DOORS ESP
+function round(number, decimals)
+    local power = 10 ^ decimals
+    return math.floor(number * power) / power
+end
 
-local doorESPEnabled = false
-local currentRoomNumber = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
+
+local ESPColors = {
+    Door = Color3.fromRGB(241, 196, 15),
+}
 
 local function setupESPForDoors(door)
     local highlight = ESPLibrary.ESP.Highlight({
@@ -372,66 +379,61 @@ local function setupESPForDoors(door)
 end
 
 spawn(function()
-    while wait(0.2) do
+    while wait(0.2) do 
         if doorESPEnabled then
-            -- Atualiza o número da sala atual
-            currentRoomNumber = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
-
             for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-                local roomNumber = tonumber(room.Name) -- Converte o nome da sala para número
+                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+                    local door = room.Door.Door
 
-                if roomNumber and roomNumber >= currentRoomNumber then -- Somente portas a partir da sala atual
-                    if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                        local door = room.Door.Door
-
-                        if not door:FindFirstChild("Highlight") then
-                            setupESPForDoors(door)
-                        end
-
-                        local bb = door:FindFirstChild("BillBoard")
-                        if not bb then
-                            bb = Instance.new('BillboardGui', door)
-                            bb.Adornee = door
-                            bb.ExtentsOffset = Vector3.new(0, 1, 0)
-                            bb.AlwaysOnTop = true
-                            bb.Size = UDim2.new(0, 6, 0, 6)
-                            bb.StudsOffset = Vector3.new(0, 1, 0)
-                            bb.Name = "BillBoard"
-
-                            local txtlbl = Instance.new('TextLabel', bb)
-                            txtlbl.ZIndex = 10
-                            txtlbl.BackgroundTransparency = 1
-                            txtlbl.Position = UDim2.new(0, 0, 0, -45)
-                            txtlbl.Size = UDim2.new(1, 0, 10, 0)
-                            txtlbl.Font = Enum.Font.ArialBold
-                            txtlbl.TextSize = 12
-                            txtlbl.Text = "Door " .. room.Name
-                            txtlbl.TextStrokeTransparency = 0.5
-                            txtlbl.TextColor3 = ESPColors.Door
-
-                            local txtlbl2 = Instance.new('TextLabel', bb)
-                            txtlbl2.ZIndex = 10
-                            txtlbl2.BackgroundTransparency = 1
-                            txtlbl2.Position = UDim2.new(0, 0, 0, -15)
-                            txtlbl2.Size = UDim2.new(1, 0, 10, 0)
-                            txtlbl2.Font = Enum.Font.ArialBold
-                            txtlbl2.TextSize = 12
-                            txtlbl2.Text = "? Studs"
-                            txtlbl2.Name = "Dist"
-                            txtlbl2.TextStrokeTransparency = 0.5
-                            txtlbl2.TextColor3 = ESPColors.Door
-                        end
-
-                        -- Calcula a distância do jogador até a porta
-                        local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
-                        bb.Dist.Text = round(distance, 1) .. " Studs"
+                    if not door:FindFirstChild("Highlight") then
+                        setupESPForDoors(door)
                     end
+
+                    local bb = door:FindFirstChild("BillBoard")
+                    if not bb then
+                        bb = Instance.new('BillboardGui', door)
+                        bb.Adornee = door
+                        bb.ExtentsOffset = Vector3.new(0, 1, 0)
+                        bb.AlwaysOnTop = true
+                        bb.Size = UDim2.new(0, 6, 0, 6)
+                        bb.StudsOffset = Vector3.new(0, 1, 0)
+                        bb.Name = "BillBoard"
+
+                        local txtlbl = Instance.new('TextLabel', bb)
+                        txtlbl.ZIndex = 10
+                        txtlbl.BackgroundTransparency = 1
+                        txtlbl.Position = UDim2.new(0, 0, 0, -45)
+                        txtlbl.Size = UDim2.new(1, 0, 10, 0)
+                        txtlbl.Font = Enum.Font.ArialBold
+                        txtlbl.TextSize = 12
+                        txtlbl.Text = "Door " .. room.Name
+                        txtlbl.TextStrokeTransparency = 0.5
+                        txtlbl.TextColor3 = ESPColors.Door
+
+                        local txtlbl2 = Instance.new('TextLabel', bb)
+                        txtlbl2.ZIndex = 10
+                        txtlbl2.BackgroundTransparency = 1
+                        txtlbl2.Position = UDim2.new(0, 0, 0, -15)
+                        txtlbl2.Size = UDim2.new(1, 0, 10, 0)
+                        txtlbl2.Font = Enum.Font.ArialBold
+                        txtlbl2.TextSize = 12
+                        txtlbl2.Text = "? Studs"
+                        txtlbl2.Name = "Dist"
+                        txtlbl2.TextStrokeTransparency = 0.5
+                        txtlbl2.TextColor3 = ESPColors.Door
+                    end
+
+                    local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
+                    bb.Dist.Text = round(distance, 1) .. " Studs"
                 end
+
             end
         end
     end
 end)
 
+
+ESPLibrary.Rainbow.Set(true)
 --[ FUNÇÕES ]--
 -- NOCLIP FUNÇÃO 
 local noclipEnabled = false
@@ -635,7 +637,6 @@ VisualsEsp:AddToggle({
     Callback = function(value)
         doorESPEnabled = value
         if not doorESPEnabled then
-            -- Remover o ESP das portas
             for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
                 if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
                     local door = room.Door.Door
@@ -650,6 +651,7 @@ VisualsEsp:AddToggle({
         end
     end
 })
+
 -- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
