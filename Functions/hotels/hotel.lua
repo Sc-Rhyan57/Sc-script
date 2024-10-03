@@ -353,7 +353,6 @@ local function verificarNovoLoot()
     end
 end
 
--- DOORS ESP
 local doorESPEnabled = false
 local currentRoomNumber = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
 
@@ -371,8 +370,6 @@ local function setupESPForDoors(door)
         }
     })
 end
-
-
 
 spawn(function()
     while wait(0.2) do
