@@ -605,6 +605,21 @@ local function StartDeleteSeek()
     end)
 end
 
+--- Anti Screesh
+local isAntiScreechActive = false  
+local RunService = game:GetService("RunService")  
+local mainGame = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Main_Game")
+
+local function AntiScreechCheck()
+    RunService.RenderStepped:Connect(function()
+        if isAntiScreechActive and mainGame then
+            local module = mainGame:FindFirstChild("Screech", true) or mainGame:FindFirstChild("_Screech", true)
+            if module then
+                module.Name = "_Screech"
+            end
+        end
+    end)
+end
 
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
@@ -772,6 +787,17 @@ ByTab:AddToggle({
                 AntiEyesConnection:Disconnect()
                 AntiEyesConnection = nil
             end
+        end
+    end
+})
+
+ByTab:AddToggle({
+    Name = "Anti-Screech",
+    Default = false,
+    Callback = function(value)
+        isAntiScreechActive = value  
+        if value then
+            AntiScreechCheck()
         end
     end
 })
