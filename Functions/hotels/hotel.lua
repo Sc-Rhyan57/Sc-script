@@ -537,10 +537,9 @@ local function DeactivateAntiLag()
         if obj:IsA("BasePart") and obj.Material == Enum.Material.Plastic then
             obj.Material = Enum.Material.SmoothPlastic
         elseif obj:IsA("Decal") then
-            obj.Transparency = 0 
+            obj.Transparency = 0
         end
     end
-
 
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590657391"
@@ -551,7 +550,6 @@ local function DeactivateAntiLag()
         sound:Destroy()
     end)
 
-
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "🔔 Notificação",
         Text = "Anti Lag Desativado",
@@ -559,6 +557,15 @@ local function DeactivateAntiLag()
         Duration = 5
     })
 end
+local function onRoomChanged()
+    local currentRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
+    print("[Seekee Logs] AntiLag Adicionado a sala" .. currentRoom)
+
+    ActivateAntiLag()
+end
+local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
+latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
+
 
 
 --[ NOTIFICAÇÕES ]--
