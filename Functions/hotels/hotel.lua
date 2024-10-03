@@ -809,14 +809,6 @@ local notifsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-notifsTab:AddToggle({
-    Name = "Notificar Rush",
-    Default = false,
-    Callback = function(state)
-        toggleDetector(state)
-    end
-})
-
 notifsTab:AddButton({
     Name = "⚠️ Ambush Alert",
     Callback = function()
