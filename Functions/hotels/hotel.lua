@@ -712,6 +712,70 @@ local ExploitsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+local BypassGroup = ExploitsTab:AddRightGroupbox("Bypass")
+
+BypassGroup:AddDropdown({
+    Name = "SpeedBypassMethod",
+    Default = "Massless",
+    Options = {"Massless", "Size"},
+    Callback = function(value)
+        Script.Functions.SpeedBypassMethod = value
+    end
+})
+
+BypassGroup:AddSlider({
+    Name = "SpeedBypassDelay",
+    Default = 0.21,
+    Min = 0.2,
+    Max = 0.22,
+    Rounding = 2,
+    Callback = function(value)
+        Script.Functions.SpeedBypassDelay = value
+    end
+})
+
+BypassGroup:AddToggle({
+    Name = "SpeedBypass",
+    Default = false,
+    Callback = function(value)
+        if value then
+            Script.Functions.SpeedBypass()
+        else
+                
+            Script.Functions.CleanupBypass()
+        end
+    end
+})
+
+function Script.Functions.SpeedBypass()
+    if Script.Functions.SpeedBypassing then return end
+    Script.Functions.SpeedBypassing = true
+
+    local method = Script.Functions.SpeedBypassMethod
+
+    task.spawn(function()
+        while Toggles.SpeedBypass.Value and collisionClone and Options.SpeedBypassMethod.Value == method do
+            if method == "Massless" then
+                collisionClone.Massless = not collisionClone.Massless
+            elseif method == "Size" then
+                collisionClone.Size = Vector3.new(3, 5.5, 3)
+                task.wait(Script.Functions.SpeedBypassDelay)
+                collisionClone.Size = Vector3.new(1.5, 2.75, 1.5)
+            end
+            task.wait(Script.Functions.SpeedBypassDelay)
+        end
+        Script.Functions.CleanupBypass()
+    end)
+end
+
+function Script.Functions.CleanupBypass()
+    Script.Functions.SpeedBypassing = false
+    if collisionClone then
+        collisionClone.Massless = false
+        collisionClone.Size = Vector3.new(1.5, 2.75, 1.5)
+    end
+end
+
 ExploitsTab:AddToggle({
     Name = "Anti-Halt",
     Default = false,
