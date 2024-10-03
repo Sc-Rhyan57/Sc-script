@@ -735,6 +735,42 @@ autoIn:AddToggle({
     end
 })
 
+-- Define uma aba de créditos
+local ByTab = Window:MakeTab({
+    Name = "Byppas",
+    Icon = "rbxassetid://14255000409",
+    PremiumOnly = false
+})
+
+
+local antiGiggleEnabled = false
+
+ByTab:AddToggle({
+    Name = "Anti-Giggle",
+    Default = false,
+    Callback = function(value)
+        antiGiggleEnabled = value
+        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+            for _, giggle in pairs(room:GetChildren()) do
+                if giggle.Name == "GiggleCeiling" then
+                    giggle:WaitForChild("Hitbox", 5).CanTouch = not antiGiggleEnabled
+                end
+            end
+        end
+    end
+})
+
+local function toggleAntiGiggle(state)
+    antiGiggleEnabled = state
+    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+        for _, giggle in pairs(room:GetChildren()) do
+            if giggle.Name == "GiggleCeiling" then
+                giggle:WaitForChild("Hitbox", 5).CanTouch = not antiGiggleEnabled
+            end
+        end
+    end
+end
+
 -- Define uma aba para itens
 local ItensTab = Window:MakeTab({
     Name = "Give Itens",
