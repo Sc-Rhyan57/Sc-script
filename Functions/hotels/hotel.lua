@@ -495,12 +495,19 @@ end
 local function ActivateAntiLag()
     game.Lighting.FogEnd = 1e10
     game.Lighting.FogStart = 1e10
-
     game.Lighting.Brightness = 2
     game.Lighting.GlobalShadows = false
     game.Lighting.EnvironmentDiffuseScale = 0
     game.Lighting.EnvironmentSpecularScale = 0
 
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Material ~= Enum.Material.Plastic then
+            obj.Material = Enum.Material.Plastic
+        elseif obj:IsA("Decal") then
+            obj.Transparency = 1
+        end
+    end
+    
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590657391"
     sound.Volume = 1
@@ -509,6 +516,7 @@ local function ActivateAntiLag()
     sound.Ended:Connect(function()
         sound:Destroy()
     end)
+
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "🔔 Notificação",
         Text = "Anti Lag Ativo",
@@ -524,7 +532,16 @@ local function DeactivateAntiLag()
     game.Lighting.GlobalShadows = true
     game.Lighting.EnvironmentDiffuseScale = 1
     game.Lighting.EnvironmentSpecularScale = 1
-    
+
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("BasePart") and obj.Material == Enum.Material.Plastic then
+            obj.Material = Enum.Material.SmoothPlastic
+        elseif obj:IsA("Decal") then
+            obj.Transparency = 0 
+        end
+    end
+
+
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590657391"
     sound.Volume = 1
@@ -534,6 +551,7 @@ local function DeactivateAntiLag()
         sound:Destroy()
     end)
 
+
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "🔔 Notificação",
         Text = "Anti Lag Desativado",
@@ -541,6 +559,7 @@ local function DeactivateAntiLag()
         Duration = 5
     })
 end
+
 
 --[ NOTIFICAÇÕES ]--
 local entities = {"RushMoving"}
