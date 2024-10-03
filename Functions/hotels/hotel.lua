@@ -181,7 +181,6 @@ local entidades = {
     {"Snare", "Armadilha", Color3.fromRGB(255, 0, 0)},
     {"Item", "+", Color3.fromRGB(0, 255, 0)},
     {"FigureRig", "Figure", Color3.fromRGB(255, 0, 0)},
-    {"Eyes", "Olhos", Color3.fromRGB(255, 0, 0)},
     {"A60", "A-60", Color3.fromRGB(255, 0, 0)},
     {"A120", "A-120", Color3.fromRGB(255, 0, 0)},
     {"GiggleCeiling", "Giggle", Color3.fromRGB(255, 0, 0)},
@@ -583,6 +582,38 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
+-- DELETE SEEK
+local function StartDeleteSeek()
+    local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "Barreira do Seek não encontrada!",
+            Time = 5
+        })
+        return
+    end
+
+    local function DeleteSeek(obj)
+        if obj and obj:IsA("BasePart") and obj.Name == "Collision" then
+            firetouchinterest(rootPart, obj, 1)
+            firetouchinterest(rootPart, obj, 0)
+
+            OrionLib:MakeNotification({
+                Name = "Delete Seek",
+                Content = "Seek foi deletado com sucesso!",
+                Time = 5
+            })
+        end
+    end
+
+    game.Workspace.DescendantAdded:Connect(function(child)
+        if getgenv().DeleteSeekEnabled and child.Name == "Collision" then
+            DeleteSeek(child)
+        end
+    end)
+end
+
 
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
@@ -771,38 +802,6 @@ ExploitsTab:AddToggle({
         end
     end    
 })
-
-local function StartDeleteSeek()
-    local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then
-        OrionLib:MakeNotification({
-            Name = "Erro",
-            Content = "Barreira do Seek não encontrada!",
-            Time = 5
-        })
-        return
-    end
-
-    local function DeleteSeek(obj)
-        if obj and obj:IsA("BasePart") and obj.Name == "Collision" then
-            firetouchinterest(rootPart, obj, 1)
-            firetouchinterest(rootPart, obj, 0)
-
-            OrionLib:MakeNotification({
-                Name = "Delete Seek",
-                Content = "Seek foi deletado com sucesso!",
-                Time = 5
-            })
-        end
-    end
-
-    game.Workspace.DescendantAdded:Connect(function(child)
-        if getgenv().DeleteSeekEnabled and child.Name == "Collision" then
-            DeleteSeek(child)
-        end
-    end)
-end
-
 -- Aba de notificações
 local notifsTab = Window:MakeTab({
     Name = "Notificações",
@@ -832,84 +831,12 @@ notifsTab:AddButton({
     end
 })
 
--- Define uma aba local
+-- Local Player
 local GameLocal = Window:MakeTab({
     Name = "Local",
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
 })
-
-GameLocal:AddSlider({
-    Name = "🏃 Velocidade de caminhada",
-    Min = 16,
-    Max = 100,
-    Default = 16,
-    Color = Color3.fromRGB(255, 255, 255),
-    Increment = 1,
-    ValueName = "Speed",
-    Callback = function(value)
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = value
-    end
-})
-
-local speedBoostEnabled = false
-
-local function toggleSpeedBoost()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:WaitForChild("Humanoid")
-    
-    if humanoid then
-        if speedBoostEnabled then
-            humanoid.WalkSpeed = 16 -- Velocidade padrão
-            print("Velocidade restaurada para 16.")
-        else
-            humanoid.WalkSpeed = 50 -- Aumenta a velocidade de caminhada
-            print("Velocidade aumentada para 50.")
-        end
-
-        speedBoostEnabled = not speedBoostEnabled
-    else
-        warn("Humanoid não encontrado!")
-    end
-end
-
-GameLocal:AddButton({
-    Name = "🏃 Toggle Speed Boost",
-    Callback = function()
-        toggleSpeedBoost()
-    end    
-})
-
-GameLocal:AddButton({
-    Name = "🔄 Resetar velocidade",
-    Callback = function()
-        local player = game.Players.LocalPlayer
-        local character = player.Character or player.CharacterAdded:Wait()
-        local humanoid = character:WaitForChild("Humanoid")
-        humanoid.WalkSpeed = 16
-    end
-})
-
-GameLocal:AddParagraph("❓ Info velocidade", "Não consegue interagir? utilize um mouse.")
-
-local fovEnabled = false
-
-local function toggleFieldOfView()
-    local camera = workspace.CurrentCamera
-
-    if fovEnabled then
-        camera.FieldOfView = 70
-    else
-        camera.FieldOfView = 120
-    end
-
-    fovEnabled = not fovEnabled
-end
-
 GameLocal:AddButton({
     Name = "🎥 Alternar campo de visão",
     Callback = function()
