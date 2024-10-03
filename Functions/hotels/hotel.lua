@@ -1,5 +1,5 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
-local Window = OrionLib:MakeWindow({IntroText = "RSeekerHUb 1.0.0", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
+local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
@@ -507,7 +507,16 @@ local function ActivateAntiLag()
             obj.Transparency = 1
         end
     end
-    
+
+
+    workspace.DescendantAdded:Connect(function(obj)
+        if obj:IsA("BasePart") and obj.Material ~= Enum.Material.Plastic then
+            obj.Material = Enum.Material.Plastic
+        elseif obj:IsA("Decal") then
+            obj.Transparency = 1
+        end
+    end)
+
     local sound = Instance.new("Sound")
     sound.SoundId = "rbxassetid://4590657391"
     sound.Volume = 1
@@ -557,15 +566,16 @@ local function DeactivateAntiLag()
         Duration = 5
     })
 end
+
 local function onRoomChanged()
     local currentRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
-    print("[Seekee Logs] AntiLag Adicionado a sala" .. currentRoom)
+    print("[Seekee Logs] AntiLag Adicionado a sala " .. currentRoom)
 
     ActivateAntiLag()
 end
+
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
-
 
 
 --[ NOTIFICAÇÕES ]--
