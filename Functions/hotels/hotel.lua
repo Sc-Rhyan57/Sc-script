@@ -774,7 +774,7 @@ end
 --// Anti-Eyes \\--
 local AntiEyesConnection
 
-AntiEntityTab:AddToggle({
+ByTab:AddToggle({
     Name = "Anti-Eyes",
     Default = false,
     Callback = function(Value)
