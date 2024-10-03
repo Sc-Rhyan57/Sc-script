@@ -726,6 +726,48 @@ ExploitsTab:AddToggle({
     end    
 })
 
+ExploitsTab:AddToggle({
+    Name = "Delete Seek (FE)",
+    Default = false,
+    Callback = function(value)
+        getgenv().DeleteSeekEnabled = value
+        if value then
+            StartDeleteSeek()
+        end
+    end    
+})
+
+local function StartDeleteSeek()
+    local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if not rootPart then
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "HumanoidRootPart não encontrado!",
+            Time = 5
+        })
+        return
+    end
+
+    local function DeleteSeek(obj)
+        if obj and obj:IsA("BasePart") and obj.Name == "Collision" then
+            firetouchinterest(rootPart, obj, 1)
+            firetouchinterest(rootPart, obj, 0)
+
+            OrionLib:MakeNotification({
+                Name = "Delete Seek",
+                Content = "Seek foi deletado com sucesso!",
+                Time = 5
+            })
+        end
+    end
+
+    game.Workspace.DescendantAdded:Connect(function(child)
+        if getgenv().DeleteSeekEnabled and child.Name == "Collision" then
+            DeleteSeek(child)
+        end
+    end)
+end
+
 -- Aba de notificações
 local notifsTab = Window:MakeTab({
     Name = "Notificações",
