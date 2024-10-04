@@ -152,11 +152,11 @@ ElevatorTab:AddButton({
             local presetData = {
                 Floor = "Hotel",
                 MaxPlayers = 1,
-                Modifiers = {},
+                Modifiers = {},  -- Aqui você pode adicionar modificadores conforme necessário
                 FriendsOnly = true
             }
             CreatePreset(Script.PresetName, presetData)
-            LoadPresets()
+            LoadPresets()  -- Recarrega a lista de presets após criar
         end
     end
 })
@@ -187,8 +187,15 @@ ElevatorTab:AddButton({
             })
         else
             delfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json")
-            LoadPresets()
+            LoadPresets()  -- Recarrega a lista de presets após deletar
         end
+    end
+})
+
+ElevatorTab:AddButton({
+    Name = "Refresh Presets",
+    Callback = function()
+        LoadPresets()
     end
 })
 
