@@ -106,12 +106,7 @@ local function LoopAchievements()
     end)
 end
 
-OrionLib:MakeWindow({
-    Name = "Achievements Control",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "AchievementsConfig"
-})
+
 
 local AchievementTab = OrionLib:MakeTab({
     Name = "Achievements",
