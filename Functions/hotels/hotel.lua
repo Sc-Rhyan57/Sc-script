@@ -391,28 +391,6 @@ spawn(function()
                         bb.StudsOffset = Vector3.new(0, 1, 0)
                         bb.Name = "BillBoard"
 
-                        local txtlbl = Instance.new('TextLabel', bb)
-                        txtlbl.ZIndex = 10
-                        txtlbl.BackgroundTransparency = 1
-                        txtlbl.Position = UDim2.new(0, 0, 0, -45)
-                        txtlbl.Size = UDim2.new(1, 0, 10, 0)
-                        txtlbl.Font = Enum.Font.ArialBold
-                        txtlbl.TextSize = 12
-                        txtlbl.Text = "Door " .. room.Name
-                        txtlbl.TextStrokeTransparency = 0.5
-                        txtlbl.TextColor3 = ESPColors.Door
-
-                        local txtlbl2 = Instance.new('TextLabel', bb)
-                        txtlbl2.ZIndex = 10
-                        txtlbl2.BackgroundTransparency = 1
-                        txtlbl2.Position = UDim2.new(0, 0, 0, -15)
-                        txtlbl2.Size = UDim2.new(1, 0, 10, 0)
-                        txtlbl2.Font = Enum.Font.ArialBold
-                        txtlbl2.TextSize = 12
-                        txtlbl2.Text = "? Studs"
-                        txtlbl2.Name = "Dist"
-                        txtlbl2.TextStrokeTransparency = 0.5
-                        txtlbl2.TextColor3 = ESPColors.Door
                     end
 
                     local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
