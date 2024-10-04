@@ -24,6 +24,173 @@ if game.PlaceId == 6516141723 then
     })
 end
 
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
+local createElevator = remotesFolder:WaitForChild("CreateElevator")
+
+local Script = {
+    ElevatorPresetData = {},
+    ElevatorPresets = {}
+}
+
+local function EnforceTypes(args, template)
+    args = type(args) == "table" and args or {}
+
+    for key, value in pairs(template) do
+        local argValue = args[key]
+        if argValue == nil or (value ~= nil and type(argValue) ~= type(value)) then
+            args[key] = value
+        elseif type(value) == "table" then
+            args[key] = EnforceTypes(argValue, value)
+        end
+    end
+
+    return args
+end
+
+local function BuildPresetStructure()
+    if not isfolder(".seekerLobby/presets") then
+        makefolder(".seekerLobby/presets")
+    end
+end
+
+local function CreatePreset(name, data)
+    local presetData = EnforceTypes(data, {
+        Floor = "Hotel",
+        MaxPlayers = 1,
+        Modifiers = nil,
+        FriendsOnly = true
+    })
+    BuildPresetStructure()
+    writefile(".seekerLobby/presets/" .. name .. ".json", HttpService:JSONEncode(presetData))
+end
+
+local function LoadPresets()
+    table.clear(Script.ElevatorPresets)
+    table.clear(Script.ElevatorPresetData)
+
+    for _, file in pairs(listfiles(".seekerLobby/presets")) do
+        local success, ret = pcall(function()
+            local data = readfile(file)
+            return HttpService:JSONDecode(data)
+        end)
+
+        if success then
+            local name = file:match("([^/]+)%.json$")
+            Script.ElevatorPresetData[name] = EnforceTypes(ret, {
+                Floor = "Hotel",
+                MaxPlayers = 1,
+                Modifiers = nil,
+                FriendsOnly = true
+            })
+            table.insert(Script.ElevatorPresets, name)
+        else
+            warn("Failed to load preset: " .. file)
+        end
+    end
+end
+
+local function LoadPreset(name)
+    BuildPresetStructure()
+    local success, ret = pcall(function()
+        local data = readfile(".seekerLobby/presets/" .. name .. ".json")
+        return HttpService:JSONDecode(data)
+    end)
+
+    if success then
+        local presetData = EnforceTypes(ret, {
+            Floor = "Hotel",
+            MaxPlayers = 1,
+            Modifiers = nil,
+            FriendsOnly = true
+        })
+
+        local data = {
+            ["FriendsOnly"] = presetData.FriendsOnly,
+            ["Destination"] = presetData.Floor,
+            ["Mods"] = presetData.Modifiers or {},
+            ["MaxPlayers"] = tostring(presetData.MaxPlayers)
+        }
+
+        createElevator:FireServer(data)
+        OrionLib:MakeNotification({
+            Name = "Success",
+            Content = "Loaded elevator preset: " .. name,
+            Time = 5
+        })
+    else
+        warn("Failed to load preset: " .. name)
+    end
+end
+
+local ElevatorTab = Window:MakeTab({
+    Name = "Elevator Presets",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+ElevatorTab:AddTextbox({
+    Name = "Preset Name",
+    Default = "",
+    TextDisappear = false,
+    Callback = function(Value)
+        Script.PresetName = Value
+    end
+})
+
+ElevatorTab:AddButton({
+    Name = "Create Preset",
+    Callback = function()
+        if isfile(".seekerLobby/presets/" .. Script.PresetName .. ".json") then
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "Preset already exists!",
+                Time = 5
+            })
+        else
+            local presetData = {
+                Floor = "Hotel",
+                MaxPlayers = 1,
+                Modifiers = {},
+                FriendsOnly = true
+            }
+            CreatePreset(Script.PresetName, presetData)
+            LoadPresets()
+        end
+    end
+})
+
+ElevatorTab:AddDropdown({
+    Name = "Preset List",
+    Options = Script.ElevatorPresets,
+    Callback = function(Value)
+        Script.SelectedPreset = Value
+    end
+})
+
+ElevatorTab:AddButton({
+    Name = "Load Preset",
+    Callback = function()
+        LoadPreset(Script.SelectedPreset)
+    end
+})
+
+ElevatorTab:AddButton({
+    Name = "Delete Preset",
+    Callback = function()
+        if not isfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json") then
+            OrionLib:MakeNotification({
+                Name = "Error",
+                Content = "Preset does not exist!",
+                Time = 5
+            })
+        else
+            delfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json")
+            LoadPresets()
+        end
+    end
+})
 
 local Script = {
     CurrentBadge = 0,
