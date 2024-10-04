@@ -1,5 +1,5 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
-local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "💎 RSeeker Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
+local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "Rseeker | DOORS | Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
@@ -11,22 +11,21 @@ sound.Ended:Connect(function()
 end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "🔔 Notificação | Rseeker System",
-    Text = "⚙️ Lobby Menu Carregado com Sucesso!",
+    Text = "⚙️ • Rseeker Lobby Carregado.",
     Icon = "rbxassetid://76411928845479",
     Duration = 5
 })
 
-local AnotherTab = OrionLib:MakeTab({
-    Name = "Outra Aba",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-AnotherTab:AddButton({
-    Name = "Clique Aqui",
-    Callback = function()
-        print("Botão clicado!")
-    end
-})
+if game.PlaceId == 6516141723 then
+    OrionLib:MakeNotification({
+        Name = "Error",
+        Content = "Por favor, execute quando estiver no jogo, não no lobby.",
+        Time = 2
+    })
+end
+
+
+--  Lobby
 
 local Script = {
     CurrentBadge = 0,
@@ -148,5 +147,15 @@ AchievementTab:AddSlider({
     Callback = function(Value)
     end
 })
+
+-- Créditos
+local CreditsTab = Window:MakeTab({
+    Name = "Creditos",
+    Icon = "rbxassetid://14255000409",
+    PremiumOnly = false
+})
+
+CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker Lobby.")
+CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
 
 OrionLib:Init()
