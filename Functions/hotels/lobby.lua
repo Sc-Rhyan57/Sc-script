@@ -86,7 +86,7 @@ local function LoadPresets()
             })
             table.insert(Script.ElevatorPresets, name)
         else
-            warn("Failed to load preset: " .. file)
+            warn("Falha ao carregar:" .. file)
         end
     end
 end
@@ -112,26 +112,34 @@ local function LoadPreset(name)
             ["Mods"] = presetData.Modifiers or {},
             ["MaxPlayers"] = tostring(presetData.MaxPlayers)
         }
-
-        createElevator:FireServer(data)
-        OrionLib:MakeNotification({
-            Name = "Success",
-            Content = "Loaded elevator preset: " .. name,
-            Time = 5
-        })
+createElevator:FireServer(data)
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://3458224686"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação | Seeker Lobby",
+    Text = "Sucesso ao Carregar predefinição.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
     else
-        warn("Failed to load preset: " .. name)
+        warn("[Seeker Logs] Falha ao Carregar a Predefinição: " .. name)
     end
 end
 
 local ElevatorTab = Window:MakeTab({
-    Name = "Elevator Presets",
+    Name = "Predefinições de Elevadores",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
 ElevatorTab:AddTextbox({
-    Name = "Preset Name",
+    Name = "Nome da Predefinição",
     Default = "",
     TextDisappear = false,
     Callback = function(Value)
@@ -140,23 +148,34 @@ ElevatorTab:AddTextbox({
 })
 
 ElevatorTab:AddButton({
-    Name = "Create Preset",
+    Name = "Criar Predefinição",
     Callback = function()
         if isfile(".seekerLobby/presets/" .. Script.PresetName .. ".json") then
-            OrionLib:MakeNotification({
-                Name = "Error",
-                Content = "Preset already exists!",
-                Time = 5
-            })
+
+                local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação | Seeker Lobby",
+    Text = "Predefinição Já existe!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
+            
         else
             local presetData = {
                 Floor = "Hotel",
                 MaxPlayers = 1,
-                Modifiers = {},  -- Aqui você pode adicionar modificadores conforme necessário
+                Modifiers = {}, 
                 FriendsOnly = true
             }
             CreatePreset(Script.PresetName, presetData)
-            LoadPresets()  -- Recarrega a lista de presets após criar
+            LoadPresets() 
         end
     end
 })
@@ -170,21 +189,32 @@ ElevatorTab:AddDropdown({
 })
 
 ElevatorTab:AddButton({
-    Name = "Load Preset",
+    Name = "Carregar Preset",
     Callback = function()
         LoadPreset(Script.SelectedPreset)
     end
 })
 
 ElevatorTab:AddButton({
-    Name = "Delete Preset",
+    Name = "Deletar Preset",
     Callback = function()
         if not isfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json") then
-            OrionLib:MakeNotification({
-                Name = "Error",
-                Content = "Preset does not exist!",
-                Time = 5
-            })
+            
+                local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação | Seeker Lobby",
+    Text = "Predefinição Inexistente!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
+                
         else
             delfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json")
             LoadPresets()  -- Recarrega a lista de presets após deletar
