@@ -16,6 +16,18 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     Duration = 5
 })
 
+local AnotherTab = OrionLib:MakeTab({
+    Name = "Outra Aba",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+AnotherTab:AddButton({
+    Name = "Clique Aqui",
+    Callback = function()
+        print("Botão clicado!")
+    end
+})
+
 local Script = {
     CurrentBadge = 0,
     Achievements = {
