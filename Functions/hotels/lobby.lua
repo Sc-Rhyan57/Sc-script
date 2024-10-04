@@ -25,47 +25,6 @@ if game.PlaceId == 6516141723 then
 end
 
 
---  Lobby
-local AchievementTab = OrionLib:MakeTab({
-    Name = "Achievements",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-AchievementTab:AddToggle({
-    Name = "Loop Achievements",
-    Default = false,
-    Flag = "LoopAchievements",
-    Callback = function(Value)
-        if Value then
-            LoopAchievements()
-        end
-    end
-})
-
-AchievementTab:AddSlider({
-    Name = "Loop Speed",
-    Min = 0.05,
-    Max = 1,
-    Default = 0.1,
-    Color = Color3.fromRGB(255, 0, 0),
-    Increment = 0.01,
-    Flag = "LoopAchievementsSpeed",
-    Callback = function(Value)
-    end
-})
-
--- Créditos
-local CreditsTab = Window:MakeTab({
-    Name = "Creditos",
-    Icon = "rbxassetid://14255000409",
-    PremiumOnly = false
-})
-
-CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker Lobby.")
-CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
-
--- Vars?
 local Script = {
     CurrentBadge = 0,
     Achievements = {
@@ -143,17 +102,52 @@ local Script = {
 local function LoopAchievements()
     task.spawn(function()
         while OrionLib.Flags["LoopAchievements"].Value do
-            if Script.CurrentBadge >= #Script.Achievements then 
-                Script.CurrentBadge = 0 
+            if Script.CurrentBadge >= #Script.Achievements then
+                Script.CurrentBadge = 0
             end
-            
             Script.CurrentBadge = Script.CurrentBadge + 1
             local randomAchievement = Script.Achievements[Script.CurrentBadge]
             remotesFolder.FlexAchievement:FireServer(randomAchievement)
-
             task.wait(OrionLib.Flags["LoopAchievementsSpeed"].Value)
         end
     end)
 end
 
+local AchievementTab = Window:MakeTab({
+    Name = "Achievements",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+AchievementTab:AddToggle({
+    Name = "Loop Achievements",
+    Default = false,
+    Flag = "LoopAchievements",
+    Callback = function(Value)
+        if Value then
+            LoopAchievements()
+        end
+    end
+})
+
+AchievementTab:AddSlider({
+    Name = "Loop Speed",
+    Min = 0.05,
+    Max = 1,
+    Default = 0.1,
+    Color = Color3.fromRGB(255, 0, 0),
+    Increment = 0.01,
+    Flag = "LoopAchievementsSpeed",
+    Callback = function(Value)
+    end
+})
+
+local CreditsTab = Window:MakeTab({
+    Name = "Creditos",
+    Icon = "rbxassetid://14255000409",
+    PremiumOnly = false
+})
+
+CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker Lobby.")
+CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
 OrionLib:Init()
