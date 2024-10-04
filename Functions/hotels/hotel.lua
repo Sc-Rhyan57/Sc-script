@@ -350,7 +350,6 @@ function round(number, decimals)
     return math.floor(number * power) / power
 end
 
-
 local ESPColors = {
     Door = Color3.fromRGB(241, 196, 15),
 }
@@ -381,48 +380,16 @@ spawn(function()
                         setupESPForDoors(door)
                     end
 
+                    -- Removendo as legendas "Door (number)" e "Studs"
                     local bb = door:FindFirstChild("BillBoard")
-                    if not bb then
-                        bb = Instance.new('BillboardGui', door)
-                        bb.Adornee = door
-                        bb.ExtentsOffset = Vector3.new(0, 1, 0)
-                        bb.AlwaysOnTop = true
-                        bb.Size = UDim2.new(0, 6, 0, 6)
-                        bb.StudsOffset = Vector3.new(0, 1, 0)
-                        bb.Name = "BillBoard"
-                        local txtlbl = Instance.new('TextLabel', bb)
-                        
-                        txtlbl.ZIndex = 10
-                        txtlbl.BackgroundTransparency = 1
-                        txtlbl.Position = UDim2.new(0, 0, 0, -45)
-                        txtlbl.Size = UDim2.new(1, 0, 10, 0)
-                        txtlbl.Font = Enum.Font.ArialBold
-                        txtlbl.TextSize = 12
-                        txtlbl.Text = "Door " .. room.Name
-                        txtlbl.TextStrokeTransparency = 0.5
-                        txtlbl.TextColor3 = ESPColors.Door
-
-                        local txtlbl2 = Instance.new('TextLabel', bb)
-                        txtlbl2.ZIndex = 10
-                        txtlbl2.BackgroundTransparency = 1
-                        txtlbl2.Position = UDim2.new(0, 0, 0, -15)
-                        txtlbl2.Size = UDim2.new(1, 0, 10, 0)
-                        txtlbl2.Font = Enum.Font.ArialBold
-                        txtlbl2.TextSize = 12
-                        txtlbl2.Text = "? Studs"
-                        txtlbl2.Name = "Dist"
-                        txtlbl2.TextStrokeTransparency = 0.5
-                        txtlbl2.TextColor3 = ESPColors.Door
+                    if bb then
+                        bb:Destroy()
                     end
-
-                    local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - door.Position).Magnitude
-                    bb.Dist.Text = round(distance, 1) .. " Studs"
                 end
             end
         end
     end
 end)
-
 
 ESPLibrary.Rainbow.Set(true)
 
@@ -638,6 +605,7 @@ local VisualsEsp = Window:MakeTab({
 VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 -- BOTÕES ORGANIZADOS POR rhyan57
 -- DOORS ESP
+-- Botão usando Orion Lib
 VisualsEsp:AddToggle({
     Name = "ESP de Portas",
     Default = false,
@@ -658,6 +626,7 @@ VisualsEsp:AddToggle({
         end
     end
 })
+
 -- Esp de entidades
 VisualsEsp:AddToggle({
     Name = "Esp Entidade",
