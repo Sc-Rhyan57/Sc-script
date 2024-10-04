@@ -1,5 +1,5 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
-local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "💎 RSeeker(Lobby)", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
+local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "💎 RSeeker Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
