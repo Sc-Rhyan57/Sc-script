@@ -294,7 +294,7 @@ end
 
 -- LOOT ESP
 local esp_loot = { 
-    {"droppedItem", "+", Color3.fromRGB(0, 0, 255)}
+    {"Item", "+", Color3.fromRGB(0, 0, 255)}
     }
 
 local esp_loot_ativos = {}
@@ -1084,6 +1084,31 @@ ByTab:AddToggle({
             if Script.Connections["AntiA90"] then
                 Script.Connections["AntiA90"]:Disconnect()
                 Script.Connections["AntiA90"] = nil
+            end
+        end
+    end
+})
+
+ByTab:AddToggle({
+    Name = "Anti-Halt",
+    Default = false,
+    Callback = function(value)
+        local entityModules = game:GetService("ReplicatedStorage"):FindFirstChild("EntityModules")
+        if entityModules then
+            local haltModule = entityModules:FindFirstChild("Shade") or entityModules:FindFirstChild("_Shade")
+            
+            if haltModule then
+                haltModule.Name = value and "_Shade" or "Shade"
+                
+                if value then
+                    local entity = workspace:FindFirstChild("ShadeEntity")
+                    if entity then
+                        Script.Functions.DeleteSeek(entity)
+                        print("[ SeekerLogs ] a Entidade 'Shade' foi detectada e deletada.")
+                    else
+                        print("[ SeekerLogs ] a Entidade 'Shade' não foi encontrada.")
+                    end
+                end
             end
         end
     end
