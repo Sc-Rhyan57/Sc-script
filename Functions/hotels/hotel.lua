@@ -1077,6 +1077,8 @@ local function toggleAntiGiggle(state)
     end
 end
 
+-- Certifique-se de que 'Script.Connections' está inicializada
+Script.Connections = Script.Connections or {}
 
 ByTab:AddToggle({
     Name = "Anti A-90",
@@ -1096,6 +1098,7 @@ ByTab:AddToggle({
         end
     end
 })
+
 
 ByTab:AddToggle({
     Name = "Anti-Halt",
