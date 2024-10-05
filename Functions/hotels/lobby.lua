@@ -20,7 +20,7 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 local HttpService = game:GetService("HttpService")
 
 local function getBlacklist()
-    local url = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/blacklist.json"
+    local url = "https://raw.githubusercontent.com/Sc-Rhyan57/Sc-script/refs/heads/main/system/blacklist.lua"
     local response = HttpService:GetAsync(url)
     local blacklist = HttpService:JSONDecode(response)
     return blacklist
