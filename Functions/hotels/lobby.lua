@@ -16,8 +16,17 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     Duration = 5
 })
 
+--// BlackList \\--
+local HttpService = game:GetService("HttpService")
 
+local function getBlacklist()
+    local url = "https://raw.githubusercontent.com/SEU_USUARIO/SEU_REPOSITORIO/main/blacklist.json"
+    local response = HttpService:GetAsync(url)
+    local blacklist = HttpService:JSONDecode(response)
+    return blacklist
+end
 
+--//Serviços\\--
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
