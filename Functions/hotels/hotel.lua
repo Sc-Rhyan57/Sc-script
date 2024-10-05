@@ -616,6 +616,88 @@ local function AntiScreechCheck()
     end)
 end
 
+--//NOTIFICAÇÃO\\--
+local EntityTable = {
+    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
+    ["SideNames"] = {"FigureRig", "GiggleCeiling", "GrumbleRig", "Snare"},
+    ["ShortNames"] = {
+        ["BackdoorRush"] = "Blitz",
+        ["JeffTheKiller"] = "Jeff The Killer"
+    },
+    ["NotifyMessage"] = {
+        ["GloombatSwarm"] = "Gloombats in the next room!"
+    },
+    ["Avoid"] = {
+        "RushMoving",
+        "AmbushMoving"
+    },
+    ["NotifyReason"] = {
+        ["A60"] = {
+            ["Image"] = "12350986086",
+        },
+        ["A120"] = {
+            ["Image"] = "12351008553",
+        },
+        ["BackdoorRush"] = {
+            ["Image"] = "11102256553",
+        },
+        ["RushMoving"] = {
+            ["Image"] = "11102256553",
+        },
+        ["AmbushMoving"] = {
+            ["Image"] = "10938726652",
+        },
+        ["Eyes"] = {
+            ["Image"] = "10865377903",
+            ["Spawned"] = true
+        },
+        ["BackdoorLookman"] = {
+            ["Image"] = "16764872677",
+            ["Spawned"] = true
+        },
+        ["JeffTheKiller"] = {
+            ["Image"] = "98993343",
+            ["Spawned"] = true
+        },
+        ["GloombatSwarm"] = {
+            ["Image"] = "108578770251369",
+            ["Spawned"] = true
+        }
+    }
+}
+
+local notificationsEnabled = false
+
+function NotifyEntity(entityName)
+    if notificationsEnabled and EntityTable.NotifyReason[entityName] then
+        local notificationData = EntityTable.NotifyReason[entityName]
+        local notifyTitle = EntityTable.ShortNames[entityName] or entityName
+        local notifyMessage = EntityTable.NotifyMessage[entityName] or "Entity detected!"
+        
+        OrionLib:MakeNotification({
+            Name = notifyTitle,
+            Content = notifyMessage,
+            Image = "rbxassetid://" .. notificationData.Image,
+            Time = 5
+        })
+    end
+end
+
+function MonitorEntities()
+    game:GetService("RunService").Stepped:Connect(function()
+        if notificationsEnabled then
+            for _, entityName in ipairs(EntityTable.Names) do
+                local entity = workspace:FindFirstChild(entityName)
+                if entity and not entity:GetAttribute("Notified") then
+                    entity:SetAttribute("Notified", true)
+                    NotifyEntity(entityName)
+                end
+            end
+        end
+    end)
+end
+MonitorEntities()
+
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
@@ -891,6 +973,30 @@ local notifsTab = Window:MakeTab({
     Name = "Notificações",
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
+})
+
+local NotifyTabBox = Tabs.Visuals:AddRightTabbox()
+local NotifyTab = NotifyTabBox:AddTab("Notifier")
+
+notifsTab:AddDropdown("NotifyEntity", {
+    AllowNull = true,
+    Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "A60", "A120", "Jeff The Killer", "Gloombat Swarm"},
+    Default = {},
+    Multi = true,
+    Text = "Notify Entities",
+    Callback = function(selectedEntities)
+        for _, entity in ipairs(selectedEntities) do
+            NotifyEntity(entity)
+        end
+    end
+})
+
+notifsTab:AddToggle("EnableNotifications", {
+    Text = "Enable Notifications",
+    Default = false,
+    Callback = function(value)
+        notificationsEnabled = value
+    end
 })
 
 notifsTab:AddButton({
