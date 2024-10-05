@@ -24,8 +24,20 @@ if game.PlaceId == 6516141723 then
     })
 end
 
+--// Serviços \\--
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local SoundService = game:GetService("SoundService")
+local TextChatService = game:GetService("TextChatService")
+local UserInputService = game:GetService("UserInputService")
+local PathfindingService = game:GetService("PathfindingService")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local TweenService = game:GetService("TweenService")
+local Workspace = game:GetService("Workspace")
 
--- VARIÁVEIS --
+--// VARIÁVEIS \\--
 
 local autoLootEnabled = false
 local autoInteractEnabled = false
