@@ -945,17 +945,6 @@ GameLocal:AddToggle({
     end
 })
 
--- Define uma aba de créditos
-local CreditsTab = Window:MakeTab({
-    Name = "Creditos",
-    Icon = "rbxassetid://14255000409",
-    PremiumOnly = false
-})
-
-CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
-CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
-
-
 local FloorTab = Window:MakeTab({
     Name = "Floors",
     Icon = "rbxassetid://4483345998",
@@ -970,12 +959,20 @@ AutomationSection:AddButton({
     Name = "Beat Door 200",
     Callback = function()
         if latestRoom.Value < 99 then
-            OrionLib:MakeNotification({
-                Name = "Beat Door 200",
-                Content = "Você não alcançou a porta 200 ainda...",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação | Floor 2",
+    Text = "Você ainda não alcançou a porta 200!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
             return
         end
 
@@ -1034,6 +1031,19 @@ AutomationSection:AddButton({
         character:PivotTo(startPos)
     end
 })
+
+-- Define uma aba de créditos
+local CreditsTab = Window:MakeTab({
+    Name = "Creditos",
+    Icon = "rbxassetid://14255000409",
+    PremiumOnly = false
+})
+local CdSc = CreditsTab:AddSection({
+    Name = "cd"
+})
+
+CdSc:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
+CdSc:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
 
 -- Inicializa a interface
 OrionLib:Init()
