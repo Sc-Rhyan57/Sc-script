@@ -619,61 +619,26 @@ end
 --//NOTIFICAÇÃO\\--
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
-    ["SideNames"] = {"FigureRig", "GiggleCeiling", "GrumbleRig", "Snare"},
-    ["ShortNames"] = {
-        ["BackdoorRush"] = "Blitz",
-        ["JeffTheKiller"] = "Jeff The Killer"
-    },
-    ["NotifyMessage"] = {
-        ["GloombatSwarm"] = "Gloombats in the next room!"
-    },
-    ["Avoid"] = {
-        "RushMoving",
-        "AmbushMoving"
-    },
     ["NotifyReason"] = {
-        ["A60"] = {
-            ["Image"] = "12350986086",
-        },
-        ["A120"] = {
-            ["Image"] = "12351008553",
-        },
-        ["BackdoorRush"] = {
-            ["Image"] = "11102256553",
-        },
-        ["RushMoving"] = {
-            ["Image"] = "11102256553",
-        },
-        ["AmbushMoving"] = {
-            ["Image"] = "10938726652",
-        },
-        ["Eyes"] = {
-            ["Image"] = "10865377903",
-            ["Spawned"] = true
-        },
-        ["BackdoorLookman"] = {
-            ["Image"] = "16764872677",
-            ["Spawned"] = true
-        },
-        ["JeffTheKiller"] = {
-            ["Image"] = "98993343",
-            ["Spawned"] = true
-        },
-        ["GloombatSwarm"] = {
-            ["Image"] = "108578770251369",
-            ["Spawned"] = true
-        }
+        ["A60"] = { ["Image"] = "12350986086" },
+        ["A120"] = { ["Image"] = "12351008553" },
+        ["BackdoorRush"] = { ["Image"] = "11102256553" },
+        ["RushMoving"] = { ["Image"] = "11102256553" },
+        ["AmbushMoving"] = { ["Image"] = "10938726652" },
+        ["Eyes"] = { ["Image"] = "10865377903", ["Spawned"] = true },
+        ["BackdoorLookman"] = { ["Image"] = "16764872677", ["Spawned"] = true },
+        ["JeffTheKiller"] = { ["Image"] = "98993343", ["Spawned"] = true },
+        ["GloombatSwarm"] = { ["Image"] = "108578770251369", ["Spawned"] = true }
     }
 }
 
-local notificationsEnabled = false
-
+-- Função para notificar sobre entidades usando OrionLib
 function NotifyEntity(entityName)
-    if notificationsEnabled and EntityTable.NotifyReason[entityName] then
+    if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
-        local notifyTitle = EntityTable.ShortNames[entityName] or entityName
-        local notifyMessage = EntityTable.NotifyMessage[entityName] or "Entity detected!"
-        
+        local notifyTitle = entityName
+        local notifyMessage = "Entidade Detectada!"
+
         OrionLib:MakeNotification({
             Name = notifyTitle,
             Content = notifyMessage,
@@ -683,6 +648,10 @@ function NotifyEntity(entityName)
     end
 end
 
+-- Variável para controlar se as notificações estão ativas
+local notificationsEnabled = false
+
+-- Função para monitorar a aparição de entidades e notificá-las
 function MonitorEntities()
     game:GetService("RunService").Stepped:Connect(function()
         if notificationsEnabled then
@@ -697,6 +666,7 @@ function MonitorEntities()
     end)
 end
 MonitorEntities()
+
 
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
@@ -975,38 +945,42 @@ local notifsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
--- Dropdown para escolher quais entidades notificar
-notifsTab:AddDropdown({
-    Name = "Notify Entities",
-    AllowNull = true,
-    Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "A60", "A120", "Jeff The Killer", "Gloombat Swarm"},
-    Default = {},
-    Multi = true,
-    Callback = function(selectedEntities)
-        for _, entity in ipairs(selectedEntities) do
-            NotifyEntity(entity)
-        end
-    end
-})
-
--- Adiciona o toggle para ativar/desativar as notificações
 notifsTab:AddToggle({
-    Name = "Enable Notifications",
+    Name = "Notificar Entidades",
     Default = false,
     Callback = function(value)
         notificationsEnabled = value
         if value then
-            OrionLib:MakeNotification({
-                Name = "Notifications Enabled",
-                Content = "Entity notifications have been enabled.",
-                Time = 3
-            })
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Notificações de Entidades ativas!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 3
+})
+
         else
-            OrionLib:MakeNotification({
-                Name = "Notifications Disabled",
-                Content = "Entity notifications have been disabled.",
-                Time = 3
-            })
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590662766"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Notificações de Entidades desativadas!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 3
+})
         end
     end
 })
@@ -1070,7 +1044,7 @@ local FloorTab = Window:MakeTab({
 })
 
 local AutomationSection = FloorTab:AddSection({
-    Name = "Automation"
+    Name = "Auto"
 })
 
 AutomationSection:AddButton({
@@ -1167,8 +1141,8 @@ local Livraria = CreditsTab:AddSection({
     Name = "Livrarias"
 })
 
-CdSc:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
-CdSc:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
+Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
+Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 
 
 -- Inicializa a interface
