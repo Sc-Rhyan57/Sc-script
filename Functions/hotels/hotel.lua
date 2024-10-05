@@ -1039,11 +1039,19 @@ local CreditsTab = Window:MakeTab({
     PremiumOnly = false
 })
 local CdSc = CreditsTab:AddSection({
-    Name = "cd"
+    Name = "Créditos"
 })
 
 CdSc:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
 CdSc:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
+
+local Livraria = CreditsTab:AddSection({
+    Name = "Livrarias"
+})
+
+CdSc:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
+CdSc:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
+
 
 -- Inicializa a interface
 OrionLib:Init()
