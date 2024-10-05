@@ -86,7 +86,7 @@ local function LoadPresets()
             })
             table.insert(Script.ElevatorPresets, name)
         else
-            warn("Falha ao carregar:" .. file)
+            warn("[ SeekerLogs ] Falha ao carregar:" .. file)
         end
     end
 end
