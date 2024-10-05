@@ -623,9 +623,11 @@ local function AntiScreechCheck()
     end)
 end
 
---//NOTIFICAÇÃO\\--
+--// Tabela de Entidades \\--
+Script.Connections = Script.Connections or {}
+
 local EntityTable = {
-    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
+    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A90", "A120"},
     ["NotifyReason"] = {
         ["A60"] = { ["Image"] = "12350986086" },
         ["A120"] = { ["Image"] = "12351008553" },
@@ -1077,9 +1079,6 @@ local function toggleAntiGiggle(state)
     end
 end
 
--- Certifique-se de que 'Script.Connections' está inicializada
-Script.Connections = Script.Connections or {}
-
 ByTab:AddToggle({
     Name = "Anti A-90",
     Default = false,
@@ -1087,7 +1086,8 @@ ByTab:AddToggle({
         if enabled then
             Script.Connections["AntiA90"] = game:GetService("RunService").Heartbeat:Connect(function()
                 if EntityTable["A90"] and EntityTable["A90"].Spawned then
-                    warn("[Seeker Logs] A-90 detectado e prevenido!")
+                    warn("Seeker Logs | A-90 detectado e prevenido!")
+
                 end
             end)
         else
@@ -1098,7 +1098,6 @@ ByTab:AddToggle({
         end
     end
 })
-
 
 ByTab:AddToggle({
     Name = "Anti-Halt",
