@@ -985,19 +985,7 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     end
 })
 
-notifsTab:AddButton({
-    Name = "⚠️ Ambush Alert",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/NaSum/Sc/AmbushoSum.lua"))()
-    end
-})
 
-notifsTab:AddButton({
-    Name = "⚠️ Eyes Alert",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/NaSum/Sc/EyesSum.lua"))()
-    end
-})
 
 -- Local Player
 local GameLocal = Window:MakeTab({
