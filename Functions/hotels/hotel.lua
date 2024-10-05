@@ -52,24 +52,6 @@ local collision
 local collisionClone
 local velocityLimiter
 
---// Variáveis dos Players \\--
-local entityModules = ReplicatedStorage:WaitForChild("ClientModules"):WaitForChild("EntityModules")
-
-local gameData = ReplicatedStorage:WaitForChild("GameData")
-local floor = gameData:WaitForChild("Floor")
-local latestRoom = gameData:WaitForChild("LatestRoom")
-
-local liveModifiers = ReplicatedStorage:WaitForChild("LiveModifiers")
-
-local floorReplicated = if not isFools then ReplicatedStorage:WaitForChild("FloorReplicated") else nil
-local remotesFolder = if not isFools then ReplicatedStorage:WaitForChild("RemotesFolder") else ReplicatedStorage:WaitForChild("EntityInfo")
-
-local isMines = floor.Value == "Mines"
-local isRooms = floor.Value == "Rooms"
-local isHotel = floor.Value == "Hotel"
-local isBackdoor = floor.Value == "Backdoor"
-local isFools = floor.Value == "Fools"
-
 --// Variáveis do Doors players\\--
 local currentRoom = localPlayer:GetAttribute("CurrentRoom") or 0
 local nextRoom = currentRoom + 1
