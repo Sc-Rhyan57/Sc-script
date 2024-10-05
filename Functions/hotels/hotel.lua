@@ -52,36 +52,6 @@ local collision
 local collisionClone
 local velocityLimiter
 
---// Variáveis do Doors players\\--
-local currentRoom = localPlayer:GetAttribute("CurrentRoom") or 0
-local nextRoom = currentRoom + 1
-
-local mainUI = playerGui:WaitForChild("MainUI")
-local mainGame = mainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
-local mainGameSrc = if ExecutorSupport["require"] then require(mainGame) else nil
-local controlModule = if ExecutorSupport["require"] then require(playerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")) else nil
-
---// Other Variables \\--
-local speedBypassing = false
-
-local lastSpeed = 0
-local bypassed = false
-
-local MinecartPathNodeColor = {
-    Disabled = nil,
-    Red = Color3.new(1, 0, 0),
-    Yellow = Color3.new(1, 1, 0),
-    Purple = Color3.new(1, 0, 1),
-    Green = Color3.new(0, 1, 0),
-    Cyan = Color3.new(0, 1, 1),
-    Orange = Color3.new(1, 0.5, 0),
-    White = Color3.new(1, 1, 1),
-}
-
-local MinecartPathfind = {
-    -- ground chase [41 to 44]
-    -- minecart chase [45 to 49]
-                }
                 
 --// VARIÁVEIS \\--
 
