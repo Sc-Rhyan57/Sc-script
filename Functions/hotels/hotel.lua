@@ -477,9 +477,12 @@ end
 
 
 -- ANTI LAG
+local antiLagEnabled = false
 local antiLagConnection
 
 local function ActivateAntiLag()
+    if not antiLagEnabled then return end
+
     game.Lighting.FogEnd = 1e10
     game.Lighting.FogStart = 1e10
     game.Lighting.Brightness = 2
@@ -561,12 +564,12 @@ end
 local function onRoomChanged()
     local currentRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
     print("[Seekee Logs] AntiLag Adicionado a sala " .. currentRoom)
-
     ActivateAntiLag()
 end
 
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
+
 
 -- DELETE SEEK
 local function StartDeleteSeek()
@@ -885,17 +888,19 @@ VisualsEsp:AddToggle({
 
 VisualsEsp:AddParagraph("Local Player", "Funções visuais do jogador.")
 
-VisualsEsp:AddToggle({
+ByTab:AddToggle({
     Name = "Anti-Lag",
     Default = false,
-    Callback = function(value)
-        if value then
-            ActivateAntiLag()
+    Callback = function(Value)
+        antiLagEnabled = Value
+        if Value then
+            ActivateAntiLag() 
         else
-            DeactivateAntiLag()
+            DeactivateAntiLag() 
         end
     end
 })
+
 
 
 VisualsEsp:AddToggle({
