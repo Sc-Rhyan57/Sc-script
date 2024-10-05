@@ -975,15 +975,13 @@ local notifsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-local NotifyTabBox = Tabs.Visuals:AddRightTabbox()
-local NotifyTab = NotifyTabBox:AddTab("Notifier")
-
-notifsTab:AddDropdown("NotifyEntity", {
+-- Dropdown para escolher quais entidades notificar
+notifsTab:AddDropdown({
+    Name = "Notify Entities",
     AllowNull = true,
     Values = {"Blitz", "Lookman", "Rush", "Ambush", "Eyes", "A60", "A120", "Jeff The Killer", "Gloombat Swarm"},
     Default = {},
     Multi = true,
-    Text = "Notify Entities",
     Callback = function(selectedEntities)
         for _, entity in ipairs(selectedEntities) do
             NotifyEntity(entity)
@@ -991,11 +989,25 @@ notifsTab:AddDropdown("NotifyEntity", {
     end
 })
 
-notifsTab:AddToggle("EnableNotifications", {
-    Text = "Enable Notifications",
+-- Adiciona o toggle para ativar/desativar as notificações
+notifsTab:AddToggle({
+    Name = "Enable Notifications",
     Default = false,
     Callback = function(value)
         notificationsEnabled = value
+        if value then
+            OrionLib:MakeNotification({
+                Name = "Notifications Enabled",
+                Content = "Entity notifications have been enabled.",
+                Time = 3
+            })
+        else
+            OrionLib:MakeNotification({
+                Name = "Notifications Disabled",
+                Content = "Entity notifications have been disabled.",
+                Time = 3
+            })
+        end
     end
 })
 
