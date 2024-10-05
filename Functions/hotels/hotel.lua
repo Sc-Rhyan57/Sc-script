@@ -888,7 +888,7 @@ VisualsEsp:AddToggle({
 
 VisualsEsp:AddParagraph("Local Player", "Funções visuais do jogador.")
 
-ByTab:AddToggle({
+VisualsEsp:AddToggle({
     Name = "Anti-Lag",
     Default = false,
     Callback = function(Value)
