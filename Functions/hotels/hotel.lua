@@ -677,6 +677,53 @@ function MonitorEntities()
 end
 MonitorEntities()
 
+--// Cart System \\--
+local minecartVisualizerActive = false
+local minecartTeleportActive = false
+
+function MinecartPathVisualiser()
+    local realNodes = {}
+    local fakeNodes = {}
+
+    local function changeNodeColor(node, color)
+        if not node then return end
+        node.Color = color or Color3.fromRGB(255, 255, 0)
+        node.Material = Enum.Material.Neon
+        node.Transparency = 0
+    end
+
+    while minecartVisualizerActive do
+        for _, node in pairs(realNodes) do
+            changeNodeColor(node, Color3.fromRGB(0, 255, 0))
+        end
+        for _, node in pairs(fakeNodes) do
+            changeNodeColor(node, Color3.fromRGB(255, 0, 0))
+        end
+        task.wait(1)
+    end
+end
+
+function MinecartTeleport()
+    local minecartRoot
+    local minecartRig
+    local roomNum = 45
+
+    while minecartTeleportActive do
+        minecartRig = workspace.CurrentCamera:FindFirstChild("MinecartRig")
+        if minecartRig then
+            minecartRoot = minecartRig:FindFirstChild("Root")
+            for _, path in ipairs(MinecartPathfind) do
+                if path.room_number >= roomNum then
+                    local lastNode = path.real[#path.real]
+                    minecartRoot.CFrame = lastNode.CFrame
+                    task.wait(2)
+                    if roomNum == 49 then break end
+                end
+            end
+        end
+        task.wait(1)
+    end
+end
 
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
@@ -1041,12 +1088,38 @@ local FloorTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+local Visuals = FloorTab:AddSection({
+    Name = "Visual"
+})
+
+Visuals:AddToggle({
+    Name = "Visualizador de Caminho do Minecart",
+    Default = false,
+    Callback = function(value)
+        minecartVisualizerActive = value
+        if minecartVisualizerActive then
+            task.spawn(MinecartPathVisualiser)
+        end
+    end    
+})
+
 local AutomationSection = FloorTab:AddSection({
-    Name = "Auto"
+    Name = "Automoção"
+})
+
+AutomationSection:AddToggle({
+    Name = "AutoMinecart tp",
+    Default = false,
+    Callback = function(value)
+        minecartTeleportActive = value
+        if minecartTeleportActive then
+            task.spawn(MinecartTeleport)
+        end
+    end    
 })
 
 AutomationSection:AddButton({
-    Name = "Beat Door 200",
+    Name = "Bater Porta 200",
     Callback = function()
         if latestRoom.Value < 99 then
             local sound = Instance.new("Sound")
