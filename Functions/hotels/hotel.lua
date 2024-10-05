@@ -477,11 +477,12 @@ end
 
 
 -- ANTI LAG
+
 local antiLagEnabled = false
 local antiLagConnection
 
 local function ActivateAntiLag()
-    if not antiLagEnabled then return end
+    if not antiLagEnabled then return end  
 
     game.Lighting.FogEnd = 1e10
     game.Lighting.FogStart = 1e10
@@ -562,9 +563,12 @@ local function DeactivateAntiLag()
 end
 
 local function onRoomChanged()
-    local currentRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
-    print("[Seekee Logs] AntiLag Adicionado a sala " .. currentRoom)
-    ActivateAntiLag()
+    if antiLagEnabled then
+        local currentRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom").Value
+        print("[Seekee Logs] AntiLag Adicionado a sala " .. currentRoom)
+
+        ActivateAntiLag()
+    end
 end
 
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
@@ -896,11 +900,10 @@ VisualsEsp:AddToggle({
         if Value then
             ActivateAntiLag() 
         else
-            DeactivateAntiLag() 
+            DeactivateAntiLag()
         end
     end
 })
-
 
 
 VisualsEsp:AddToggle({
