@@ -897,6 +897,22 @@ VisualsEsp:AddToggle({
     end
 })
 
+
+VisualsEsp:AddToggle({
+    Name = "No Cutscenes",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            for _, cutsceneName in ipairs(CutsceneExclude) do
+                local cutscene = workspace:FindFirstChild(cutsceneName)
+                if cutscene then
+                    cutscene:Destroy()
+                end
+            end
+        end
+    end
+})
+
 -- Funções de automação
 local autoIn = Window:MakeTab({
     Name = "Automoção",
@@ -972,7 +988,7 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     end
 })
 
--- Define uma aba de créditos
+--[[ Byppas Area ]]--
 local ByTab = Window:MakeTab({
     Name = "Byppas",
     Icon = "rbxassetid://14255000409",
@@ -1024,7 +1040,7 @@ ByTab:AddToggle({
     end
 })
 
---//Anti Goggle\\--
+--//Anti Giggle\\--
 local antiGiggleEnabled = false
 
 ByTab:AddToggle({
@@ -1053,7 +1069,28 @@ local function toggleAntiGiggle(state)
     end
 end
 
--- Define uma aba para itens
+
+ByTab:AddToggle({
+    Name = "Anti A-90",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            Script.Connections["AntiA90"] = game:GetService("RunService").Heartbeat:Connect(function()
+                if EntityTable["A90"] and EntityTable["A90"].Spawned then
+                    warn("[Seeker Logs] A-90 detectado e prevenido!")
+                end
+            end)
+        else
+            if Script.Connections["AntiA90"] then
+                Script.Connections["AntiA90"]:Disconnect()
+                Script.Connections["AntiA90"] = nil
+            end
+        end
+    end
+})
+
+
+--[ Itens ]--
 local ItensTab = Window:MakeTab({
     Name = "Give Itens",
     Icon = "rbxassetid://11713331539",
@@ -1061,7 +1098,7 @@ local ItensTab = Window:MakeTab({
 })
 
 ItensTab:AddButton({
-    Name = "💊 Vitamina",
+    Name = "💊 Vitamina Fake",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/GiveVitamns.lua"))()
     end
@@ -1087,19 +1124,7 @@ local ExploitsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
-ExploitsTab:AddToggle({
-    Name = "Anti-Halt",
-    Default = false,
-    Callback = function(value)
-        local entityModules = game:GetService("ReplicatedStorage"):FindFirstChild("EntityModules")
-        if entityModules then
-            local haltModule = entityModules:FindFirstChild("Shade") or entityModules:FindFirstChild("_Shade")
-            if haltModule then
-                haltModule.Name = value and "_Shade" or "Shade"
-            end
-        end
-    end    
-})
+
 
 ExploitsTab:AddToggle({
     Name = "Delete Seek (FE)",
