@@ -625,7 +625,7 @@ end
 
 --// Tabela de Entidades \\--
 local EntityTable = {
-    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", , "A120"},
+    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
     ["NotifyReason"] = {
         ["A60"] = { ["Image"] = "12350986086" },
         ["A120"] = { ["Image"] = "12351008553" },
