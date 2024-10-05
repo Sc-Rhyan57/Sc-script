@@ -955,6 +955,85 @@ local CreditsTab = Window:MakeTab({
 CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
 CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
 
+
+local FloorTab = Window:MakeTab({
+    Name = "Floors",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+local AutomationSection = FloorTab:AddSection({
+    Name = "Automation"
+})
+
+AutomationSection:AddButton({
+    Name = "Beat Door 200",
+    Callback = function()
+        if latestRoom.Value < 99 then
+            OrionLib:MakeNotification({
+                Name = "Beat Door 200",
+                Content = "Você não alcançou a porta 200 ainda...",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            return
+        end
+
+        local bypassing = Toggles.SpeedBypass.Value
+        local startPos = rootPart.CFrame
+
+        Toggles.SpeedBypass:SetValue(false)
+
+        local damHandler = workspace.CurrentRooms[latestRoom.Value]:FindFirstChild("_DamHandler")
+
+        if damHandler then
+-- FASE 1
+            if damHandler:FindFirstChild("PlayerBarriers1") then
+                for _, pump in pairs(damHandler.Flood1.Pumps:GetChildren()) do
+                    character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    fireproximityprompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(8)
+            end
+
+-- FASE 2
+            if damHandler:FindFirstChild("PlayerBarriers2") then
+                for _, pump in pairs(damHandler.Flood2.Pumps:GetChildren()) do
+                    character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    fireproximityprompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(8)
+            end
+
+-- FASE 3
+            if damHandler:FindFirstChild("PlayerBarriers3") then
+                for _, pump in pairs(damHandler.Flood3.Pumps:GetChildren()) do
+                    character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    fireproximityprompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(10)
+            end
+        end
+
+        local generator = workspace.CurrentRooms[latestRoom.Value]:FindFirstChild("MinesGenerator", true)
+
+        if generator then
+            character:PivotTo(generator.PrimaryPart.CFrame)
+            task.wait(0.25)
+            fireproximityprompt(generator.Lever.LeverPrompt)
+            task.wait(0.25)
+        end
+
+        Toggles.SpeedBypass:SetValue(bypassing)
+        character:PivotTo(startPos)
+    end
+})
+
 -- Inicializa a interface
 OrionLib:Init()
-
