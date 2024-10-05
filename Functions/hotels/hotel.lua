@@ -1080,26 +1080,6 @@ local function toggleAntiGiggle(state)
 end
 
 ByTab:AddToggle({
-    Name = "Anti A-90",
-    Default = false,
-    Callback = function(enabled)
-        if enabled then
-            Script.Connections["AntiA90"] = game:GetService("RunService").Heartbeat:Connect(function()
-                if EntityTable["A90"] and EntityTable["A90"].Spawned then
-                    warn("Seeker Logs | A-90 detectado e prevenido!")
-
-                end
-            end)
-        else
-            if Script.Connections["AntiA90"] then
-                Script.Connections["AntiA90"]:Disconnect()
-                Script.Connections["AntiA90"] = nil
-            end
-        end
-    end
-})
-
-ByTab:AddToggle({
     Name = "Anti-Halt",
     Default = false,
     Callback = function(value)
