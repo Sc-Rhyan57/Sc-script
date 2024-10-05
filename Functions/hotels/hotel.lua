@@ -3,7 +3,7 @@ local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "�
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
-sound.Volume = 1
+sound.Volume = 3
 sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 sound:Play()
 sound.Ended:Connect(function()
@@ -12,7 +12,7 @@ end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "🔔 Notificação | Rseeker System",
     Text = "O Menu foi iniciado com sucesso!(Caso não tenha aparece nenhuma função eles está quebrado ou em manutenção! 🤝)",
-    Icon = "rbxassetid://76411928845479",
+    Icon = "rbxassetid://123071339850669",
     Duration = 5
 })
 
@@ -645,6 +645,16 @@ function NotifyEntity(entityName)
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
+        
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://10469938989"
+sound.Volume = 3
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+        
     end
 end
 
