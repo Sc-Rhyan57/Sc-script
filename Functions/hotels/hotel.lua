@@ -37,6 +37,70 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+--// Players  Vars \\--
+local camera = workspace.CurrentCamera
+
+local localPlayer = Players.LocalPlayer
+local playerGui = localPlayer.PlayerGui
+local playerScripts = localPlayer.PlayerScripts
+
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local alive = localPlayer:GetAttribute("Alive")
+local humanoid: Humanoid
+local rootPart: BasePart
+local collision
+local collisionClone
+local velocityLimiter
+
+--// Variáveis dos Players \\--
+local entityModules = ReplicatedStorage:WaitForChild("ClientModules"):WaitForChild("EntityModules")
+
+local gameData = ReplicatedStorage:WaitForChild("GameData")
+local floor = gameData:WaitForChild("Floor")
+local latestRoom = gameData:WaitForChild("LatestRoom")
+
+local liveModifiers = ReplicatedStorage:WaitForChild("LiveModifiers")
+
+local floorReplicated = if not isFools then ReplicatedStorage:WaitForChild("FloorReplicated") else nil
+local remotesFolder = if not isFools then ReplicatedStorage:WaitForChild("RemotesFolder") else ReplicatedStorage:WaitForChild("EntityInfo")
+
+local isMines = floor.Value == "Mines"
+local isRooms = floor.Value == "Rooms"
+local isHotel = floor.Value == "Hotel"
+local isBackdoor = floor.Value == "Backdoor"
+local isFools = floor.Value == "Fools"
+
+--// Variáveis do Doors players\\--
+local currentRoom = localPlayer:GetAttribute("CurrentRoom") or 0
+local nextRoom = currentRoom + 1
+
+local mainUI = playerGui:WaitForChild("MainUI")
+local mainGame = mainUI:WaitForChild("Initiator"):WaitForChild("Main_Game")
+local mainGameSrc = if ExecutorSupport["require"] then require(mainGame) else nil
+local controlModule = if ExecutorSupport["require"] then require(playerScripts:WaitForChild("PlayerModule"):WaitForChild("ControlModule")) else nil
+
+--// Other Variables \\--
+local speedBypassing = false
+
+local lastSpeed = 0
+local bypassed = false
+
+local MinecartPathNodeColor = {
+    Disabled = nil,
+    Red = Color3.new(1, 0, 0),
+    Yellow = Color3.new(1, 1, 0),
+    Purple = Color3.new(1, 0, 1),
+    Green = Color3.new(0, 1, 0),
+    Cyan = Color3.new(0, 1, 1),
+    Orange = Color3.new(1, 0.5, 0),
+    White = Color3.new(1, 1, 1),
+}
+
+local MinecartPathfind = {
+    -- ground chase [41 to 44]
+    -- minecart chase [45 to 49]
+                }
+                
 --// VARIÁVEIS \\--
 
 local autoLootEnabled = false
