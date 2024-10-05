@@ -1,9 +1,9 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
-local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "Rseeker | DOORS | Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
+local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "🚪 Rseeker Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
 
 local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657171"
-sound.Volume = 1
+sound.SoundId = "rbxassetid://4590656842"
+sound.Volume = 2
 sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 sound:Play()
 sound.Ended:Connect(function()
@@ -12,17 +12,11 @@ end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "🔔 Notificação | Rseeker System",
     Text = "⚙️ • Rseeker Lobby Carregado.",
-    Icon = "rbxassetid://76411928845479",
+    Icon = "rbxassetid://123071339850669",
     Duration = 5
 })
 
-if game.PlaceId == 6516141723 then
-    OrionLib:MakeNotification({
-        Name = "Error",
-        Content = "Por favor, execute quando estiver no jogo, não no lobby.",
-        Time = 2
-    })
-end
+
 
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -351,7 +345,22 @@ local CreditsTab = Window:MakeTab({
     Icon = "rbxassetid://14255000409",
     PremiumOnly = false
 })
+local CreditsTab = Window:MakeTab({
+    Name = "Creditos",
+    Icon = "rbxassetid://14255000409",
+    PremiumOnly = false
+})
+local CdSc = CreditsTab:AddSection({
+    Name = "Créditos"
+})
 
-CreditsTab:AddParagraph("Rhyan57", "Criador do RSeeker Lobby.")
-CreditsTab:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
+CdSc:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
+CdSc:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
+
+local Livraria = CreditsTab:AddSection({
+    Name = "Livrarias"
+})
+
+Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
+Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 OrionLib:Init()
