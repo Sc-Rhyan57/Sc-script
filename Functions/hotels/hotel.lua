@@ -725,6 +725,78 @@ function MinecartTeleport()
     end
 end
 
+--// Library Code 50 \\--
+local autoLibraryEnabled = false
+
+local function AutoLibrarySolver()
+    if autoLibraryEnabled then
+        local foundBook = false
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+            if not player.Character then continue end
+            local tool = player.Character:FindFirstChildOfClass("Tool")
+
+            if tool and tool.Name:match("LibraryHintPaper") then
+                foundBook = true
+                local code = Script.Functions.GetPadlockCode(tool)
+                local padlock = workspace:FindFirstChild("Padlock", true)
+
+                if tonumber(code) and Script.Functions.DistanceFromCharacter(padlock) <= 10 then
+                    remotesFolder.PL:FireServer(code)
+                    
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590662766"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Código Enviado para o cadeado.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
+                else
+                    
+                    local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://5914602124"
+sound.Volume = 2
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Você está muito longe do cadeado!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 7
+})
+                end
+            end
+        end
+        if not foundBook then
+            
+        local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://5914602124"
+sound.Volume = 2
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Você não possuí o Livro de Código.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 7
+})
+        end
+    end
+end
+
+
 --[ ORION LIB - MENU ]--
 -- Define um VisualsTab vazio
 local VisualsTab = Window:MakeTab({
@@ -852,6 +924,50 @@ autoIn:AddToggle({
         autoInteractEnabled = state
         if autoInteractEnabled then
             coroutine.wrap(autoInteract)() 
+        end
+    end
+})
+
+autoIn:AddToggle({
+    Name = "Auto Library Code",
+    Default = false,
+    Callback = function(value)
+        autoLibraryEnabled = value
+        if value then
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Automoção de código da Livraria ativa.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 6
+})
+            
+            while autoLibraryEnabled do
+                AutoLibrarySolver()
+                task.wait(1)
+            end
+        else
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590662766"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Automoção de Código da livraria desativado.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 6
+})
         end
     end
 })
