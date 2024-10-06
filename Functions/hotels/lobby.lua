@@ -33,207 +33,6 @@ local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.Mai
 local presetName, destination, maxPlayers, friendsOnly = "", "Hotel", 4, true
 local data = {}
 
-local Script = {
-    ElevatorPresetData = {},
-    ElevatorPresets = {}
-}
-
-local function EnforceTypes(args, template)
-    args = type(args) == "table" and args or {}
-
-    for key, value in pairs(template) do
-        local argValue = args[key]
-        if argValue == nil or (value ~= nil and type(argValue) ~= type(value)) then
-            args[key] = value
-        elseif type(value) == "table" then
-            args[key] = EnforceTypes(argValue, value)
-        end
-    end
-
-    return args
-end
-
-local function BuildPresetStructure()
-    if not isfolder(".seekerLobby/presets") then
-        makefolder(".seekerLobby/presets")
-    end
-end
-
-local function CreatePreset(name, data)
-    local presetData = EnforceTypes(data, {
-        Floor = "Hotel",
-        MaxPlayers = 1,
-        Modifiers = nil,
-        FriendsOnly = true
-    })
-    BuildPresetStructure()
-    writefile(".seekerLobby/presets/" .. name .. ".json", HttpService:JSONEncode(presetData))
-end
-
-local function LoadPresets()
-    table.clear(Script.ElevatorPresets)
-    table.clear(Script.ElevatorPresetData)
-
-    for _, file in pairs(listfiles(".seekerLobby/presets")) do
-        local success, ret = pcall(function()
-            local data = readfile(file)
-            return HttpService:JSONDecode(data)
-        end)
-
-        if success then
-            local name = file:match("([^/]+)%.json$")
-            Script.ElevatorPresetData[name] = EnforceTypes(ret, {
-                Floor = "Hotel",
-                MaxPlayers = 1,
-                Modifiers = nil,
-                FriendsOnly = true
-            })
-            table.insert(Script.ElevatorPresets, name)
-        else
-            warn("[ SeekerLogs ] Falha ao carregar:" .. file)
-        end
-    end
-end
-
-local function LoadPreset(name)
-    BuildPresetStructure()
-    local success, ret = pcall(function()
-        local data = readfile(".seekerLobby/presets/" .. name .. ".json")
-        return HttpService:JSONDecode(data)
-    end)
-
-    if success then
-        local presetData = EnforceTypes(ret, {
-            Floor = "Hotel",
-            MaxPlayers = 1,
-            Modifiers = nil,
-            FriendsOnly = true
-        })
-
-        local data = {
-            ["FriendsOnly"] = presetData.FriendsOnly,
-            ["Destination"] = presetData.Floor,
-            ["Mods"] = presetData.Modifiers or {},
-            ["MaxPlayers"] = tostring(presetData.MaxPlayers)
-        }
-createElevator:FireServer(data)
-        local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://3458224686"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação | Seeker Lobby",
-    Text = "Sucesso ao Carregar predefinição.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-    else
-        warn("[Seeker Logs] Falha ao Carregar a Predefinição: " .. name)
-    end
-end
-
-local ElevatorTab = Window:MakeTab({
-    Name = "Predefinições de Elevadores",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-ElevatorTab:AddTextbox({
-    Name = "Nome da Predefinição",
-    Default = "",
-    TextDisappear = false,
-    Callback = function(Value)
-        Script.PresetName = Value
-    end
-})
-
-ElevatorTab:AddButton({
-    Name = "Criar Predefinição",
-    Callback = function()
-        if isfile(".seekerLobby/presets/" .. Script.PresetName .. ".json") then
-
-                local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação | Seeker Lobby",
-    Text = "Predefinição Já existe!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-            
-        else
-            local presetData = {
-                Floor = "Hotel",
-                MaxPlayers = 1,
-                Modifiers = {}, 
-                FriendsOnly = true
-            }
-            CreatePreset(Script.PresetName, presetData)
-            LoadPresets() 
-        end
-    end
-})
-
-ElevatorTab:AddDropdown({
-    Name = "Preset List",
-    Options = Script.ElevatorPresets,
-    Callback = function(Value)
-        Script.SelectedPreset = Value
-    end
-})
-
-ElevatorTab:AddButton({
-    Name = "Carregar Preset",
-    Callback = function()
-        LoadPreset(Script.SelectedPreset)
-    end
-})
-
-ElevatorTab:AddButton({
-    Name = "Deletar Preset",
-    Callback = function()
-        if not isfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json") then
-            
-                local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação | Seeker Lobby",
-    Text = "Predefinição Inexistente!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-                
-        else
-            delfile(".seekerLobby/presets/" .. Script.SelectedPreset .. ".json")
-            LoadPresets()  -- Recarrega a lista de presets após deletar
-        end
-    end
-})
-
-ElevatorTab:AddButton({
-    Name = "Refresh Presets",
-    Callback = function()
-        LoadPresets()
-    end
-})
-
-
 --//New System Presets\\--
 local PresetManager = {}
 PresetManager.PresetData = {}
@@ -334,20 +133,13 @@ function PresetManager:OverridePreset(name, data)
     return true, "Preset sobrescrito: " .. name
 end
 
-local Window = OrionLib:MakeWindow({
-    Name = "Gerenciamento de Presets",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "OrionPresets"
-})
-
-local Tab = Window:MakeTab({
+local PresetTab = Window:MakeTab({
     Name = "Presets",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
-Tab:AddTextbox({
+PresetTab:AddTextbox({
     Name = "Nome do Preset",
     Default = "",
     TextDisappear = true,
@@ -356,7 +148,7 @@ Tab:AddTextbox({
     end
 })
 
-Tab:AddButton({
+PresetTab:AddButton({
     Name = "Criar Preset",
     Callback = function()
         if _G.PresetName then
@@ -379,7 +171,7 @@ Tab:AddButton({
     end
 })
 
-local PresetDropdown = Tab:AddDropdown({
+local PresetDropdown = PresetTab:AddDropdown({
     Name = "Selecione um Preset",
     Default = "",
     Options = PresetManager:LoadPresets(),
@@ -388,7 +180,7 @@ local PresetDropdown = Tab:AddDropdown({
     end
 })
 
-Tab:AddButton({
+PresetTab:AddButton({
     Name = "Carregar Preset",
     Callback = function()
         if _G.SelectedPreset then
@@ -403,7 +195,7 @@ Tab:AddButton({
     end
 })
 
-Tab:AddButton({
+PresetTab:AddButton({
     Name = "Deletar Preset",
     Callback = function()
         if _G.SelectedPreset then
@@ -421,7 +213,7 @@ Tab:AddButton({
     end
 })
 
-Tab:AddButton({
+PresetTab:AddButton({
     Name = "Sobrescrever Preset",
     Callback = function()
         if _G.SelectedPreset then
@@ -441,7 +233,7 @@ Tab:AddButton({
     end
 })
 
-Tab:AddButton({
+PresetTab:AddButton({
     Name = "Atualizar Presets",
     Callback = function()
         local newOptions = PresetManager:LoadPresets()
@@ -454,16 +246,6 @@ Tab:AddButton({
         })
     end
 })
-
-
-
-
-
-
-
-
-
-
 
 
 local Script = {
