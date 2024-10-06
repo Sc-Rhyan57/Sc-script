@@ -72,6 +72,10 @@ local PromptTable = {
         "LeverPrompt",
         "LootPrompt",
         "ValvePrompt"
+        "LeverForGate",
+        "LiveBreakerPolePickup",
+        "LiveHintBook",
+        "Button",
     },
     Excluded = {
         Prompt = {
