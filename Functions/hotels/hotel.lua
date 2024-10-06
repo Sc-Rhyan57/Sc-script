@@ -71,7 +71,7 @@ local PromptTable = {
         "HerbPrompt",
         "LeverPrompt",
         "LootPrompt",
-        "ValvePrompt"
+        "ValvePrompt",
         "LeverForGate",
         "LiveBreakerPolePickup",
         "LiveHintBook",
