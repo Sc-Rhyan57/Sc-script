@@ -16,21 +16,16 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
     Duration = 5
 })
 
---// BlackList \\--
-local HttpService = game:GetService("HttpService")
-
-local function getBlacklist()
-    local url = "https://raw.githubusercontent.com/Sc-Rhyan57/Sc-script/refs/heads/main/system/blacklist.lua"
-    local response = HttpService:GetAsync(url)
-    local blacklist = HttpService:JSONDecode(response)
-    return blacklist
-end
 
 --//Serviços\\--
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
 local createElevator = remotesFolder:WaitForChild("CreateElevator")
+local createElevator = game:GetService("ReplicatedStorage"):WaitForChild("RemotesFolder"):WaitForChild("CreateElevator")
+local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.MainUI.LobbyFrame.CreateElevator
+local presetName, destination, maxPlayers, friendsOnly = "", "Hotel", 4, true
+local data = {}
 
 local Script = {
     ElevatorPresetData = {},
@@ -347,6 +342,153 @@ AchievementTab:AddSlider({
     Flag = "LoopAchievementsSpeed",
     Callback = function(Value)
     end
+})
+
+-- Função para criar elevador Retro
+local function CreateRetroModeElevator()
+    data = {
+        ["FriendsOnly"] = friendsOnly,
+        ["Destination"] = destination,
+        ["Mods"] = {"RetroMode"},
+        ["MaxPlayers"] = tostring(maxPlayers)
+    }
+
+    local success, err = pcall(function()
+        createElevator:FireServer(data)
+    end)
+
+    if success then
+        OrionLib:MakeNotification({
+            Name = "Sucesso",
+            Content = "Elevador Retro criado com sucesso!",
+            Time = 5
+        })
+    else
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "Falha ao criar o Elevador Retro: " .. err,
+            Time = 5
+        })
+    end
+end
+
+local function CreateElevator()
+    data = {
+        ["FriendsOnly"] = friendsOnly,
+        ["Destination"] = destination,
+        ["Mods"] = {},
+        ["MaxPlayers"] = tostring(maxPlayers)
+    }
+
+    local success, err = pcall(function()
+        createElevator:FireServer(data)
+    end)
+
+    if success then
+        OrionLib:MakeNotification({
+            Name = "Sucesso",
+            Content = "Elevador criado com sucesso!",
+            Time = 5
+        })
+    else
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "Falha ao criar o elevador: " .. err,
+            Time = 5
+        })
+    end
+end
+
+
+local function SetupElevatorUI()
+
+    local MainTab = Window:MakeTab({
+        Name = "Elevadores",
+        Icon = "rbxassetid://4483345998",
+        PremiumOnly = false
+    })
+
+    MainTab:AddParagraph("Elevator Controls", "Gerencie e crie elevadores com as configurações desejadas.")
+
+    -- Input para o nome do preset
+    MainTab:AddTextbox({
+        Name = "Nome do Preset",
+        Default = "",
+        TextDisappear = true,
+        Callback = function(Value)
+            presetName = Value
+        end
+    })
+
+    -- Botão para criar elevador Retro
+    MainTab:AddButton({
+        Name = "Criar Elevador Retro",
+        Callback = function()
+            CreateRetroModeElevator()
+        end
+    })
+
+    -- Botão para criar elevador normal
+    MainTab:AddButton({
+        Name = "Criar Elevador",
+        Callback = function()
+            CreateElevator()
+        end
+    })
+
+    -- Dropdown para selecionar destino do elevador
+    MainTab:AddDropdown({
+        Name = "Destino do Elevador",
+        Default = "Hotel",
+        Options = {"Hotel", "Rooms", "Backdoor"},
+        Callback = function(Value)
+            destination = Value
+        end
+    })
+
+    -- Slider para selecionar o número máximo de jogadores
+    MainTab:AddSlider({
+        Name = "Número Máximo de Jogadores",
+        Min = 1,
+        Max = 12,
+        Default = 4,
+        Color = Color3.fromRGB(255,255,255),
+        Increment = 1,
+        ValueName = "Jogadores",
+        Callback = function(Value)
+            maxPlayers = Value
+        end    
+    })
+
+    -- Toggle para definir se o elevador é só para amigos
+    MainTab:AddToggle({
+        Name = "Somente Amigos",
+        Default = true,
+        Callback = function(Value)
+            friendsOnly = Value
+        end
+    })
+
+    -- Modificadores adicionais (opcional)
+    MainTab:AddToggle({
+        Name = "Modo Hard",
+        Default = false,
+        Callback = function(Value)
+            if Value then
+                table.insert(data.Mods, "HardMode")
+            end
+        end
+    })
+end
+
+-- Chamando a função de setup da UI
+SetupElevatorUI()
+
+-- Notificação de carregamento completo
+OrionLib:MakeNotification({
+    Name = "Sistema Carregado",
+    Content = "Gerenciador de Elevadores pronto!",
+    Time = 5
 })
 
 local CreditsTab = Window:MakeTab({
