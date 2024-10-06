@@ -21,6 +21,12 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
+
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local localPlayer = Players.LocalPlayer
+local playerGui = localPlayer:WaitForChild("PlayerGui")
+local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
 local createElevator = remotesFolder:WaitForChild("CreateElevator")
 local createElevator = game:GetService("ReplicatedStorage"):WaitForChild("RemotesFolder"):WaitForChild("CreateElevator")
 local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.MainUI.LobbyFrame.CreateElevator
@@ -227,6 +233,239 @@ ElevatorTab:AddButton({
     end
 })
 
+
+--//New System Presets\\--
+local PresetManager = {}
+PresetManager.PresetData = {}
+PresetManager.PresetList = {}
+
+function PresetManager:BuildPresetStructure()
+    if not isfolder(".seekerLobby/doors/presets") then
+        makefolder(".seekerLobby/doors/presets")
+    end
+end
+
+function PresetManager:CreatePreset(name, data)
+    if isfile(".seekerLobby/doors/presets/" .. name .. ".json") then
+        return false, "Preset já existe!"
+    end
+
+    local presetData = {
+        Floor = data.Floor or "Hotel",
+        MaxPlayers = data.MaxPlayers or 1,
+        Modifiers = data.Modifiers or {},
+        FriendsOnly = data.FriendsOnly or true
+    }
+    
+    self:BuildPresetStructure()
+    writefile(".seekerLobby/doors/presets/" .. name .. ".json", HttpService:JSONEncode(presetData))
+    return true, "Preset criado com sucesso!"
+end
+
+function PresetManager:LoadPresets()
+    self.PresetList = {}
+    self.PresetData = {}
+
+    for _, file in pairs(listfiles(".seekerLobby/doors/presets")) do
+        local success, data = pcall(function()
+            return HttpService:JSONDecode(readfile(file))
+        end)
+
+        if success then
+            local name = self:GetFileNameFromPath(file)
+            self.PresetData[name] = data
+            table.insert(self.PresetList, name)
+        else
+            warn("Failed to load preset: " .. file)
+        end
+    end
+
+    return self.PresetList
+end
+
+function PresetManager:GetFileNameFromPath(path)
+    local fileExtension = ".json"
+    path = path:gsub("\\", "/")
+    local pos = path:find("/[^/]*$")
+    
+    if pos then
+        return path:sub(pos + 1, -#fileExtension - 1)
+    end
+end
+
+function PresetManager:LoadPreset(name)
+    local presetData = self.PresetData[name]
+    
+    if not presetData then
+        return false, "Preset não encontrado!"
+    end
+    
+    local data = {
+        ["FriendsOnly"] = presetData.FriendsOnly,
+        ["Destination"] = presetData.Floor,
+        ["Mods"] = presetData.Modifiers or {},
+        ["MaxPlayers"] = tostring(presetData.MaxPlayers)
+    }
+
+    createElevator:FireServer(data)
+
+    return true, "Preset carregado: " .. name
+end
+
+function PresetManager:DeletePreset(name)
+    if isfile(".seekerLobby/doors/presets/" .. name .. ".json") then
+        delfile(".seekerLobby/doors/presets/" .. name .. ".json")
+        self.PresetData[name] = nil
+        return true, "Preset deletado: " .. name
+    else
+        return false, "Preset não encontrado!"
+    end
+end
+
+function PresetManager:OverridePreset(name, data)
+    local presetData = {
+        Floor = data.Floor or "Hotel",
+        MaxPlayers = data.MaxPlayers or 1,
+        Modifiers = data.Modifiers or {},
+        FriendsOnly = data.FriendsOnly or true
+    }
+
+    writefile(".seekerLobby/doors/presets/" .. name .. ".json", HttpService:JSONEncode(presetData))
+    return true, "Preset sobrescrito: " .. name
+end
+
+local Window = OrionLib:MakeWindow({
+    Name = "Gerenciamento de Presets",
+    HidePremium = false,
+    SaveConfig = true,
+    ConfigFolder = "OrionPresets"
+})
+
+local Tab = Window:MakeTab({
+    Name = "Presets",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+Tab:AddTextbox({
+    Name = "Nome do Preset",
+    Default = "",
+    TextDisappear = true,
+    Callback = function(value)
+        _G.PresetName = value
+    end
+})
+
+Tab:AddButton({
+    Name = "Criar Preset",
+    Callback = function()
+        if _G.PresetName then
+            local success, message = PresetManager:CreatePreset(_G.PresetName, {
+                Floor = "Hotel",
+                MaxPlayers = 4,
+                FriendsOnly = true,
+                Modifiers = {"RetroMode"}
+            })
+            OrionLib:MakeNotification({
+                Name = success and "Sucesso" or "Erro",
+                Content = message,
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+
+            local newOptions = PresetManager:LoadPresets()
+            Tab:SetDropdown("Selecione um Preset", newOptions)
+        end
+    end
+})
+
+local PresetDropdown = Tab:AddDropdown({
+    Name = "Selecione um Preset",
+    Default = "",
+    Options = PresetManager:LoadPresets(),
+    Callback = function(selectedPreset)
+        _G.SelectedPreset = selectedPreset
+    end
+})
+
+Tab:AddButton({
+    Name = "Carregar Preset",
+    Callback = function()
+        if _G.SelectedPreset then
+            local success, message = PresetManager:LoadPreset(_G.SelectedPreset)
+            OrionLib:MakeNotification({
+                Name = success and "Sucesso" or "Erro",
+                Content = message,
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+})
+
+Tab:AddButton({
+    Name = "Deletar Preset",
+    Callback = function()
+        if _G.SelectedPreset then
+            local success, message = PresetManager:DeletePreset(_G.SelectedPreset)
+            OrionLib:MakeNotification({
+                Name = success and "Sucesso" or "Erro",
+                Content = message,
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+
+            local newOptions = PresetManager:LoadPresets()
+            PresetDropdown:SetOptions(newOptions)
+        end
+    end
+})
+
+Tab:AddButton({
+    Name = "Sobrescrever Preset",
+    Callback = function()
+        if _G.SelectedPreset then
+            local success, message = PresetManager:OverridePreset(_G.SelectedPreset, {
+                Floor = "Hotel",
+                MaxPlayers = 5,
+                FriendsOnly = false,
+                Modifiers = {"HardMode"}
+            })
+            OrionLib:MakeNotification({
+                Name = success and "Sucesso" or "Erro",
+                Content = message,
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+})
+
+Tab:AddButton({
+    Name = "Atualizar Presets",
+    Callback = function()
+        local newOptions = PresetManager:LoadPresets()
+        PresetDropdown:SetOptions(newOptions)
+        OrionLib:MakeNotification({
+            Name = "Atualizado",
+            Content = "Lista de presets atualizada!",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+})
+
+
+
+
+
+
+
+
+
+
+
+
 local Script = {
     CurrentBadge = 0,
     Achievements = {
@@ -344,7 +583,6 @@ AchievementTab:AddSlider({
     end
 })
 
--- Função para criar elevador Retro
 local function CreateRetroModeElevator()
     data = {
         ["FriendsOnly"] = friendsOnly,
@@ -420,7 +658,6 @@ local function SetupElevatorUI()
         end
     })
 
-    -- Botão para criar elevador Retro
     MainTab:AddButton({
         Name = "Criar Elevador Retro",
         Callback = function()
@@ -428,7 +665,6 @@ local function SetupElevatorUI()
         end
     })
 
-    -- Botão para criar elevador normal
     MainTab:AddButton({
         Name = "Criar Elevador",
         Callback = function()
@@ -436,7 +672,6 @@ local function SetupElevatorUI()
         end
     })
 
-    -- Dropdown para selecionar destino do elevador
     MainTab:AddDropdown({
         Name = "Destino do Elevador",
         Default = "Hotel",
@@ -446,7 +681,6 @@ local function SetupElevatorUI()
         end
     })
 
-    -- Slider para selecionar o número máximo de jogadores
     MainTab:AddSlider({
         Name = "Número Máximo de Jogadores",
         Min = 1,
@@ -460,7 +694,6 @@ local function SetupElevatorUI()
         end    
     })
 
-    -- Toggle para definir se o elevador é só para amigos
     MainTab:AddToggle({
         Name = "Somente Amigos",
         Default = true,
@@ -469,7 +702,6 @@ local function SetupElevatorUI()
         end
     })
 
-    -- Modificadores adicionais (opcional)
     MainTab:AddToggle({
         Name = "Modo Hard",
         Default = false,
@@ -481,7 +713,6 @@ local function SetupElevatorUI()
     })
 end
 
--- Chamando a função de setup da UI
 SetupElevatorUI()
 
 -- Notificação de carregamento completo
