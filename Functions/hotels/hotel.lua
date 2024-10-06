@@ -58,31 +58,27 @@ local PromptTable = {
     GamePrompts = {},
     Aura = {
         ["ActivateEventPrompt"] = false,
-        ["AwesomePrompt"] = true,
         ["FusesPrompt"] = true,
         ["HerbPrompt"] = false,
         ["LeverPrompt"] = true,
         ["LootPrompt"] = false,
-        ["ModulePrompt"] = true,
         ["SkullPrompt"] = false,
         ["UnlockPrompt"] = true,
         ["ValvePrompt"] = false,
-        ["PropPrompt"] = true
     },
     Clip = {
         "AwesomePrompt",
         "FusesPrompt",
         "HerbPrompt",
-        "HidePrompt",
         "LeverPrompt",
         "LootPrompt",
-        "ModulePrompt",
         "UnlockPrompt",
         "ValvePrompt"
     },
     Excluded = {
         Prompt = {
             "HintPrompt",
+            "HidePrompt",
             "InteractPrompt"
         },
         Parent = {
