@@ -496,11 +496,6 @@ local CreditsTab = Window:MakeTab({
     Icon = "rbxassetid://14255000409",
     PremiumOnly = false
 })
-local CreditsTab = Window:MakeTab({
-    Name = "Creditos",
-    Icon = "rbxassetid://14255000409",
-    PremiumOnly = false
-})
 local CdSc = CreditsTab:AddSection({
     Name = "Créditos"
 })
