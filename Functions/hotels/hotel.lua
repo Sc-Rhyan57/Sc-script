@@ -63,7 +63,6 @@ local PromptTable = {
         ["LeverPrompt"] = true,
         ["LootPrompt"] = false,
         ["SkullPrompt"] = false,
-        ["UnlockPrompt"] = true,
         ["ValvePrompt"] = false,
     },
     Clip = {
@@ -72,7 +71,6 @@ local PromptTable = {
         "HerbPrompt",
         "LeverPrompt",
         "LootPrompt",
-        "UnlockPrompt",
         "ValvePrompt"
     },
     Excluded = {
