@@ -131,6 +131,9 @@ local function ChildCheck(child)
     end
 end
 
+workspace.DescendantAdded:Connect(ChildCheck)
+CheckPrompts()
+
 --// VARIÁVEIS \\--
 
 local autoLootEnabled = false
@@ -1017,28 +1020,16 @@ autoIn:AddToggle({
     end
 })
 
-
-local autoInteractEnabled = false
-
-autoIm:AddToggle({
+autoIn:AddToggle({
     Name = "Auto Interact",
     Default = false,
-    Callback = function(Value)
-        autoInteractEnabled = Value
-        if Value then
-            while autoInteractEnabled do
-                CheckPrompts()
-                task.wait(1)
-            end
+    Callback = function(value)
+        autoInteractEnabled = value
+        if value then
+            task.spawn(AutoInteract)
         end
     end
 })
-
--- Conectar Novos Prompts à Função
-workspace.DescendantAdded:Connect(ChildCheck)
-
--- Verificar Prompts Existentes ao Carregar o Jogo
-CheckPrompts()
 
 autoIn:AddToggle({
     Name = "Auto Library Code",
