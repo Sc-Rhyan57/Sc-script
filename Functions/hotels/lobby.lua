@@ -91,10 +91,8 @@ function PresetManager:GetFileNameFromPath(path)
         return path:sub(pos + 1, -#fileExtension - 1)
     end
 end
-
 function PresetManager:LoadPreset(name)
     local presetData = self.PresetData[name]
-    
     if not presetData then
         return false, "Preset não encontrado!"
     end
@@ -102,13 +100,22 @@ function PresetManager:LoadPreset(name)
     local data = {
         ["FriendsOnly"] = presetData.FriendsOnly,
         ["Destination"] = presetData.Floor,
-        ["Mods"] = presetData.Modifiers or {},
-        ["MaxPlayers"] = tostring(presetData.MaxPlayers)
+        ["Mods"] = presetData.Modifiers or {},  -- Modificadores
+        ["MaxPlayers"] = tostring(presetData.MaxPlayers)  -- Certifique-se que é uma string
     }
 
-    createElevator:FireServer(data)
 
-    return true, "Preset carregado: " .. name
+    print("Carregando preset:", HttpService:JSONEncode(data))
+
+    local success, err = pcall(function()
+        createElevator:FireServer(data)
+    end)
+
+    if success then
+        return true, "Preset carregado: " .. name
+    else
+        return false, "Erro ao carregar preset: " .. err
+    end
 end
 
 function PresetManager:DeletePreset(name)
