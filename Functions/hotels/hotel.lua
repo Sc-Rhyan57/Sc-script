@@ -52,7 +52,85 @@ local collision
 local collisionClone
 local velocityLimiter
 
-                
+--// Var :0 \\--
+local PromptTable = {
+    GamePrompts = {},
+    Aura = {
+        ["ActivateEventPrompt"] = false,
+        ["AwesomePrompt"] = true,
+        ["FusesPrompt"] = true,
+        ["LeverPrompt"] = true,
+        ["UnlockPrompt"] = true,
+        ["ValvePrompt"] = false,
+        ["LootPrompt"] = false,
+    },
+    Clip = {
+        "AwesomePrompt",
+        "FusesPrompt",
+        "LeverPrompt",
+        "UnlockPrompt"
+    },
+    Excluded = {
+        Prompt = {
+            "HintPrompt",
+            "InteractPrompt" 
+        },
+        Parent = {
+            "KeyObtainFake",
+            "Padlock"
+        },
+        ModelAncestor = {
+            "DoorFake"
+        }
+    }
+}
+
+--// New system of Auto Interact \\--
+local function PromptCondition(prompt)
+    local modelAncestor = prompt:FindFirstAncestorOfClass("Model")
+    return prompt:IsA("ProximityPrompt") and 
+        not table.find(PromptTable.Excluded.Prompt, prompt.Name) and 
+        not table.find(PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") and 
+        not table.find(PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or "")
+end
+
+local function AutoInteractWithPrompt(prompt)
+    if prompt:IsA("ProximityPrompt") and prompt.Enabled then
+        fireproximityprompt(prompt) 
+    end
+end
+
+local function CheckPrompts()
+    for _, prompt in pairs(workspace:GetDescendants()) do
+        if PromptCondition(prompt) then
+            AutoInteractWithPrompt(prompt)
+        end
+    end
+end
+
+local function AdjustPromptProperties(prompt)
+    task.defer(function()
+        if not prompt:GetAttribute("Hold") then prompt:SetAttribute("Hold", prompt.HoldDuration) end
+        if not prompt:GetAttribute("Distance") then prompt:SetAttribute("Distance", prompt.MaxActivationDistance) end
+        if not prompt:GetAttribute("Enabled") then prompt:SetAttribute("Enabled", prompt.Enabled) end
+        if not prompt:GetAttribute("Clip") then prompt:SetAttribute("Clip", prompt.RequiresLineOfSight) end
+    end)
+    
+    task.defer(function()
+        prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * 1 
+        prompt.HoldDuration = 0
+        prompt.RequiresLineOfSight = false 
+    end)
+    
+    table.insert(PromptTable.GamePrompts, prompt)
+end
+
+local function ChildCheck(child)
+    if PromptCondition(child) then
+        AdjustPromptProperties(child)
+    end
+end
+
 --// VARIÁVEIS \\--
 
 local autoLootEnabled = false
@@ -207,7 +285,6 @@ local entidades = {
     {"RushMoving", "Rush", Color3.fromRGB(255, 0, 0)},
     {"AmbushMoving", "Ambush", Color3.fromRGB(0, 255, 0)},
     {"Snare", "Armadilha", Color3.fromRGB(255, 0, 0)},
-    {"Item", "+", Color3.fromRGB(0, 255, 0)},
     {"FigureRig", "Figure", Color3.fromRGB(255, 0, 0)},
     {"A60", "A-60", Color3.fromRGB(255, 0, 0)},
     {"A120", "A-120", Color3.fromRGB(255, 0, 0)},
@@ -293,8 +370,8 @@ local function verificarNovasEntidades()
 end
 
 -- LOOT ESP
-local esp_loot = { 
-    {"Item", "+", Color3.fromRGB(0, 0, 255)}
+local esp_loot = {
+    {"Item", "+", Color3.fromRGB(0, 255, 0)}
     }
 
 local esp_loot_ativos = {}
@@ -941,16 +1018,27 @@ autoIn:AddToggle({
 })
 
 
-autoIn:AddToggle({
+local autoInteractEnabled = false
+
+autoIm:AddToggle({
     Name = "Auto Interact",
     Default = false,
-    Callback = function(state)
-        autoInteractEnabled = state
-        if autoInteractEnabled then
-            coroutine.wrap(autoInteract)() 
+    Callback = function(Value)
+        autoInteractEnabled = Value
+        if Value then
+            while autoInteractEnabled do
+                CheckPrompts()
+                task.wait(1)
+            end
         end
     end
 })
+
+-- Conectar Novos Prompts à Função
+workspace.DescendantAdded:Connect(ChildCheck)
+
+-- Verificar Prompts Existentes ao Carregar o Jogo
+CheckPrompts()
 
 autoIn:AddToggle({
     Name = "Auto Library Code",
