@@ -594,35 +594,75 @@ latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
 
 -- DELETE SEEK
-local function StartDeleteSeek()
-    local rootPart = game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then
-        OrionLib:MakeNotification({
-            Name = "Erro",
-            Content = "Barreira do Seek não encontrada!",
-            Time = 5
-        })
-        return
-    end
+local Toggles = {
+    DeleteSeek = {Value = true}
+}
+function DeleteSeek(collision: BasePart)
+    if not rootPart then return end
 
-    local function DeleteSeek(obj)
-        if obj and obj:IsA("BasePart") and obj.Name == "Collision" then
-            firetouchinterest(rootPart, obj, 1)
-            firetouchinterest(rootPart, obj, 0)
+    task.spawn(function()
+        local attempts = 0
+        repeat task.wait() attempts += 1 until collision.Parent or attempts > 200
 
+        if collision:IsDescendantOf(workspace) and (collision.Parent and collision.Parent.Name == "TriggerEventCollision") then
             OrionLib:MakeNotification({
-                Name = "Delete Seek",
-                Content = "Seek foi deletado com sucesso!",
-                Time = 5
+                Name = "Delete Seek - Seeker Hub",
+                Content = "Deleting Seek trigger...",
+                Time = 5,
+                Image = "rbxassetid://6023426923"
             })
-        end
-    end
 
-    game.Workspace.DescendantAdded:Connect(function(child)
-        if getgenv().DeleteSeekEnabled and child.Name == "Collision" then
-            DeleteSeek(child)
+            task.delay(4, function()
+                if collision:IsDescendantOf(workspace) then
+                    OrionLib:MakeNotification({
+                        Name = "Delete Seek FE",
+                        Content = "Failed to delete Seek trigger!",
+                        Time = 5,
+                        Image = "rbxassetid://6023426923"
+                    })
+                end
+            end)
+
+            if fireTouch then
+                rootPart.Anchored = true
+                task.delay(0.25, function() rootPart.Anchored = false end)
+
+                repeat
+                    if collision:IsDescendantOf(workspace) then fireTouch(collision, rootPart, 1) end
+                    task.wait()
+                    if collision:IsDescendantOf(workspace) then fireTouch(collision, rootPart, 0) end
+                    task.wait()
+                until not collision:IsDescendantOf(workspace) or not Toggles.DeleteSeek.Value
+            else
+                collision:PivotTo(CFrame.new(rootPart.Position))
+                rootPart.Anchored = true
+                repeat task.wait() until not collision:IsDescendantOf(workspace) or not Toggles.DeleteSeek.Value
+                rootPart.Anchored = false
+            end
+
+            if not collision:IsDescendantOf(workspace) then
+                OrionLib:MakeNotification({
+                    Name = "Delete Seek - Seeker Hub",
+                    Content = "Deleted Seek trigger successfully!",
+                    Time = 5,
+                    Image = "rbxassetid://6023426923"
+                })
+            end
         end
     end)
+end
+
+function TestDeleteSeek()
+    local exampleCollision = game.Workspace:FindFirstChild("SomeCollisionPart") -- Altere para um objeto válido de colisão
+    if exampleCollision then
+        DeleteSeek(exampleCollision)
+    else
+        OrionLib:MakeNotification({
+            Name = "Error",
+            Content = "No collision object found!",
+            Time = 5
+        })
+    end
 end
 
 --- Anti Screesh
@@ -1204,17 +1244,26 @@ local ExploitsTab = Window:MakeTab({
 })
 
 
-
 ExploitsTab:AddToggle({
-    Name = "Delete Seek (FE)",
-    Default = false,
-    Callback = function(value)
-        getgenv().DeleteSeekEnabled = value
-        if value then
-            StartDeleteSeek()
-        end
-    end    
+    Name = "Activate Delete Seek",
+    Default = true,
+    Callback = function(Value)
+        Toggles.DeleteSeek.Value = Value
+        OrionLib:MakeNotification({
+            Name = "Rseeker Hub",
+            Content = "Delete Seek agora está " .. (Value and "Active" or "Inactive"),
+            Time = 5
+        })
+    end
 })
+
+ExploitsTab:AddButton({
+    Name = "Test Delete Seek",
+    Callback = function()
+        TestDeleteSeek()
+    end
+})
+
 -- Aba de notificações
 local notifsTab = Window:MakeTab({
     Name = "Notificações",
