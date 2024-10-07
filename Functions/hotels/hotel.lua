@@ -61,9 +61,9 @@ local PromptTable = {
         ["FusesPrompt"] = true,
         ["HerbPrompt"] = false,
         ["LeverPrompt"] = true,
-        ["LootPrompt"] = false,
+        ["LootPrompt"] = true,
         ["SkullPrompt"] = false,
-        ["ValvePrompt"] = false,
+        ["ValvePrompt"] = true,
     },
     Clip = {
         "AwesomePrompt",
@@ -536,7 +536,7 @@ local function ActivateAntiLag()
 
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "🔔 Notificação",
-        Text = "Anti Lag Ativo",
+        Text = "Anti Lag Carregado...",
         Icon = "rbxassetid://13264701341",
         Duration = 5
     })
@@ -665,22 +665,6 @@ function TestDeleteSeek()
     end
 end
 
---- Anti Screesh
-local isAntiScreechActive = false  
-local RunService = game:GetService("RunService")  
-local mainGame = game.Players.LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("Main_Game")
-
-local function AntiScreechCheck()
-    RunService.RenderStepped:Connect(function()
-        if isAntiScreechActive and mainGame then
-            local module = mainGame:FindFirstChild("Screech", true) or mainGame:FindFirstChild("_Screech", true)
-            if module then
-                module.Name = "_Screech"
-            end
-        end
-    end)
-end
-
 --// Tabela de Entidades \\--
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
@@ -787,77 +771,6 @@ function MinecartTeleport()
             end
         end
         task.wait(1)
-    end
-end
-
---// Library Code 50 \\--
-local autoLibraryEnabled = false
-
-local function AutoLibrarySolver()
-    if autoLibraryEnabled then
-        local foundBook = false
-        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-            if not player.Character then continue end
-            local tool = player.Character:FindFirstChildOfClass("Tool")
-
-            if tool and tool.Name:match("LibraryHintPaper") then
-                foundBook = true
-                local code = Script.Functions.GetPadlockCode(tool)
-                local padlock = workspace:FindFirstChild("Padlock", true)
-
-                if tonumber(code) and Script.Functions.DistanceFromCharacter(padlock) <= 10 then
-                    remotesFolder.PL:FireServer(code)
-                    
-        local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Código Enviado para o cadeado.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-                else
-                    
-                    local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://5914602124"
-sound.Volume = 2
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Você está muito longe do cadeado!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 7
-})
-                end
-            end
-        end
-        if not foundBook then
-            
-        local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://5914602124"
-sound.Volume = 2
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Você não possuí o Livro de Código.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 7
-})
-        end
     end
 end
 
@@ -1057,51 +970,8 @@ autoIn:AddToggle({
     end
 })
 
-
-autoIn:AddToggle({
-    Name = "Auto Library Code",
-    Default = false,
-    Callback = function(value)
-        autoLibraryEnabled = value
-        if value then
-            local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Automoção de código da Livraria ativa.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 6
-})
-            
-            while autoLibraryEnabled do
-                AutoLibrarySolver()
-                task.wait(1)
-            end
-        else
-            local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Automoção de Código da livraria desativado.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 6
-})
-        end
-    end
-})
-
+--[ VOU JOGAR FNF, DEPOIS TERMINO. ]--
+--[ RESOLVER: AUTO LIBRARY 50, ANTI ENTITY E MORE. ]--
 --[[ Byppas Area ]]--
 local ByTab = Window:MakeTab({
     Name = "Byppas",
@@ -1223,19 +1093,7 @@ ItensTab:AddButton({
     end
 })
 
--- Aba para itens infinitos
-local IitensTab = Window:MakeTab({
-    Name = "Infinte Itens",
-    Icon = "rbxassetid://11713331539",
-    PremiumOnly = false
-})
 
-IitensTab:AddButton({
-    Name = "✝️ Crucifixo infinito",
-    Callback = function()
-        loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/refs/heads/Fun%C3%A7%C3%B5es/Sc/GiveCrucifix.lua"))()
-    end
-})
 -- Exploits
 local ExploitsTab = Window:MakeTab({
     Name = "Exploits",
