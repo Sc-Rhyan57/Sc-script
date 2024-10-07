@@ -972,6 +972,96 @@ autoIn:AddToggle({
 
 --[ VOU JOGAR FNF, DEPOIS TERMINO. ]--
 --[ RESOLVER: AUTO LIBRARY 50, ANTI ENTITY E MORE. ]--
+
+local Options = {
+    AutoBreakerSolverMethod = {Value = "Legit"},
+    AutoBreakerSolver = {Value = false}, 
+    LegitMode = {Value = true} 
+}
+
+function EnableBreaker(breaker, value)
+    breaker:SetAttribute("Enabled", value)
+
+    if value then
+        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = -0.2
+        breaker.Light.Material = Enum.Material.Neon
+        breaker.Light.Attachment.Spark:Emit(1)
+        breaker.Sound.Pitch = 1.3
+    else
+        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = 0.2
+        breaker.Light.Material = Enum.Material.Glass
+        breaker.Sound.Pitch = 1.2
+    end
+
+    breaker.Sound:Play()
+end
+
+function SolveBreakerBox(breakerBox)
+    if not Options.AutoBreakerSolver.Value then return end -- Verifica se o AutoBreakerSolver está ativado
+    if not breakerBox then return end
+
+    local code = breakerBox:FindFirstChild("Code", true)
+    local correct = breakerBox:FindFirstChild("Correct", true)
+
+    repeat task.wait() until code.Text ~= "..." or not breakerBox:IsDescendantOf(workspace)
+    if not breakerBox:IsDescendantOf(workspace) then return end
+
+    OrionLib:MakeNotification({
+        Name = "Auto Breaker Solver",
+        Content = "Solving the breaker box...",
+        Image = "rbxassetid://4483345998",
+        Time = 5
+    })
+
+    if Options.LegitMode.Value then
+        local UsedBreakers = {}
+        if correct then
+            correct:GetPropertyChangedSignal("Playing"):Connect(function()
+                if correct.Playing then table.clear(UsedBreakers) end
+            end)
+
+            code:GetPropertyChangedSignal("Text"):Connect(function()
+                task.delay(0.1, AutoBreaker, code, breakerBox)
+            end)
+        end
+    else
+        repeat task.wait(0.1)
+            remotesFolder.EBF:FireServer()
+        until not workspace.CurrentRooms["100"]:FindFirstChild("DoorToBreakDown")
+
+        OrionLib:MakeNotification({
+            Name = "Auto Breaker Solver",
+            Content = "The breaker box has been successfully solved.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+    end
+end
+function AutoBreaker(code, breakerBox)
+    local newCode = code.Text
+    if not tonumber(newCode) and newCode ~= "??" then return end
+
+    local isEnabled = code.Frame.BackgroundTransparency == 0
+    local breaker = breakerBox[newCode]
+
+    if newCode == "??" and #UsedBreakers == 9 then
+        for i = 1, 10 do
+            local id = string.format("%02d", i)
+            if not table.find(UsedBreakers, id) then
+                breaker = breakerBox[id]
+            end
+        end
+    end
+
+    if breaker then
+        table.insert(UsedBreakers, newCode)
+        if breaker:GetAttribute("Enabled") ~= isEnabled then
+            EnableBreaker(breaker, isEnabled)
+        end
+    end
+end
+
+
 --[[ Byppas Area ]]--
 local ByTab = Window:MakeTab({
     Name = "Byppas",
@@ -1233,6 +1323,23 @@ Visuals:AddToggle({
 local AutomationSection = FloorTab:AddSection({
     Name = "Automoção"
 })
+
+AutomationSection:AddToggle({
+    Name = "Auto Breaker Solver",
+    Default = false,
+    Callback = function(Value)
+        Options.AutoBreakerSolver.Value = Value -- (Basicamente liga/desliga)
+    end    
+})
+
+AutomationSection:AddToggle({
+    Name = "Use Legit Method",
+    Default = true,
+    Callback = function(Value)
+        Options.LegitMode.Value = Value
+    end    
+})
+
 
 AutomationSection:AddToggle({
     Name = "AutoMinecart tp",
