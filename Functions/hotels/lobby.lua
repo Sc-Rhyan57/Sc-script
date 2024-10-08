@@ -393,14 +393,7 @@ AchievementTab:AddSlider({
     end
 })
 
---// Elevator Sniper \\--
-local MainTab = AchievementTab:MakeTab({
-    Name = "Main",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-MainTab:AddToggle({
+AchievementTab:AddToggle({
     Name = "Elevator Sniper",
     Default = false,
     Callback = function(Value)
@@ -419,8 +412,7 @@ Players.PlayerAdded:Connect(updatePlayerList)
 Players.PlayerRemoving:Connect(updatePlayerList)
 RunService.RenderStepped:Connect(function()
     if Toggles.ElevatorSniper and Options.SelectedTarget then
-        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTarget)
-        if not targetCharacter then return end
+        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTharacter then return end
 
         local targetElevatorID = targetCharacter:GetAttribute("InGameElevator")
         local currentElevatorID = character:GetAttribute("InGameElevator")
