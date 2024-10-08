@@ -34,6 +34,14 @@ local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.Mai
 local presetName, destination, maxPlayers, friendsOnly = "", "", 4, true
 local data = {}
 local lobbyElevators = Workspace:WaitForChild("Lobby"):WaitForChild("LobbyElevators")
+-- Serviços
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local localPlayer = Players.LocalPlayer
 --//New System Sniper\\--
 --[[Variáveis]]--
 local Toggles = {}
