@@ -33,6 +33,69 @@ local createElevator = game:GetService("ReplicatedStorage"):WaitForChild("Remote
 local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.MainUI.LobbyFrame.CreateElevator
 local presetName, destination, maxPlayers, friendsOnly = "", "", 4, true
 local data = {}
+local lobbyElevators = Workspace:WaitForChild("Lobby"):WaitForChild("LobbyElevators")
+--//New System Sniper\\--
+--[[Variáveis]]--
+local Toggles = {}
+local Options = {}
+local playerList = {}
+
+local function updatePlayerList()
+    playerList = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    Options.ElevatorSniperTarget:Refresh(playerList)
+end
+
+local MainTab = Window:MakeTab({
+    Name = "Elevator Snipe",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+MainTab:AddToggle({
+    Name = "Elevator Sniper",
+    Default = false,
+    Callback = function(Value)
+        Toggles.ElevatorSniper = Value
+    end    
+})
+
+Options.ElevatorSniperTarget = MainTab:AddDropdown({
+    Name = "Selecione o Jogador",
+    Options = playerList,
+    Callback = function(Value)
+        Options.SelectedTarget = Value
+    end
+})
+
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+
+RunService.RenderStepped:Connect(function()
+    if Toggles.ElevatorSniper and Options.SelectedTarget then
+        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTarget)
+        if not targetCharacter then return end
+
+        local targetElevatorID = targetCharacter:GetAttribute("InGameElevator")
+        local currentElevatorID = localPlayer.Character:GetAttribute("InGameElevator")
+        if currentElevatorID == targetElevatorID then return end
+
+        if targetElevatorID then
+            local targetElevator = lobbyElevators:FindFirstChild("LobbyElevator-" .. targetElevatorID)
+            if targetElevator then
+                remotesFolder.ElevatorJoin:FireServer(targetElevator)
+            end
+        elseif currentElevatorID then
+            remotesFolder.ElevatorExit:FireServer()
+        end
+    end
+end)
+
+updatePlayerList()
 
 --//New System Presets\\--
 local PresetManager = {}
