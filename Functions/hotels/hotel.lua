@@ -969,6 +969,105 @@ autoIn:AddToggle({
     end
 })
 
+--[ NEW! - auto Hide ]--
+local autoHideEnabled = false
+local alive = true
+local hideDistanceThreshold = {RushMoving = 100, AmbushMoving = 155, A60 = 200, A120 = 200}
+local EntityTable = {"RushMoving", "AmbushMoving", "A60", "A120"}
+local hideSpot
+
+local function notify(title, content, duration)
+    OrionLib:MakeNotification({
+        Name = title,
+        Content = content,
+        Time = duration,
+        Image = "rbxassetid://4483345998"
+    })
+end
+
+local function autoHide()
+    if not autoHideEnabled or not alive then return end
+    
+    hideSpot = nil
+    for _, entityName in pairs(EntityTable) do
+        local entity = workspace:FindFirstChild(entityName)
+        
+        if entity and entity.PrimaryPart then
+            local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - entity.PrimaryPart.Position).Magnitude
+            if distance <= hideDistanceThreshold[entityName] then
+                hideSpot = Script.Functions.GetNearestPromptWithCondition(function(prompt)
+                    return prompt.Name == "HidePrompt" and not prompt.Parent.HiddenPlayer.Value and Script.Functions.DistanceFromCharacter(prompt.Parent) < 20
+                end)
+                break
+            end
+        end
+    end
+
+    if hideSpot then
+        notify("Auto Hide", "Escondendo automaticamente!", 5)
+        fireproximityprompt(hideSpot)
+        
+        repeat task.wait() until not alive or (hideSpot and not hideSpot.Parent:IsDescendantOf(workspace))
+        remotesFolder.CamLock:FireServer()
+        notify("Auto Hide", "Pode sair do esconderijo!", 5)
+    end
+end
+
+game:GetService("RunService").RenderStepped:Connect(function()
+    if autoHideEnabled then
+        autoHide()
+    end
+end)
+
+autoIn:AddToggle({
+    Name = "Ativar Auto Closet/Locker",
+    Default = false,
+    Callback = function(state)
+        autoHideEnabled = state
+        if autoHideEnabled then
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "🏃 Auto Hide ativado.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
+        else
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590662766"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "🏃 Auto Hide Desativado.",
+    Icon = "rbxassetid://13264701341",
+    Duration = 5
+})
+        end
+    end
+})
+
+game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
+    character:WaitForChild("Humanoid").Died:Connect(function()
+        alive = false
+    end)
+end)
+
+game.Players.LocalPlayer.CharacterRemoving:Connect(function()
+    alive = true
+end)
+
 
 -- Exploits
 local ExploitsTab = Window:MakeTab({
