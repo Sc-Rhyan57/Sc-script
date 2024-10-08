@@ -34,15 +34,15 @@ local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.Mai
 local presetName, destination, maxPlayers, friendsOnly = "", "", 4, true
 local data = {}
 
--- Serviços do Roblox
-
 local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
 local lobbyElevators = Workspace:WaitForChild("Lobby"):WaitForChild("LobbyElevators")
 local localPlayer = Players.LocalPlayer
 local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+
 local Toggles = {}
 local Options = {}
 local playerList = {}
+
 local function updatePlayerList()
     playerList = {}
     for _, player in pairs(Players:GetPlayers()) do
@@ -50,9 +50,57 @@ local function updatePlayerList()
             table.insert(playerList, player.Name)
         end
     end
-    Options.ElevatorSniperTarget:Refresh(playerList)
+    Options.ElevatorSniperTarget:SetOptions(playerList)
 end
 
+
+
+local Sniper = Window:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+Sniper:AddToggle({
+    Name = "Elevator Sniper",
+    Default = false,
+    Callback = function(Value)
+        Toggles.ElevatorSniper = Value
+    end    
+})
+
+Options.ElevatorSniperTarget = Sniper:AddDropdown({
+    Name = "Target",
+    Options = playerList,
+    Callback = function(Value)
+        Options.SelectedTarget = Value
+    end
+})
+
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+
+RunService.RenderStepped:Connect(function()
+    if Toggles.ElevatorSniper and Options.SelectedTarget then
+        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTarget)
+        if not targetCharacter then return end
+
+        local targetElevatorID = targetCharacter:GetAttribute("InGameElevator")
+        local currentElevatorID = character:GetAttribute("InGameElevator")
+        if currentElevatorID == targetElevatorID then return end
+
+        if targetElevatorID then
+            local targetElevator = lobbyElevators:FindFirstChild("LobbyElevator-" .. targetElevatorID)
+            if targetElevator then
+                remotesFolder.ElevatorJoin:FireServer(targetElevator)
+            end
+        elseif currentElevatorID then
+            remotesFolder.ElevatorExit:FireServer()
+        end
+    end
+end)
+
+updatePlayerList()
 
 --//New System Presets\\--
 local PresetManager = {}
@@ -392,43 +440,6 @@ AchievementTab:AddSlider({
     Callback = function(Value)
     end
 })
-
-AchievementTab:AddToggle({
-    Name = "Elevator Sniper",
-    Default = false,
-    Callback = function(Value)
-        Toggles.ElevatorSniper = Value
-    end    
-})
-
-Options.ElevatorSniperTarget = MainTab:AddDropdown({
-    Name = "Target",
-    Options = playerList,
-    Callback = function(Value)
-        Options.SelectedTarget = Value
-    end
-})
-Players.PlayerAdded:Connect(updatePlayerList)
-Players.PlayerRemoving:Connect(updatePlayerList)
-RunService.RenderStepped:Connect(function()
-    if Toggles.ElevatorSniper and Options.SelectedTarget then
-        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTharacter then return end
-
-        local targetElevatorID = targetCharacter:GetAttribute("InGameElevator")
-        local currentElevatorID = character:GetAttribute("InGameElevator")
-        if currentElevatorID == targetElevatorID then return end
-
-        if targetElevatorID then
-            local targetElevator = lobbyElevators:FindFirstChild("LobbyElevator-" .. targetElevatorID)
-            if targetElevator then
-                remotesFolder.ElevatorJoin:FireServer(targetElevator)
-            end
-        elseif currentElevatorID then
-            remotesFolder.ElevatorExit:FireServer()
-        end
-    end
-end)
-
 --// Elevadores Pages \\--
 local function CreateRetroModeElevator()
     data = {
@@ -588,5 +599,4 @@ local Livraria = CreditsTab:AddSection({
 Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
 Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 OrionLib:Init()
-updatePlayerList()
 
