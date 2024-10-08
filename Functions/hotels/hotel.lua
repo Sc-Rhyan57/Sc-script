@@ -1323,59 +1323,6 @@ Visuals:AddToggle({
 local AutomationSection = FloorTab:AddSection({
     Name = "Automoção"
 })
---[ DOOR PROMPT ]--
-local Options = {
-    DoorPromptEnabled = {Value = false},
-    MaxDistance = {Value = 50},
-    InstaInteract = {Value = true},
-}
-
-function EnableDoorPrompt(prompt, distance)
-    local distanceFromDoor = (prompt.Parent.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
-    if distanceFromDoor <= distance then
-        fireproximityprompt(prompt, 0)
-    end
-end
-
-function AutoOpenDoors()
-    if not Options.DoorPromptEnabled.Value then return end
-    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-        local prompt = room:FindFirstChild("UnlockPrompt", true)
-        if prompt and prompt:IsA("ProximityPrompt") then
-            EnableDoorPrompt(prompt, Options.MaxDistance.Value)
-        end
-    end
-end
-
-function StartAutoOpen()
-    game:GetService("RunService").Stepped:Connect(function()
-        AutoOpenDoors()
-    end)
-end
-
-AutomationSection:AddToggle({
-    Name = "Auto Door Open",
-    Default = false,
-    Callback = function(Value)
-        Options.DoorPromptEnabled.Value = Value
-        if Value then
-            StartAutoOpen()
-        end
-    end    
-})
-
-AutomationSection:AddSlider({
-    Name = "Distância máxima para abrir a porta",
-    Min = 10,
-    Max = 100,
-    Default = 50,
-    Color = Color3.fromRGB(255, 255, 255),
-    Increment = 1,
-    ValueName = "Distance",
-    Callback = function(Value)
-        Options.MaxDistance.Value = Value
-    end    
-})
 
 Tab:AddToggle({
     Name = "Instant Interaction",
