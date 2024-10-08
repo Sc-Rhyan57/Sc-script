@@ -124,50 +124,6 @@ local function AutoLoot()
         wait(0.1)
     end
 end
---[[DOOR PROMPT]]--
-
---// Variáveis \\--
-local localPlayer = Players.LocalPlayer
-local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-
-
-local Toggles = {
-    DoorReach = {Value = false},
-    PromptClip = {Value = false}
-}
-
-local Options = {
-    PromptReachMultiplier = {Value = 1}
-}
-
-function PromptCondition(prompt)
-    local modelAncestor = prompt:FindFirstAncestorOfClass("Model")
-    return prompt:IsA("ProximityPrompt") and not (
-        table.find(PromptTable.Excluded.Prompt, prompt.Name) or
-        table.find(PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") or
-        table.find(PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or "")
-    )
-end
-
-function AdjustPromptReach()
-    for _, prompt in pairs(Workspace:GetDescendants()) do
-        if PromptCondition(prompt) then
-            if not prompt:GetAttribute("Distance") then
-                prompt:SetAttribute("Distance", prompt.MaxActivationDistance)
-            end
-
-            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
-        end
-    end
-end
-
-ProximityPromptService.PromptAdded:Connect(function(prompt)
-    if PromptCondition(prompt) then
-        if Toggles.DoorReach.Value then
-            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
-        end
-    end
-end)
 
 -- [ ESP, TRAÇOS ETC... ]--
 -- MS ESP(@mstudio45) - thanks for the API!
@@ -1013,6 +969,50 @@ autoIn:AddToggle({
     end
 })
 
+--[[DOOR PROMPT]]--
+
+--// Variáveis \\--
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+
+
+local Toggles = {
+    DoorReach = {Value = false},
+    PromptClip = {Value = false}
+}
+
+local Options = {
+    PromptReachMultiplier = {Value = 1}
+}
+
+function PromptCondition(prompt)
+    local modelAncestor = prompt:FindFirstAncestorOfClass("Model")
+    return prompt:IsA("ProximityPrompt") and not (
+        table.find(PromptTable.Excluded.Prompt, prompt.Name) or
+        table.find(PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") or
+        table.find(PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or "")
+    )
+end
+
+function AdjustPromptReach()
+    for _, prompt in pairs(Workspace:GetDescendants()) do
+        if PromptCondition(prompt) then
+            if not prompt:GetAttribute("Distance") then
+                prompt:SetAttribute("Distance", prompt.MaxActivationDistance)
+            end
+
+            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
+        end
+    end
+end
+
+ProximityPromptService.PromptAdded:Connect(function(prompt)
+    if PromptCondition(prompt) then
+        if Toggles.DoorReach.Value then
+            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
+        end
+    end
+end)
 
 autoIn:AddToggle({
     Name = "Door Reach",
