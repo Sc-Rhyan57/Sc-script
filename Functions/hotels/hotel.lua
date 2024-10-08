@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+minhalocal OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 
 local sound = Instance.new("Sound")
@@ -51,7 +51,6 @@ local rootPart: BasePart
 local collision
 local collisionClone
 local velocityLimiter
-
 
 --// Tabela de Itens Prompt \\--
 local PromptTable = {
@@ -125,6 +124,50 @@ local function AutoLoot()
         wait(0.1)
     end
 end
+--[[DOOR PROMPT]]--
+
+--// Variáveis \\--
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+
+
+local Toggles = {
+    DoorReach = {Value = false},
+    PromptClip = {Value = false}
+}
+
+local Options = {
+    PromptReachMultiplier = {Value = 1}
+}
+
+function PromptCondition(prompt)
+    local modelAncestor = prompt:FindFirstAncestorOfClass("Model")
+    return prompt:IsA("ProximityPrompt") and not (
+        table.find(PromptTable.Excluded.Prompt, prompt.Name) or
+        table.find(PromptTable.Excluded.Parent, prompt.Parent and prompt.Parent.Name or "") or
+        table.find(PromptTable.Excluded.ModelAncestor, modelAncestor and modelAncestor.Name or "")
+    )
+end
+
+function AdjustPromptReach()
+    for _, prompt in pairs(Workspace:GetDescendants()) do
+        if PromptCondition(prompt) then
+            if not prompt:GetAttribute("Distance") then
+                prompt:SetAttribute("Distance", prompt.MaxActivationDistance)
+            end
+
+            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
+        end
+    end
+end
+
+ProximityPromptService.PromptAdded:Connect(function(prompt)
+    if PromptCondition(prompt) then
+        if Toggles.DoorReach.Value then
+            prompt.MaxActivationDistance = prompt:GetAttribute("Distance") * Options.PromptReachMultiplier.Value
+        end
+    end
+end)
 
 -- [ ESP, TRAÇOS ETC... ]--
 -- MS ESP(@mstudio45) - thanks for the API!
@@ -970,6 +1013,28 @@ autoIn:AddToggle({
     end
 })
 
+
+autoIn:AddToggle({
+    Name = "Door Reach",
+    Default = false,
+    Callback = function(Value)
+        Toggles.DoorReach.Value = Value
+        AdjustPromptReach()
+    end
+})
+
+autoIn:AddSlider({
+    Name = "Prompt Reach Multiplier",
+    Min = 1,
+    Max = 2,
+    Default = 1,
+    Rounding = 1,
+    Callback = function(Value)
+        Options.PromptReachMultiplier.Value = Value
+        AdjustPromptReach()
+    end
+})
+
 --[ VOU JOGAR FNF, DEPOIS TERMINO. ]--
 --[ RESOLVER: AUTO LIBRARY 50, ANTI ENTITY E MORE. ]--
 
@@ -1061,6 +1126,15 @@ function AutoBreaker(code, breakerBox)
     end
 end
 
+-- Exploits
+local ExploitsTab = Window:MakeTab({
+    Name = "Exploits",
+    Icon = "rbxassetid://13264701341",
+    PremiumOnly = false
+})
+
+
+--[EM BREVE]--
 
 --[[ Byppas Area ]]--
 local ByTab = Window:MakeTab({
@@ -1069,105 +1143,7 @@ local ByTab = Window:MakeTab({
     PremiumOnly = false
 })
 
---// Anti-Eyes \\--
-local AntiEyesConnection
-
-ByTab:AddToggle({
-    Name = "Anti-Eyes",
-    Default = false,
-    Callback = function(Value)
-        if Value then
-            local function applyAntiEyes(entity)
-                if entity.Name == "Eyes" or entity.Name == "BackdoorLookman" then
-                    if not isFools then
-                        remotesFolder.MotorReplication:FireServer(-649)
-                    else
-                        remotesFolder.MotorReplication:FireServer(0, -90, 0, false)
-                    end
-                end
-            end
-            
-            for _, entity in pairs(workspace:GetChildren()) do
-                applyAntiEyes(entity)
-            end
-            
-            AntiEyesConnection = workspace.ChildAdded:Connect(function(newChild)
-                applyAntiEyes(newChild)
-            end)
-        else
-            if AntiEyesConnection then
-                AntiEyesConnection:Disconnect()
-                AntiEyesConnection = nil
-            end
-        end
-    end
-})
-
-ByTab:AddToggle({
-    Name = "Anti-Screech",
-    Default = false,
-    Callback = function(value)
-        isAntiScreechActive = value  
-        if value then
-            AntiScreechCheck()
-        end
-    end
-})
-
---//Anti Giggle\\--
-local antiGiggleEnabled = false
-
-ByTab:AddToggle({
-    Name = "Anti-Giggle",
-    Default = false,
-    Callback = function(value)
-        antiGiggleEnabled = value
-        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-            for _, giggle in pairs(room:GetChildren()) do
-                if giggle.Name == "GiggleCeiling" then
-                    giggle:WaitForChild("Hitbox", 5).CanTouch = not antiGiggleEnabled
-                end
-            end
-        end
-    end
-})
-
-local function toggleAntiGiggle(state)
-    antiGiggleEnabled = state
-    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-        for _, giggle in pairs(room:GetChildren()) do
-            if giggle.Name == "GiggleCeiling" then
-                giggle:WaitForChild("Hitbox", 5).CanTouch = not antiGiggleEnabled
-            end
-        end
-    end
-end
-
-ByTab:AddToggle({
-    Name = "Anti-Halt",
-    Default = false,
-    Callback = function(value)
-        local entityModules = game:GetService("ReplicatedStorage"):FindFirstChild("EntityModules")
-        if entityModules then
-            local haltModule = entityModules:FindFirstChild("Shade") or entityModules:FindFirstChild("_Shade")
-            
-            if haltModule then
-                haltModule.Name = value and "_Shade" or "Shade"
-                
-                if value then
-                    local entity = workspace:FindFirstChild("ShadeEntity")
-                    if entity then
-                        Script.Functions.DeleteSeek(entity)
-                        print("[ SeekerLogs ] a Entidade 'Shade' foi detectada e deletada.")
-                    else
-                        print("[ SeekerLogs ] a Entidade 'Shade' não foi encontrada.")
-                    end
-                end
-            end
-        end
-    end
-})
-
+--[ EM BREVE ]--
 
 --[ Itens ]--
 local ItensTab = Window:MakeTab({
@@ -1180,35 +1156,6 @@ ItensTab:AddButton({
     Name = "💊 Vitamina Fake",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/GiveVitamns.lua"))()
-    end
-})
-
-
--- Exploits
-local ExploitsTab = Window:MakeTab({
-    Name = "Exploits",
-    Icon = "rbxassetid://13264701341",
-    PremiumOnly = false
-})
-
-
-ExploitsTab:AddToggle({
-    Name = "Activate Delete Seek",
-    Default = true,
-    Callback = function(Value)
-        Toggles.DeleteSeek.Value = Value
-        OrionLib:MakeNotification({
-            Name = "Rseeker Hub",
-            Content = "Delete Seek agora está " .. (Value and "Active" or "Inactive"),
-            Time = 5
-        })
-    end
-})
-
-ExploitsTab:AddButton({
-    Name = "Test Delete Seek",
-    Callback = function()
-        TestDeleteSeek()
     end
 })
 
