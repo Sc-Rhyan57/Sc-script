@@ -408,7 +408,7 @@ local function LoopAchievements()
 end
 
 local AchievementTab = Window:MakeTab({
-    Name = "Local Player",
+    Name = "Conquistas",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
