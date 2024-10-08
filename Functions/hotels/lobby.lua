@@ -21,6 +21,7 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 local HttpService = game:GetService("HttpService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
+local RunService = game:GetService("RunService")
 
 local Players = game:GetService("Players")
 local Workspace = game:GetService("Workspace")
@@ -30,8 +31,28 @@ local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
 local createElevator = remotesFolder:WaitForChild("CreateElevator")
 local createElevator = game:GetService("ReplicatedStorage"):WaitForChild("RemotesFolder"):WaitForChild("CreateElevator")
 local createElevatorFrame = game:GetService("Players").LocalPlayer.PlayerGui.MainUI.LobbyFrame.CreateElevator
-local presetName, destination, maxPlayers, friendsOnly = "", "Hotel", 4, true
+local presetName, destination, maxPlayers, friendsOnly = "", "", 4, true
 local data = {}
+
+-- Serviços do Roblox
+
+local remotesFolder = ReplicatedStorage:WaitForChild("RemotesFolder")
+local lobbyElevators = Workspace:WaitForChild("Lobby"):WaitForChild("LobbyElevators")
+local localPlayer = Players.LocalPlayer
+local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
+local Toggles = {}
+local Options = {}
+local playerList = {}
+local function updatePlayerList()
+    playerList = {}
+    for _, player in pairs(Players:GetPlayers()) do
+        if player ~= localPlayer then
+            table.insert(playerList, player.Name)
+        end
+    end
+    Options.ElevatorSniperTarget:Refresh(playerList)
+end
+
 
 --//New System Presets\\--
 local PresetManager = {}
@@ -344,13 +365,13 @@ local function LoopAchievements()
 end
 
 local AchievementTab = Window:MakeTab({
-    Name = "Achievements",
+    Name = "Local Player",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
 
 AchievementTab:AddToggle({
-    Name = "Loop Achievements",
+    Name = "Conquistas em Loop",
     Default = false,
     Flag = "LoopAchievements",
     Callback = function(Value)
@@ -372,6 +393,51 @@ AchievementTab:AddSlider({
     end
 })
 
+--// Elevator Sniper \\--
+local MainTab = AchievementTab:MakeTab({
+    Name = "Main",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+})
+
+MainTab:AddToggle({
+    Name = "Elevator Sniper",
+    Default = false,
+    Callback = function(Value)
+        Toggles.ElevatorSniper = Value
+    end    
+})
+
+Options.ElevatorSniperTarget = MainTab:AddDropdown({
+    Name = "Target",
+    Options = playerList,
+    Callback = function(Value)
+        Options.SelectedTarget = Value
+    end
+})
+Players.PlayerAdded:Connect(updatePlayerList)
+Players.PlayerRemoving:Connect(updatePlayerList)
+RunService.RenderStepped:Connect(function()
+    if Toggles.ElevatorSniper and Options.SelectedTarget then
+        local targetCharacter = Workspace:FindFirstChild(Options.SelectedTarget)
+        if not targetCharacter then return end
+
+        local targetElevatorID = targetCharacter:GetAttribute("InGameElevator")
+        local currentElevatorID = character:GetAttribute("InGameElevator")
+        if currentElevatorID == targetElevatorID then return end
+
+        if targetElevatorID then
+            local targetElevator = lobbyElevators:FindFirstChild("LobbyElevator-" .. targetElevatorID)
+            if targetElevator then
+                remotesFolder.ElevatorJoin:FireServer(targetElevator)
+            end
+        elseif currentElevatorID then
+            remotesFolder.ElevatorExit:FireServer()
+        end
+    end
+end)
+
+--// Elevadores Pages \\--
 local function CreateRetroModeElevator()
     data = {
         ["FriendsOnly"] = friendsOnly,
@@ -464,7 +530,7 @@ local function SetupElevatorUI()
     MainTab:AddDropdown({
         Name = "Destino do Elevador",
         Default = "Hotel",
-        Options = {"Hotel", "Rooms", "Backdoor"},
+        Options = {"Hotel","", "Backdoor"},
         Callback = function(Value)
             destination = Value
         end
@@ -530,3 +596,5 @@ local Livraria = CreditsTab:AddSection({
 Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
 Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 OrionLib:Init()
+updatePlayerList()
+
