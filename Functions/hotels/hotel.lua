@@ -670,6 +670,7 @@ local EntityTable = {
     ["NotifyReason"] = {
         ["A60"] = { ["Image"] = "12350986086" },
         ["A120"] = { ["Image"] = "12351008553" },
+        ["HaltRoom"] = { ["image"] = "11331795398" },
         ["BackdoorRush"] = { ["Image"] = "11102256553" },
         ["RushMoving"] = { ["Image"] = "11102256553" },
         ["AmbushMoving"] = { ["Image"] = "10938726652" },
