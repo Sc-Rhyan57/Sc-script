@@ -1326,86 +1326,12 @@ local GameLocal = Window:MakeTab({
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
 })
-local defaultWalkSpeed = 16
-local customWalkSpeed = 50
-local ladderSpeed = 50
-local walkSpeedEnabled = false
-local onLadder = false
-
-local function toggleWalkSpeed()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-
-    if humanoid then
-        if walkSpeedEnabled then
-            humanoid.WalkSpeed = defaultWalkSpeed
-        else
-            humanoid.WalkSpeed = customWalkSpeed
-        end
-        walkSpeedEnabled = not walkSpeedEnabled
-    end
-end
-
-local function setLadderSpeed(speed)
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-
-    if humanoid and onLadder then
-        humanoid.WalkSpeed = speed
-    else
-        humanoid.WalkSpeed = walkSpeedEnabled and customWalkSpeed or defaultWalkSpeed
-    end
-end
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    local player = game.Players.LocalPlayer
-    local character = player.Character or player.CharacterAdded:Wait()
-    local humanoid = character:FindFirstChildWhichIsA("Humanoid")
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-
-    if humanoid and rootPart then
-        local touchingParts = rootPart:GetTouchingParts()
-
-        onLadder = false
-        for _, part in ipairs(touchingParts) do
-            if part.Name == "Ladder" then
-                onLadder = true
-                break
-            end
-        end
-
-        setLadderSpeed(ladderSpeed)
-    end
-end)
 
 GameLocal:AddButton({
     Name = "🎥 Alternar campo de visão",
     Callback = function()
         toggleFieldOfView()
     end    
-})
-
-GameLocal:AddToggle({
-    Name = "Alternar Velocidade de Caminhada",
-    Default = false,
-    Callback = function(value)
-        toggleWalkSpeed()
-    end
-})
-
-GameLocal:AddSlider({
-    Name = "Velocidade de Escada",
-    Min = 10,
-    Max = 100,
-    Default = 50,
-    Color = Color3.fromRGB(255,255,255),
-    Increment = 1,
-    ValueName = "Velocidade",
-    Callback = function(value)
-        ladderSpeed = value
-    end
 })
 
 
