@@ -1150,6 +1150,101 @@ local ExploitsTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+--[ AUTO BREAKER ]--
+local function EnableBreaker(breaker, value)
+    breaker:SetAttribute("Enabled", value)
+    
+    if value then
+        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = -0.2
+        breaker.Light.Material = Enum.Material.Neon
+        breaker.Light.Attachment.Spark:Emit(1)
+        breaker.Sound.Pitch = 1.3
+    else
+        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = 0.2
+        breaker.Light.Material = Enum.Material.Glass
+        breaker.Sound.Pitch = 1.2
+    end
+    
+    breaker.Sound:Play()
+end
+
+local function SolveBreakerBox(breakerBox)
+    if not breakerBox then return end
+    
+    local code = breakerBox:FindFirstChild("Code", true)
+    local correct = breakerBox:FindFirstChild("Correct", true)
+    
+    repeat task.wait() until code.Text ~= "..." or not breakerBox:IsDescendantOf(workspace)
+    if not breakerBox:IsDescendantOf(workspace) then return end
+
+    -- Alerta
+    OrionLib:MakeNotification({
+        Name = "Auto Breaker Solver",
+        Content = "Solving the breaker box...",
+        Time = 5
+    })
+    
+    if _G.AutoBreakerSolverMethod == "Legit" then
+        local breakers = {}
+        for _, breaker in pairs(breakerBox:GetChildren()) do
+            if breaker.Name == "BreakerSwitch" then
+                local id = string.format("%02d", breaker:GetAttribute("ID"))
+                breakers[id] = breaker
+            end
+        end
+
+        if code:FindFirstChild("Frame") then
+            AutoBreaker(code, breakers)
+        end
+    else
+        repeat task.wait(0.1)
+            remotesFolder.EBF:FireServer()
+        until not workspace.CurrentRooms["100"]:FindFirstChild("DoorToBreakDown")
+
+        -- Notificação de sucesso
+        OrionLib:MakeNotification({
+            Name = "Auto Breaker Solver",
+            Content = "The breaker box has been successfully solved.",
+            Time = 5
+        })
+    end
+end
+
+local function AutoBreaker(code, breakers)
+    local newCode = code.Text
+    if not tonumber(newCode) and newCode ~= "??" then return end
+
+    local isEnabled = code.Frame.BackgroundTransparency == 0
+    local breaker = breakers[newCode]
+
+    if newCode == "??" and #_G.UsedBreakers == 9 then
+        for i = 1, 10 do
+            local id = string.format("%02d", i)
+            if not table.find(_G.UsedBreakers, id) then
+                breaker = breakers[id]
+            end
+        end
+    end
+
+    if breaker then
+        table.insert(_G.UsedBreakers, newCode)
+        if breaker:GetAttribute("Enabled") ~= isEnabled then
+            EnableBreaker(breaker, isEnabled)
+        end
+    end
+end
+
+--//BOTÃO\\--
+ExploitsTab:AddToggle({
+    Name = "Solucionador de Disjuntor Automático",
+    Default = false,
+    Callback = function(value)
+        _G.AutoBreakerSolver = value
+        if value then
+            SolveBreakerBox()
+        end
+    end    
+})
 
 --[EM BREVE]--
 
