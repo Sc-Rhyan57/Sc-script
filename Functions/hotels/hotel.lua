@@ -1458,7 +1458,11 @@ speedhack:AddButton({
     end
 })
 
-GameLocal:AddButton({
+local GameLocal = Visual:AddSection({
+    Name = "Visuais"
+})
+
+Visual:AddButton({
     Name = "🎥 Alternar campo de visão",
     Callback = function()
         toggleFieldOfView()
@@ -1466,7 +1470,7 @@ GameLocal:AddButton({
 })
 
 
-GameLocal:AddButton({
+Visual:AddButton({
     Name = "💾 Stats de FPS",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Stats.lua"))()
@@ -1474,7 +1478,7 @@ GameLocal:AddButton({
        end
 })
 
-GameLocal:AddButton({
+Visual:AddButton({
     Name = "👻 Modo Fantasma",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Godmode.lua"))()
@@ -1482,7 +1486,7 @@ GameLocal:AddButton({
     end
 })
 
-GameLocal:AddToggle({
+Visual:AddToggle({
     Name = "Noclip",
     Default = false,
     Callback = function(value)
