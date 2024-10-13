@@ -1431,11 +1431,11 @@ local GameLocal = Window:MakeTab({
     PremiumOnly = false
 })
 
-local Section = Tab:AddSection({
-    Name = "Speed Hack Settings"
+local GameLocal = speedhack:AddSection({
+    Name = "Speed Hack"
 })
 
-Tab:AddSlider({
+speedhack:AddSlider({
     Name = "Velocidade Speed Hack",
     Min = 16,
     Max = 150,
@@ -1451,7 +1451,7 @@ Tab:AddSlider({
     end
 })
 
-Tab:AddButton({
+speedhack:AddButton({
     Name = "Speed Hack",
     Callback = function()
         ToggleSpeedHack()
