@@ -59,7 +59,7 @@ local function updatePlayerList()
 end
 
 local MainTab = Window:MakeTab({
-    Name = "Elevator Snipe",
+    Name = "Elevator Sniper",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
