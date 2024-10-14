@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
+local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua'))()
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "🚪 Rseeker Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
 
 local sound = Instance.new("Sound")
