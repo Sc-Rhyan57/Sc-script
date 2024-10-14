@@ -36,48 +36,6 @@ local PathfindingService = game:GetService("PathfindingService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
---// Seed Hack \\--
---// Variáveis do Speed Hack \\--
-local speedEnabled = false
-local normalSpeed = 16 -- Velocidade padrão
-local speedHackSpeed = 50 -- Velocidade Speed Hack
-
-local function SetPlayerSpeed(speed)
-    humanoid.WalkSpeed = speed
-    print("[Seeker Logs] Velocidade ajustada para: " .. speed)
-end
-
-local function EnableSpeedHack()
-    if speedEnabled then return end
-
-    speedEnabled = true
-    SetPlayerSpeed(speedHackSpeed)
-    print("[Seeker Logs] Ativado! Velocidade: " .. speedHackSpeed)
-end
-
-local function DisableSpeedHack()
-    if not speedEnabled then return end
-
-    speedEnabled = false
-    SetPlayerSpeed(normalSpeed)
-    print("[Seeker Logs] Desativado! Velocidade normal: " .. normalSpeed)
-end
-
-local function ToggleSpeedHack()
-    if speedEnabled then
-        DisableSpeedHack()
-    else
-        EnableSpeedHack()
-    end
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then
-        if input.KeyCode == Enum.KeyCode.H then
-            ToggleSpeedHack()
-        end
-    end
-end)
 --// Players  Vars \\--
 local camera = workspace.CurrentCamera
 
@@ -1457,6 +1415,48 @@ speedhack:AddButton({
         ToggleSpeedHack()
     end
 })
+--// Seed Hack \\--
+--// Variáveis do Speed Hack \\--
+local speedEnabled = false
+local normalSpeed = 16 -- Velocidade padrão
+local speedHackSpeed = 50 -- Velocidade Speed Hack
+
+local function SetPlayerSpeed(speed)
+    humanoid.WalkSpeed = speed
+    print("[Seeker Logs] Velocidade ajustada para: " .. speed)
+end
+
+local function EnableSpeedHack()
+    if speedEnabled then return end
+
+    speedEnabled = true
+    SetPlayerSpeed(speedHackSpeed)
+    print("[Seeker Logs] Ativado! Velocidade: " .. speedHackSpeed)
+end
+
+local function DisableSpeedHack()
+    if not speedEnabled then return end
+
+    speedEnabled = false
+    SetPlayerSpeed(normalSpeed)
+    print("[Seeker Logs] Desativado! Velocidade normal: " .. normalSpeed)
+end
+
+local function ToggleSpeedHack()
+    if speedEnabled then
+        DisableSpeedHack()
+    else
+        EnableSpeedHack()
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.H then
+            ToggleSpeedHack()
+        end
+    end
+end)
 
 local GameLocal = Visual:AddSection({
     Name = "Visuais"
