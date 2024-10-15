@@ -665,7 +665,7 @@ Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com b
 -- ESPS
 local VisualsEsp = Window:MakeTab({
     Name = "Visual",
-    Icon = "rbxassetid://7733708692",
+    Icon = "rbxassetid://7743874674",
     PremiumOnly = false
 })
 VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
