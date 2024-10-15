@@ -642,16 +642,29 @@ MonitorEntities()
 
 
 --[ ORION LIB - MENU ]--
--- Define um VisualsTab vazio
-local VisualsTab = Window:MakeTab({
-    Name = "Início",
-    Icon = "rbxassetid://4483345998",
+--// CRÉDITOS \\--
+local CreditsTab = Window:MakeTab({
+    Name = "Creditos",
+    Icon = "rbxassetid://14255000409",
     PremiumOnly = false
 })
+local CdSc = CreditsTab:AddSection({
+    Name = "Créditos"
+})
+
+CdSc:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
+CdSc:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
+
+local Livraria = CreditsTab:AddSection({
+    Name = "Livrarias"
+})
+
+Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
+Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 
 -- ESPS
 local VisualsEsp = Window:MakeTab({
-    Name = "Visuais",
+    Name = "Visual",
     Icon = "rbxassetid://6658334182",
     PremiumOnly = false
 })
@@ -758,6 +771,52 @@ VisualsEsp:AddToggle({
         end
     end
 })
+
+local notifsTab = VisualsEsp:AddSection({
+    Name = "Notificações"
+})
+notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
+
+notifsTab:AddToggle({
+    Name = "Notificar Entidades",
+    Default = false,
+    Callback = function(value)
+        notificationsEnabled = value
+        if value then
+local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590657391"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Notificações de Entidades ativas!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 3
+})
+
+        else
+            local sound = Instance.new("Sound")
+sound.SoundId = "rbxassetid://4590662766"
+sound.Volume = 1
+sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+sound:Play()
+sound.Ended:Connect(function()
+    sound:Destroy()
+end)
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "🔔 Notificação",
+    Text = "Notificações de Entidades desativadas!",
+    Icon = "rbxassetid://13264701341",
+    Duration = 3
+})
+        end
+    end
+})
+
 
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
@@ -1040,52 +1099,6 @@ ItensTab:AddButton({
     end
 })
 
--- Aba de notificações
-local notifsTab = Window:MakeTab({
-    Name = "Notificações",
-    Icon = "rbxassetid://17328380241",
-    PremiumOnly = false
-})
-
-notifsTab:AddToggle({
-    Name = "Notificar Entidades",
-    Default = false,
-    Callback = function(value)
-        notificationsEnabled = value
-        if value then
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades ativas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
-
-        else
-            local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades desativadas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
-        end
-    end
-})
 -- Local Player
 local GameLocal = Window:MakeTab({
     Name = "Player",
@@ -1347,25 +1360,6 @@ Window:MakeTab({
     end
 })
 
--- Define uma aba de créditos
-local CreditsTab = Window:MakeTab({
-    Name = "Creditos",
-    Icon = "rbxassetid://14255000409",
-    PremiumOnly = false
-})
-local CdSc = CreditsTab:AddSection({
-    Name = "Créditos"
-})
-
-CdSc:AddParagraph("Rhyan57", "Criador do RSeeker hub.")
-CdSc:AddParagraph("SeekAlegriaFla", "Pensador das funções e programador")
-
-local Livraria = CreditsTab:AddSection({
-    Name = "Livrarias"
-})
-
-Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
-Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 
 listModFiles()
 OrionLib:Init()
