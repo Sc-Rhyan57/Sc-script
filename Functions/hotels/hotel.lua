@@ -37,6 +37,8 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
+local LocalPlayer = Players.LocalPlayer
+local LatestRoom = ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 
 
 --// Tabela de Itens Prompt \\--
@@ -1300,7 +1302,248 @@ local function createModPage()
             Icon = "rbxassetid://4483345998",
             PremiumOnly = false
         })
-        
+        --// MODS DO SCRIPT \\--
+--[[ TIMER ]]--
+
+local TimerGui = Instance.new("ScreenGui")
+TimerGui.Enabled = false
+TimerGui.IgnoreGuiInset = true
+TimerGui.Parent = LocalPlayer.PlayerGui
+
+local TimerLabel = Instance.new("TextLabel")
+TimerLabel.AnchorPoint = Vector2.new(0.5, 0)
+TimerLabel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+TimerLabel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+TimerLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+TimerLabel.BorderSizePixel = 2
+TimerLabel.Position = UDim2.new(0.5, 0, 0, 0) 
+TimerLabel.Size = UDim2.fromOffset(262, 64)
+TimerLabel.Font = Enum.Font.ArialBold
+TimerLabel.Text = "00:00.00"
+TimerLabel.TextScaled = true
+TimerLabel.Parent = TimerGui
+TimerLabel.BackgroundTransparency = 0
+TimerLabel.TextStrokeTransparency = 0
+TimerLabel.TextStrokeColor3 = Color3.fromRGB(0, 0, 0)
+
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 12) 
+UICorner.Parent = TimerLabel
+
+local locked = false
+local selectedColor = "RGB"
+local countdownLimit = 0
+local countdownExpired = false
+local currentStyle = "Padrão"
+local resizing = false
+local styleSliderExists = false
+local opacityValue = 0
+
+local gradientRunning = false
+local gradientCoroutine
+local function stopGradient()
+    if gradientRunning and gradientCoroutine then
+        coroutine.close(gradientCoroutine)
+        gradientRunning = false
+    end
+end
+
+TimerLabel.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 and not locked then
+        resizing = not resizing
+        TimerLabel.Draggable = resizing
+        TimerLabel.Selectable = resizing
+        TimerLabel.Active = resizing
+    end
+end)
+
+local function applyTimerStyle(style)
+    if style == "Tempo Limite" then
+        if countdownLimit > 0 and getgenv().SpeedRunTime >= countdownLimit then
+            countdownExpired = true
+            TimerLabel.TextColor3 = Color3.fromRGB(255, 0, 0)
+            TimerLabel.TextStrokeTransparency = 0
+            TimerLabel.Text = "Time Expired!"
+            TimerLabel.BorderColor3 = Color3.fromRGB(255, 0, 0)
+            RunService.Heartbeat:Connect(function()
+                TimerLabel.Visible = not TimerLabel.Visible
+            end)
+        end
+    elseif style == "Tempo Limite kick" then
+        if getgenv().SpeedRunTime >= countdownLimit then
+            LocalPlayer:Kick("[Seeker Hub] ⏰ Timer Expirado! ")
+        end
+    end
+end
+
+local function updateTimerColor(color)
+    stopGradient() 
+    if color == "RGB" then
+        TimerLabel.BackgroundColor3 = Color3.fromRGB(math.random(0, 255), math.random(0, 255), math.random(0, 255))
+    elseif color == "Amarelo" then
+        TimerLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 0)
+    elseif color == "Verde" then
+        TimerLabel.BackgroundColor3 = Color3.fromRGB(0, 255, 0)
+    elseif color == "Gradiente" then
+        gradientRunning = true
+        gradientCoroutine = coroutine.create(function()
+            while gradientRunning do
+                TimerLabel.BackgroundColor3 = Color3.fromHSV(tick() % 5 / 5, 1, 1)
+                RunService.Heartbeat:Wait()
+            end
+        end)
+        coroutine.resume(gradientCoroutine)
+    end
+end
+
+if getgenv().SpeedRunStopped then
+    getgenv().SpeedRunTime += (tick() - getgenv().SpeedRunStopped)
+else
+    getgenv().SpeedRunTime = 0
+end
+
+task.spawn(function()
+    if LatestRoom.Value < 1 then
+        LatestRoom.Changed:Wait()
+    end
+
+    if OrionLib.Unloaded then return end
+    RunService.RenderStepped:Connect(function(delta)
+        getgenv().SpeedRunTime += delta
+        TimerLabel.Text = string.format("%02i:%02i.%02i", getgenv().SpeedRunTime // 60, getgenv().SpeedRunTime % 60, (getgenv().SpeedRunTime % 1) * 100)
+        applyTimerStyle(currentStyle)
+    end)
+end)
+
+--[[ mods UI ]]--
+local modsSc = modPage:AddSection({
+    Name = "Mods do script"
+})
+local SectionColor = Tab:AddSection({
+    Name = "Configurações de Cor"
+})
+
+modsSc:AddToggle({
+    Name = "Ativar Cronômetro",
+    Default = false,
+    Callback = function(value)
+        TimerGui.Enabled = value
+    end
+})
+
+modsSc:AddDropdown({
+    Name = "Cor do Cronômetro",
+    Default = "RGB",
+    Options = {"RGB", "Gradiente", "Amarelo", "Verde"},
+    Callback = function(value)
+        selectedColor = value
+        updateTimerColor(selectedColor)
+    end
+})
+
+local SectionOpacity = modsSc:AddSection({
+    Name = "Configurações de opacidade"
+})
+
+modsSc:AddSlider({
+    Name = "Opacidade do Cronômetro",
+    Min = 0,
+    Max = 100,
+    Default = 100,
+    Color = Color3.fromRGB(255, 0, 0),
+    Increment = 1,
+    ValueName = "%",
+    Callback = function(value)
+        opacityValue = value / 100
+        TimerLabel.BackgroundTransparency = 1 - opacityValue
+    end
+})
+
+modsSc:AddSlider({
+    Name = "Tamanho do Cronômetro",
+    Min = 100,
+    Max = 500,
+    Default = 262,
+    Color = Color3.fromRGB(255, 0, 0),
+    Increment = 1,
+    ValueName = "Tamanho",
+    Callback = function(value)
+        TimerLabel.Size = UDim2.fromOffset(value, 64)
+    end
+})
+
+modsSc:AddDropdown({
+    Name = "Posição do Cronômetro",
+    Default = "Meio",
+    Options = {"Meio", "Canto Esquerdo", "Canto Direito"},
+    Callback = function(value)
+        if value == "Meio" then
+            TimerLabel.Position = UDim2.new(0.5, 0, 0, 0)
+        elseif value == "Canto Esquerdo" then
+            TimerLabel.Position = UDim2.new(0, 50, 0, 0)
+        elseif value == "Canto Direito" then
+            TimerLabel.Position = UDim2.new(1, -50, 0, 0)
+        end
+    end
+})
+
+modsSc:AddDropdown({
+    Name = "Modos do Cronômetro",
+    Default = "Padrão",
+    Options = {"Padrão", "Tempo Limite", "Tempo Limite kick"},
+    Callback = function(value)
+        currentStyle = value
+        -- Remove existing sliders if already created
+        if styleSliderExists then
+            Tab:RemoveObject("Definir Tempo Limite")
+        end
+        if currentStyle == "Personalizado" or currentStyle == "Personalizado 2" then
+            Tab:AddSlider({
+                Name = "Definir Tempo Limite",
+                Min = 10,
+                Max = 300,
+                Default = 60,
+                Color = Color3.fromRGB(255, 0, 0),
+                Increment = 1,
+                ValueName = "Segundos",
+                Callback = function(limit)
+                    countdownLimit = limit
+                end
+            })
+            styleSliderExists = true
+        end
+    end
+})
+
+local SectionLock = modsSc:AddSection({
+    Name = "UI Settings"
+})
+
+modsSc:AddButton({
+    Name = "Posição Free",
+    Callback = function()
+        locked = not locked
+        if locked then
+            TimerLabel.Draggable = false
+            OrionLib:MakeNotification({
+                Name = "UI Travada",
+                Content = "O cronômetro foi travado na posição atual.",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        else
+            TimerLabel.Draggable = true
+            OrionLib:MakeNotification({
+                Name = "UI Destravada",
+                Content = "Você pode mover o cronômetro novamente.",
+                Image = "rbxassetid://4483345998",
+                Time = 3
+            })
+        end
+    end
+})
+
+--//mods Area\\--
         modPage:AddDropdown({
             Name = "Selecionar Mod",
             Default = "",
@@ -1313,7 +1556,7 @@ local function createModPage()
                     Image = "rbxassetid://4483345998",
                     Time = 3
                 })
-                print("[INFO] Mod '"..selectedMod.."' selecionado.")
+                print("[Seeker Logs - INFO] Mod '"..selectedMod.."' selecionado.")
             end
         })
         
@@ -1329,7 +1572,7 @@ local function createModPage()
                         Image = "rbxassetid://4483345998",
                         Time = 5
                     })
-                    print("[ERRO] Nenhum mod foi selecionado.")
+                    print("[Seeker Logs - ERRO] Nenhum mod foi selecionado.")
                 end
             end
         })
@@ -1345,7 +1588,7 @@ local function removeModPage()
 end
 
 Window:MakeTab({
-    Name = "Settings",
+    Name = "Extras",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 }):AddToggle({
