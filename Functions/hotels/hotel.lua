@@ -50,35 +50,6 @@ local rootPart: BasePart
 local collision
 local collisionClone
 local velocityLimiter
---//Tabela de Entidades\\--
-local EntityTable = {
-    ["InfCrucifixVelocity"] = {
-        ["RushMoving"] = {
-            threshold = 52,
-            minDistance = 55,
-        },
-        ["RushNew"] = {
-            threshold = 52,
-            minDistance = 55,
-        },    
-        ["AmbushMoving"] = {
-            threshold = 70,
-            minDistance = 80,
-        },
-        ["BackdoorRush"] = {
-            threshold = 60,
-            minDistance = 65,
-        },
-        ["A60"] = {
-            threshold = 40,
-            minDistance = 45,
-        },
-        ["A120"] = {
-            threshold = 50,
-            minDistance = 55,
-        }
-    }
-}
 
 --// Tabela de Itens Prompt \\--
 local PromptTable = {
@@ -1177,40 +1148,6 @@ local ExploitsTab = Window:MakeTab({
     Icon = "rbxassetid://13264701341",
     PremiumOnly = false
 })
---[ INFINITE CRUCIFIX ]--
-
-function ActivateInfiniteCrucifix(entity)
-    if EntityTable["InfCrucifixVelocity"][entity.Name] then
-        local velocityData = EntityTable["InfCrucifixVelocity"][entity.Name]
-        if entity.Velocity.Magnitude >= velocityData.threshold then
-            print("Crucifixo ativado para " .. entity.Name)
-            local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
-            local goal = {Transparency = 0}
-            local tween = TweenService:Create(entity, tweenInfo, goal)
-            tween:Play()
-        end
-    end
-end
-
-ExploitsTab:AddButton({
-    Name = "Crucifixo Infinito",
-    Callback = function()
-        for entityName, _ in pairs(EntityTable["InfCrucifixVelocity"]) do
-            local entity = Workspace:FindFirstChild(entityName)
-            if entity then
-                ActivateInfiniteCrucifix(entity)
-            end
-        end
-    end
-})
-
-RunService.Heartbeat:Connect(function()
-    for _, entity in pairs(Workspace:GetChildren()) do
-        if entity:IsA("Model") and EntityTable["InfCrucifixVelocity"][entity.Name] then
-            ActivateInfiniteCrucifix(entity)
-        end
-    end
-end)
 
 
 --[ AUTO BREAKER ]--
