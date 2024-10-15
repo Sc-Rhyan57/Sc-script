@@ -579,78 +579,6 @@ local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild(
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
 
--- DELETE SEEK
-local Toggles = {
-    DeleteSeek = {Value = true}
-}
-function DeleteSeek(collision: BasePart)
-    if not rootPart then return end
-
-    task.spawn(function()
-        local attempts = 0
-        repeat task.wait() attempts += 1 until collision.Parent or attempts > 200
-
-        if collision:IsDescendantOf(workspace) and (collision.Parent and collision.Parent.Name == "TriggerEventCollision") then
-            OrionLib:MakeNotification({
-                Name = "Delete Seek - Seeker Hub",
-                Content = "Deleting Seek trigger...",
-                Time = 5,
-                Image = "rbxassetid://6023426923"
-            })
-
-            task.delay(4, function()
-                if collision:IsDescendantOf(workspace) then
-                    OrionLib:MakeNotification({
-                        Name = "Delete Seek FE",
-                        Content = "Failed to delete Seek trigger!",
-                        Time = 5,
-                        Image = "rbxassetid://6023426923"
-                    })
-                end
-            end)
-
-            if fireTouch then
-                rootPart.Anchored = true
-                task.delay(0.25, function() rootPart.Anchored = false end)
-
-                repeat
-                    if collision:IsDescendantOf(workspace) then fireTouch(collision, rootPart, 1) end
-                    task.wait()
-                    if collision:IsDescendantOf(workspace) then fireTouch(collision, rootPart, 0) end
-                    task.wait()
-                until not collision:IsDescendantOf(workspace) or not Toggles.DeleteSeek.Value
-            else
-                collision:PivotTo(CFrame.new(rootPart.Position))
-                rootPart.Anchored = true
-                repeat task.wait() until not collision:IsDescendantOf(workspace) or not Toggles.DeleteSeek.Value
-                rootPart.Anchored = false
-            end
-
-            if not collision:IsDescendantOf(workspace) then
-                OrionLib:MakeNotification({
-                    Name = "Delete Seek - Seeker Hub",
-                    Content = "Deleted Seek trigger successfully!",
-                    Time = 5,
-                    Image = "rbxassetid://6023426923"
-                })
-            end
-        end
-    end)
-end
-
-function TestDeleteSeek()
-    local exampleCollision = game.Workspace:FindFirstChild("SomeCollisionPart") -- Altere para um objeto válido de colisão
-    if exampleCollision then
-        DeleteSeek(exampleCollision)
-    else
-        OrionLib:MakeNotification({
-            Name = "Error",
-            Content = "No collision object found!",
-            Time = 5
-        })
-    end
-end
-
 --// Tabela de Entidades \\--
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
@@ -712,54 +640,6 @@ function MonitorEntities()
     end)
 end
 MonitorEntities()
-
---// Cart System \\--
-local minecartVisualizerActive = false
-local minecartTeleportActive = false
-
-function MinecartPathVisualiser()
-    local realNodes = {}
-    local fakeNodes = {}
-
-    local function changeNodeColor(node, color)
-        if not node then return end
-        node.Color = color or Color3.fromRGB(255, 255, 0)
-        node.Material = Enum.Material.Neon
-        node.Transparency = 0
-    end
-
-    while minecartVisualizerActive do
-        for _, node in pairs(realNodes) do
-            changeNodeColor(node, Color3.fromRGB(0, 255, 0))
-        end
-        for _, node in pairs(fakeNodes) do
-            changeNodeColor(node, Color3.fromRGB(255, 0, 0))
-        end
-        task.wait(1)
-    end
-end
-
-function MinecartTeleport()
-    local minecartRoot
-    local minecartRig
-    local roomNum = 45
-
-    while minecartTeleportActive do
-        minecartRig = workspace.CurrentCamera:FindFirstChild("MinecartRig")
-        if minecartRig then
-            minecartRoot = minecartRig:FindFirstChild("Root")
-            for _, path in ipairs(MinecartPathfind) do
-                if path.room_number >= roomNum then
-                    local lastNode = path.real[#path.real]
-                    minecartRoot.CFrame = lastNode.CFrame
-                    task.wait(2)
-                    if roomNum == 49 then break end
-                end
-            end
-        end
-        task.wait(1)
-    end
-end
 
 
 --[ ORION LIB - MENU ]--
@@ -1213,11 +1093,8 @@ local GameLocal = Window:MakeTab({
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
 })
-local GameLocal = Visual:AddSection({
-    Name = "Visuais"
-})
 
-Visual:AddButton({
+GameLocal:AddButton({
     Name = "🎥 Alternar campo de visão",
     Callback = function()
         toggleFieldOfView()
@@ -1225,7 +1102,7 @@ Visual:AddButton({
 })
 
 
-Visual:AddButton({
+GameLocal:AddButton({
     Name = "💾 Stats de FPS",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Stats.lua"))()
@@ -1233,7 +1110,7 @@ Visual:AddButton({
        end
 })
 
-Visual:AddButton({
+GameLocal:AddButton({
     Name = "👻 Modo Fantasma",
     Callback = function()
         loadstring(game:HttpGetAsync("https://raw.githubusercontent.com/RhyanXG7/RseekerHub/Fun%C3%A7%C3%B5es/Sc/Godmode.lua"))()
@@ -1241,7 +1118,7 @@ Visual:AddButton({
     end
 })
 
-Visual:AddToggle({
+GameLocal:AddToggle({
     Name = "Noclip",
     Default = false,
     Callback = function(value)
@@ -1255,23 +1132,6 @@ local FloorTab = Window:MakeTab({
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
-
-local Visuals = FloorTab:AddSection({
-    Name = "Visual"
-})
-
-Visual:AddToggle({
-    Name = "Visualizador de Caminho do Minecart",
-    Default = false,
-    Callback = function(value)
-        minecartVisualizerActive = value
-        if minecartVisualizerActive then
-            task.spawn(MinecartPathVisualiser)
-        end
-    end    
-})
-
-
 
 -- Define uma aba de créditos
 local CreditsTab = Window:MakeTab({
