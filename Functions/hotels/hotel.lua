@@ -645,7 +645,7 @@ MonitorEntities()
 --// CRÉDITOS \\--
 local CreditsTab = Window:MakeTab({
     Name = "Creditos",
-    Icon = "rbxassetid://14255000409",
+    Icon = "rbxassetid://7743871002",
     PremiumOnly = false
 })
 local CdSc = CreditsTab:AddSection({
