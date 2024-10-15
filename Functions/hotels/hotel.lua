@@ -1132,6 +1132,221 @@ local FloorTab = Window:MakeTab({
     PremiumOnly = false
 })
 
+
+local ModFolder = ".seeker/mods/"
+local modFiles = {}
+local loadedMods = {}
+local modPage = nil
+local selectedMod = nil
+local exampleModFileName = "modExemplo.lua"
+local exampleModContent = [[
+return function(modTab)
+    modTab:AddButton({
+        Name = "Testar Funcionamento",
+        Callback = function()
+            OrionLib:MakeNotification({
+                Name = "Teste de Funcionamento",
+                Content = "Funciona!",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            print("[INFO] Mod de Teste: Funciona!")
+        end
+    })
+end
+]]
+
+local function createFolderIfNotExists()
+    if not isfolder(ModFolder) then
+        makefolder(ModFolder)
+    end
+end
+
+local function createExampleModFile()
+    local filePath = ModFolder .. exampleModFileName
+    if not isfile(filePath) then
+        writefile(filePath, exampleModContent)
+        OrionLib:MakeNotification({
+            Name = "Arquivo de Exemplo Criado",
+            Content = "Arquivo de mod de exemplo foi criado em '"..filePath.."'",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+        print("[INFO] Arquivo de mod de exemplo criado em '"..filePath.."'")
+    end
+end
+
+local function listModFiles()
+    createFolderIfNotExists()
+    createExampleModFile()
+    
+    local success, result = pcall(function()
+        return listfiles(ModFolder)
+    end)
+    
+    if success and result then
+        for _, file in ipairs(result) do
+            table.insert(modFiles, file:match("([^/]+)$"))
+        end
+    else
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "Não foi possível carregar a lista de mods.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+        print("[ERRO] Não foi possível carregar a lista de mods: ", result)
+    end
+end
+
+local function filterModContent(content)
+    local filteredContent = {}
+    for line in content:gmatch("[^\r\n]+") do
+        if not line:find("OrionLib:MakeWindow") and not line:find("Window:MakeTab") then
+            table.insert(filteredContent, line)
+        end
+    end
+    return table.concat(filteredContent, "\n")
+end
+
+local function loadMod(fileName)
+    if loadedMods[fileName] then
+        OrionLib:MakeNotification({
+            Name = "Erro",
+            Content = "O mod '"..fileName.."' já está carregado.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+        return
+    end
+    
+    local filePath = ModFolder .. fileName
+    local success, modContent = pcall(function()
+        return readfile(filePath)
+    end)
+
+    if not success then
+        OrionLib:MakeNotification({
+            Name = "Erro ao Ler",
+            Content = "Erro ao ler o arquivo de mod '"..fileName.."'.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+        print("[ERRO] Falha ao ler o arquivo de mod '"..fileName.."': ", modContent)
+        return
+    end
+
+    local filteredContent = filterModContent(modContent)
+    local modFunc = loadstring(filteredContent)
+    if modFunc then
+        setfenv(modFunc, {OrionLib = OrionLib, print = print}) 
+
+        local modTab = Window:MakeTab({
+            Name = fileName:gsub("%.lua$", ""),
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
+        })
+
+        local loadSuccess, runError = pcall(function()
+            modFunc()(modTab)
+        end)
+
+        if loadSuccess then
+            loadedMods[fileName] = true
+            OrionLib:MakeNotification({
+                Name = "Mod Carregado",
+                Content = "O Mod '"..fileName.."' foi carregado com sucesso.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            print("[INFO] Mod '"..fileName.."' carregado com sucesso.")
+        else
+            OrionLib:MakeNotification({
+                Name = "Erro no Mod",
+                Content = "Erro ao executar o Mod '"..fileName.."'.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            print("[ERRO] Erro ao executar o Mod '"..fileName.."': ", runError)
+        end
+    else
+        OrionLib:MakeNotification({
+            Name = "Erro de Compilação",
+            Content = "Erro ao compilar o Mod '"..fileName.."'.",
+            Image = "rbxassetid://4483345998",
+            Time = 5
+        })
+        print("[ERRO] Erro ao compilar o Mod '"..fileName.."'.")
+    end
+end
+
+local function createModPage()
+    if not modPage then
+        modPage = Window:MakeTab({
+            Name = "Mods",
+            Icon = "rbxassetid://4483345998",
+            PremiumOnly = false
+        })
+        
+        modPage:AddDropdown({
+            Name = "Selecionar Mod",
+            Default = "",
+            Options = modFiles,
+            Callback = function(selectedFile)
+                selectedMod = selectedFile
+                OrionLib:MakeNotification({
+                    Name = "Mod Selecionado",
+                    Content = "Mod '"..selectedMod.."' foi selecionado.",
+                    Image = "rbxassetid://4483345998",
+                    Time = 3
+                })
+                print("[INFO] Mod '"..selectedMod.."' selecionado.")
+            end
+        })
+        
+        modPage:AddButton({
+            Name = "Executar Mod",
+            Callback = function()
+                if selectedMod then
+                    loadMod(selectedMod)
+                else
+                    OrionLib:MakeNotification({
+                        Name = "Nenhum Mod Selecionado",
+                        Content = "Por favor, selecione um Mod antes de executar.",
+                        Image = "rbxassetid://4483345998",
+                        Time = 5
+                    })
+                    print("[ERRO] Nenhum mod foi selecionado.")
+                end
+            end
+        })
+    end
+end
+
+local function removeModPage()
+    if modPage then
+        modPage:Destroy()
+        modPage = nil
+        selectedMod = nil
+    end
+end
+
+Window:MakeTab({
+    Name = "Settings",
+    Icon = "rbxassetid://4483345998",
+    PremiumOnly = false
+}):AddToggle({
+    Name = "Ativar Mods",
+    Default = false,
+    Callback = function(enabled)
+        if enabled then
+            createModPage()
+        else
+            removeModPage()
+        end
+    end
+})
+
 -- Define uma aba de créditos
 local CreditsTab = Window:MakeTab({
     Name = "Creditos",
@@ -1152,6 +1367,5 @@ local Livraria = CreditsTab:AddSection({
 Livraria:AddParagraph("Mstudio45", "Disponibilizou a API de esps para uso")
 Livraria:AddParagraph("MsPaint V2", "Algun Recursos/funções foram feitas com base no código da MsPaint")
 
-
--- Inicializa a interface
+listModFiles()
 OrionLib:Init()
