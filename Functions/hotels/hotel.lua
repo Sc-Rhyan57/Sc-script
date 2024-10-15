@@ -1419,9 +1419,6 @@ end)
 local modsSc = modPage:AddSection({
     Name = "Mods do script"
 })
-local SectionColor = Tab:AddSection({
-    Name = "Configurações de Cor"
-})
 
 modsSc:AddToggle({
     Name = "Ativar Cronômetro",
