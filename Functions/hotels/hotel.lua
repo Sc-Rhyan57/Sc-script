@@ -36,6 +36,7 @@ local PathfindingService = game:GetService("PathfindingService")
 local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
+
 --// Players  Vars \\--
 local camera = workspace.CurrentCamera
 
@@ -43,13 +44,6 @@ local localPlayer = Players.LocalPlayer
 local playerGui = localPlayer.PlayerGui
 local playerScripts = localPlayer.PlayerScripts
 
-local character = localPlayer.Character or localPlayer.CharacterAdded:Wait()
-local alive = localPlayer:GetAttribute("Alive")
-local humanoid: Humanoid
-local rootPart: BasePart
-local collision
-local collisionClone
-local velocityLimiter
 
 --// Tabela de Itens Prompt \\--
 local PromptTable = {
@@ -970,104 +964,6 @@ autoIn:AddToggle({
     end
 })
 
---[ NEW! - auto Hide ]--
-local autoHideEnabled = false
-local alive = true
-local hideDistanceThreshold = {RushMoving = 100, AmbushMoving = 155, A60 = 200, A120 = 200}
-local EntityTable = {"RushMoving", "AmbushMoving", "A60", "A120"}
-local hideSpot
-
-local function notify(title, content, duration)
-    OrionLib:MakeNotification({
-        Name = title,
-        Content = content,
-        Time = duration,
-        Image = "rbxassetid://4483345998"
-    })
-end
-
-local function autoHide()
-    if not autoHideEnabled or not alive then return end
-    
-    hideSpot = nil
-    for _, entityName in pairs(EntityTable) do
-        local entity = workspace:FindFirstChild(entityName)
-        
-        if entity and entity.PrimaryPart then
-            local distance = (game.Players.LocalPlayer.Character.PrimaryPart.Position - entity.PrimaryPart.Position).Magnitude
-            if distance <= hideDistanceThreshold[entityName] then
-                hideSpot = Script.Functions.GetNearestPromptWithCondition(function(prompt)
-                    return prompt.Name == "HidePrompt" and not prompt.Parent.HiddenPlayer.Value and Script.Functions.DistanceFromCharacter(prompt.Parent) < 20
-                end)
-                break
-            end
-        end
-    end
-
-    if hideSpot then
-        notify("Auto Hide", "Escondendo automaticamente!", 5)
-        fireproximityprompt(hideSpot)
-        
-        repeat task.wait() until not alive or (hideSpot and not hideSpot.Parent:IsDescendantOf(workspace))
-        remotesFolder.CamLock:FireServer()
-        notify("Auto Hide", "Pode sair do esconderijo!", 5)
-    end
-end
-
-game:GetService("RunService").RenderStepped:Connect(function()
-    if autoHideEnabled then
-        autoHide()
-    end
-end)
-
-autoIn:AddToggle({
-    Name = "Ativar Auto Closet/Locker",
-    Default = false,
-    Callback = function(state)
-        autoHideEnabled = state
-        if autoHideEnabled then
-            local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "🏃 Auto Hide ativado.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-        else
-            local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "🏃 Auto Hide Desativado.",
-    Icon = "rbxassetid://13264701341",
-    Duration = 5
-})
-        end
-    end
-})
-
-game.Players.LocalPlayer.CharacterAdded:Connect(function(character)
-    character:WaitForChild("Humanoid").Died:Connect(function()
-        alive = false
-    end)
-end)
-
-game.Players.LocalPlayer.CharacterRemoving:Connect(function()
-    alive = true
-end)
 
 local connections = {}
 
@@ -1317,83 +1213,12 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
         end
     end
 })
-
-
 -- Local Player
 local GameLocal = Window:MakeTab({
     Name = "Player",
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
 })
-local GameLocal = speedhack:AddSection({
-    Name = "Speed Hack"
-})
-
-speedhack:AddSlider({
-    Name = "Velocidade Speed Hack",
-    Min = 16,
-    Max = 150,
-    Default = speedHackSpeed,
-    Color = Color3.fromRGB(255,255,255),
-    Increment = 1,
-    ValueName = "Speed",
-    Callback = function(Value)
-        speedHackSpeed = Value
-        if speedEnabled then
-            SetPlayerSpeed(speedHackSpeed)
-        end
-    end
-})
-
-speedhack:AddButton({
-    Name = "Speed Hack",
-    Callback = function()
-        ToggleSpeedHack()
-    end
-})
---// Seed Hack \\--
---// Variáveis do Speed Hack \\--
-local speedEnabled = false
-local normalSpeed = 16 -- Velocidade padrão
-local speedHackSpeed = 50 -- Velocidade Speed Hack
-
-local function SetPlayerSpeed(speed)
-    humanoid.WalkSpeed = speed
-    print("[Seeker Logs] Velocidade ajustada para: " .. speed)
-end
-
-local function EnableSpeedHack()
-    if speedEnabled then return end
-
-    speedEnabled = true
-    SetPlayerSpeed(speedHackSpeed)
-    print("[Seeker Logs] Ativado! Velocidade: " .. speedHackSpeed)
-end
-
-local function DisableSpeedHack()
-    if not speedEnabled then return end
-
-    speedEnabled = false
-    SetPlayerSpeed(normalSpeed)
-    print("[Seeker Logs] Desativado! Velocidade normal: " .. normalSpeed)
-end
-
-local function ToggleSpeedHack()
-    if speedEnabled then
-        DisableSpeedHack()
-    else
-        EnableSpeedHack()
-    end
-end
-
-UserInputService.InputBegan:Connect(function(input, gameProcessed)
-    if not gameProcessed then
-        if input.KeyCode == Enum.KeyCode.H then
-            ToggleSpeedHack()
-        end
-    end
-end)
-
 local GameLocal = Visual:AddSection({
     Name = "Visuais"
 })
