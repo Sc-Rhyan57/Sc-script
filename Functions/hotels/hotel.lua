@@ -1438,9 +1438,7 @@ modsSc:AddDropdown({
     end
 })
 
-local SectionOpacity = modsSc:AddSection({
-    Name = "Configurações de opacidade"
-})
+
 
 modsSc:AddSlider({
     Name = "Opacidade do Cronômetro",
@@ -1510,10 +1508,6 @@ modsSc:AddDropdown({
             styleSliderExists = true
         end
     end
-})
-
-local SectionLock = modsSc:AddSection({
-    Name = "UI Settings"
 })
 
 modsSc:AddButton({
