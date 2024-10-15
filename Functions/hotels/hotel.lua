@@ -1,4 +1,4 @@
-local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua'))()
+local OrionLib = loadstring(game:HttpGet(('https://raw.githubusercontent.com/shlexware/Orion/main/source')))()
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", IntroIcon = "76411928845479", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 
 local sound = Instance.new("Sound")
@@ -37,12 +37,6 @@ local ProximityPromptService = game:GetService("ProximityPromptService")
 local TweenService = game:GetService("TweenService")
 local Workspace = game:GetService("Workspace")
 
---// Players  Vars \\--
-local camera = workspace.CurrentCamera
-
-local localPlayer = Players.LocalPlayer
-local playerGui = localPlayer.PlayerGui
-local playerScripts = localPlayer.PlayerScripts
 
 
 --// Tabela de Itens Prompt \\--
