@@ -115,7 +115,7 @@ end
 -- [ ESP, TRAÇOS ETC... ]--
 -- MS ESP(@mstudio45) - thanks for the API!
 -- OBJETOS ESP
-local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sc-Rhyan57/SeekerLib/refs/heads/main/system/main/source/Esp-Seeker.lua"))()
+local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
 -- OBJETOS ESP
 local objetos_esp = { 
     {"KeyObtain", "Chave", Color3.fromRGB(0, 255, 0)},
