@@ -1388,6 +1388,74 @@ local GameLocal = Window:MakeTab({
     Icon = "rbxassetid://17328380241",
     PremiumOnly = false
 })
+local GameLocal = speedhack:AddSection({
+    Name = "Speed Hack"
+})
+
+speedhack:AddSlider({
+    Name = "Velocidade Speed Hack",
+    Min = 16,
+    Max = 150,
+    Default = speedHackSpeed,
+    Color = Color3.fromRGB(255,255,255),
+    Increment = 1,
+    ValueName = "Speed",
+    Callback = function(Value)
+        speedHackSpeed = Value
+        if speedEnabled then
+            SetPlayerSpeed(speedHackSpeed)
+        end
+    end
+})
+
+speedhack:AddButton({
+    Name = "Speed Hack",
+    Callback = function()
+        ToggleSpeedHack()
+    end
+})
+--// Seed Hack \\--
+--// Variáveis do Speed Hack \\--
+local speedEnabled = false
+local normalSpeed = 16 -- Velocidade padrão
+local speedHackSpeed = 50 -- Velocidade Speed Hack
+
+local function SetPlayerSpeed(speed)
+    humanoid.WalkSpeed = speed
+    print("[Seeker Logs] Velocidade ajustada para: " .. speed)
+end
+
+local function EnableSpeedHack()
+    if speedEnabled then return end
+
+    speedEnabled = true
+    SetPlayerSpeed(speedHackSpeed)
+    print("[Seeker Logs] Ativado! Velocidade: " .. speedHackSpeed)
+end
+
+local function DisableSpeedHack()
+    if not speedEnabled then return end
+
+    speedEnabled = false
+    SetPlayerSpeed(normalSpeed)
+    print("[Seeker Logs] Desativado! Velocidade normal: " .. normalSpeed)
+end
+
+local function ToggleSpeedHack()
+    if speedEnabled then
+        DisableSpeedHack()
+    else
+        EnableSpeedHack()
+    end
+end
+
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if not gameProcessed then
+        if input.KeyCode == Enum.KeyCode.H then
+            ToggleSpeedHack()
+        end
+    end
+end)
 
 local GameLocal = Visual:AddSection({
     Name = "Visuais"
