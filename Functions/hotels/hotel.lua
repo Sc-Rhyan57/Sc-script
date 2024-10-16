@@ -1578,12 +1578,14 @@ local function removeModPage()
     end
 end
 
-Window:MakeTab({
-    Name = "Extras",
+local ConfigTab= Window:MakeTab({
+    Name = "Configurações",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
-}):AddToggle({
-    Name = "Ativar Mods",
+})
+
+ConfigTab:AddToggle({
+    Name = "Mods",
     Default = false,
     Callback = function(enabled)
         if enabled then
@@ -1593,6 +1595,51 @@ Window:MakeTab({
         end
     end
 })
+
+local ESPConfigTab = ConfigTab:AddSection({
+    Name = "Configurações do esp"
+})
+
+ESPConfigTab:AddToggle({
+    Name = "Rainbow ESP",
+    Default = false,
+    Callback = function(value)
+        if value then
+            ESPLibrary.Rainbow.Set(true)
+            ESPLibrary.Rainbow.Enable()
+        else
+            ESPLibrary.Rainbow.Disable()
+        end
+    end
+})
+
+ESPConfigTab:AddToggle({
+    Name = "Tracers",
+    Default = false,
+    Callback = function(value)
+        if value then
+            ESPLibrary.Tracers.Set(true)
+            ESPLibrary.Tracers.Enable()
+        else
+            ESPLibrary.Tracers.Disable()
+        end
+    end
+})
+
+
+ESPConfigTab:AddToggle({
+    Name = "Arrows",
+    Default = false,
+    Callback = function(value)
+        if value then
+            ESPLibrary.Arrows.Set(true)
+            ESPLibrary.Arrows.Enable()
+        else
+            ESPLibrary.Arrows.Disable()
+        end
+    end
+})
+
 
 
 listModFiles()
