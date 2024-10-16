@@ -377,54 +377,49 @@ local function verificarNovoLoot()
     end
 end
 
--- DOORS ESP
-function round(number, decimals)
-    local power = 10 ^ decimals
-    return math.floor(number * power) / power
-end
-
+-- DOOR ESP
 local ESPColors = {
     Door = Color3.fromRGB(241, 196, 15),
 }
 
 local function setupESPForDoors(door)
-    local highlight = ESPLibrary.ESP.Highlight({
-        Name = "Door",
-        Model = door,
-        FillColor = ESPColors.Door,
-        OutlineColor = ESPColors.Door,
-        TextColor = ESPColors.Door,
+    if not door:FindFirstChild("Highlight") then
+        local highlight = ESPLibrary.ESP.Highlight({
+            Name = "Door",
+            Model = door,
+            FillColor = ESPColors.Door,
+            OutlineColor = ESPColors.Door,
+            TextColor = ESPColors.Door,
 
-        Tracer = {
-            Enabled = true,
-            Color = ESPColors.Door
-        }
-    })
+            Tracer = {
+                Enabled = true,
+                Color = ESPColors.Door
+            }
+        })
+    end
+    
+    local bb = door:FindFirstChild("BillBoard")
+    if bb then
+        bb:Destroy()
+    end
 end
 
-spawn(function()
-    while wait(0.2) do 
-        if doorESPEnabled then
-            for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local door = room.Door.Door
-
-                    if not door:FindFirstChild("Highlight") then
-                        setupESPForDoors(door)
-                    end
-
-                    -- Removendo as legendas "Door (number)" e "Studs"
-                    local bb = door:FindFirstChild("BillBoard")
-                    if bb then
-                        bb:Destroy()
-                    end
-                end
-            end
+local function checkExistingDoors()
+    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+            local door = room.Door.Door
+            setupESPForDoors(door)
         end
+    end
+end
+
+workspace.CurrentRooms.ChildAdded:Connect(function(room)
+    if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+        local door = room.Door.Door
+        setupESPForDoors(door)
     end
 end)
 
-ESPLibrary.Rainbow.Set(true)
 
 --[ FUNÇÕES ]--
 -- NOCLIP FUNÇÃO 
@@ -674,27 +669,19 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 --[BOTÕES ORGANIZADOS POR rhyan57]--
 
 -- DOORS ESP
--- Botão usando Orion Lib
+local doorESPEnabled = false
+
 VisualsEsp:AddToggle({
-    Name = "ESP de Portas",
+    Name = "Esp de Portad",
     Default = false,
     Callback = function(value)
         doorESPEnabled = value
-        if not doorESPEnabled then
-            for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-                if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-                    local door = room.Door.Door
-                    if door:FindFirstChild("Highlight") then
-                        door.Highlight:Destroy()
-                    end
-                    if door:FindFirstChild("BillBoard") then
-                        door.BillBoard:Destroy()
-                    end
-                end
-            end
+        if doorESPEnabled then
+            checkExistingDoors()
         end
     end
 })
+
 
 --[ esp functions ]--
 VisualsEsp:AddToggle({
