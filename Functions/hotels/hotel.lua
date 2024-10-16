@@ -171,14 +171,8 @@ local function aplicarESPObjetos(objeto, nome, cor)
         TextColor = highlightColor
     })
     
-    local Arrow = ESPLibrary.ESP.Arrow({
-                Model = nome, 
-                MaxDistance = 5000, 
-                CenterOffset = 300, 
-                Color = highlightColor
-            })
     
-    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarESPObjetos()
@@ -267,14 +261,8 @@ local function aplicarESP(entidade, nome, cor)
         OutlineColor = highlightColor,
         TextColor = highlightColor
     })
-    local Arrow = ESPLibrary.ESP.Arrow({
-                Model = nome, 
-                MaxDistance = 5000, 
-                CenterOffset = 300, 
-                Color = highlightColor
-            })
     
-    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarESP()
@@ -1592,7 +1580,10 @@ modsSc:AddButton({
 })
 
 --//mods Area\\--
-        modPage:AddDropdown({
+        local ExportMods = modsSc:AddSection({
+    Name = "Exportar Mod"
+})
+        ExportMods:AddDropdown({
             Name = "Selecionar Mod",
             Default = "",
             Options = modFiles,
@@ -1608,7 +1599,7 @@ modsSc:AddButton({
             end
         })
         
-        modPage:AddButton({
+        ExportMods:AddButton({
             Name = "Executar Mod",
             Callback = function()
                 if selectedMod then
@@ -1714,7 +1705,12 @@ ESPConfigTab:AddToggle({
     Callback = function(value)
         if value then
             ESPLibrary.Arrows.Set(true)
-
+    local Arrow = ESPLibrary.ESP.Arrow({
+                Model = door, 
+                MaxDistance = 5000, 
+                CenterOffset = 300, 
+                Color = highlightColor
+            })
             ESPLibrary.Arrows.Enable()
         else
             ESPLibrary.Arrows.Disable()
