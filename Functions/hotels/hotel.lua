@@ -377,43 +377,68 @@ local function verificarNovoLoot()
 end
 
 -- DOOR ESP
-function Script.Functions.DoorESP(room)
-    local door = room:WaitForChild("Door", 5)
+
+local DoorEspColor = Color3.fromRGB(241, 196, 15)
+local doorEspActive = false
+local activeDoorEsps = {}
+
+
+local function DoorESP(room)
+    local door = room:FindFirstChild("Door")
     
     if door then
         local doorNumber = tonumber(room.Name) + 1
-        if isMines then
-            doorNumber += 100
-        end
-
         local opened = door:GetAttribute("Opened")
         local locked = room:GetAttribute("RequiresKey")
+        
+        local doorState = if opened then "[Aberta]" elseif locked then "[Trancada]" else ""
+        local doorIdx = tostring(math.random(1, 1e9)) 
+        
 
-        local doorState = opened and "[Opened]" or (locked and "[Locked]" or "")
-        local doorIdx = Script.Functions.RandomString()
-
-        local doorEsp = Script.Functions.ESP({
-            Type = "Door",
-            Object = door:WaitForChild("Door"),
-            Text = string.format("Door %s %s", doorNumber, doorState),
-            Color = Options.DoorEspColor.Value,
-
-            OnDestroy = function()
-                if Script.FeatureConnections.Door[doorIdx] then Script.FeatureConnections.Door[doorIdx]:Disconnect() end
-            end
+        local doorEsp = ESPLibrary.ESP.Highlight({
+            Name = string.format("Porta %s %s", doorNumber, doorState),
+            Model = door,
+            FillColor = DoorEspColor,
+            OutlineColor = DoorEspColor,
+            TextColor = DoorEspColor,
+            Tracer = {
+                Enabled = true,
+                Color = DoorEspColor
+            }
         })
-
-        Script.FeatureConnections.Door[doorIdx] = door:GetAttributeChangedSignal("Opened"):Connect(function()
-            if doorEsp then 
-                doorEsp:SetText(string.format("Door %s [Opened]", doorNumber)) 
-            end
-            if Script.FeatureConnections.Door[doorIdx] then 
-                Script.FeatureConnections.Door[doorIdx]:Disconnect() 
+        
+        -- Armazenar o ESP criado
+        table.insert(activeDoorEsps, doorEsp)
+        
+        -- Conectar evento para monitorar mudanças na porta
+        door:GetAttributeChangedSignal("Opened"):Connect(function()
+            if door:GetAttribute("Opened") then
+                doorEsp.SetText(string.format("Porta %s [Aberta]", doorNumber))
             end
         end)
     end
 end
 
+local function ToggleDoorESP(enable)
+    doorEspActive = enable
+    if enable then
+        for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+            DoorESP(room)
+        end
+
+        workspace.CurrentRooms.ChildAdded:Connect(function(room)
+            if doorEspActive then
+                DoorESP(room)
+            end
+        end)
+    else
+
+        for _, esp in ipairs(activeDoorEsps) do
+            esp:Destroy()
+        end
+        activeDoorEsps = {}
+    end
+end
 
 --[ FUNÇÕES ]--
 -- NOCLIP FUNÇÃO 
@@ -666,20 +691,12 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 VisualsEsp:AddToggle({
     Name = "Door ESP",
     Default = false,
-    Save = true,
-    Flag = "DoorESPFlag",
     Callback = function(value)
-        if value then
-            for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-                Script.Functions.DoorESP(room)
-            end
-        else
-            for _, esp in pairs(Script.ESPTable.Door) do
-                esp:Destroy()
-            end
-        end
+        ToggleDoorESP(value)
     end
 })
+
+ToggleDoorESP(false)
 
 
 --[ esp functions ]--
