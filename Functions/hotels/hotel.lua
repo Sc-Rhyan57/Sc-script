@@ -377,47 +377,42 @@ local function verificarNovoLoot()
 end
 
 -- DOOR ESP
-local ESPColors = {
-    Door = Color3.fromRGB(241, 196, 15),
-}
-
-local function setupESPForDoors(door)
-    if not door:FindFirstChild("Highlight") then
-        local highlight = ESPLibrary.ESP.Highlight({
-            Name = "Door",
-            Model = door,
-            FillColor = ESPColors.Door,
-            OutlineColor = ESPColors.Door,
-            TextColor = ESPColors.Door,
-
-            Tracer = {
-                Enabled = true,
-                Color = ESPColors.Door
-            }
-        })
-    end
+function Script.Functions.DoorESP(room)
+    local door = room:WaitForChild("Door", 5)
     
-    local bb = door:FindFirstChild("BillBoard")
-    if bb then
-        bb:Destroy()
-    end
-end
-
-local function checkExistingDoors()
-    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-            local door = room.Door.Door
-            setupESPForDoors(door)
+    if door then
+        local doorNumber = tonumber(room.Name) + 1
+        if isMines then
+            doorNumber += 100
         end
+
+        local opened = door:GetAttribute("Opened")
+        local locked = room:GetAttribute("RequiresKey")
+
+        local doorState = opened and "[Opened]" or (locked and "[Locked]" or "")
+        local doorIdx = Script.Functions.RandomString()
+
+        local doorEsp = Script.Functions.ESP({
+            Type = "Door",
+            Object = door:WaitForChild("Door"),
+            Text = string.format("Door %s %s", doorNumber, doorState),
+            Color = Options.DoorEspColor.Value,
+
+            OnDestroy = function()
+                if Script.FeatureConnections.Door[doorIdx] then Script.FeatureConnections.Door[doorIdx]:Disconnect() end
+            end
+        })
+
+        Script.FeatureConnections.Door[doorIdx] = door:GetAttributeChangedSignal("Opened"):Connect(function()
+            if doorEsp then 
+                doorEsp:SetText(string.format("Door %s [Opened]", doorNumber)) 
+            end
+            if Script.FeatureConnections.Door[doorIdx] then 
+                Script.FeatureConnections.Door[doorIdx]:Disconnect() 
+            end
+        end)
     end
 end
-
-workspace.CurrentRooms.ChildAdded:Connect(function(room)
-    if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-        local door = room.Door.Door
-        setupESPForDoors(door)
-    end
-end)
 
 
 --[ FUNÇÕES ]--
@@ -668,15 +663,20 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 --[BOTÕES ORGANIZADOS POR rhyan57]--
 
 -- DOORS ESP
-local doorESPEnabled = false
-
 VisualsEsp:AddToggle({
-    Name = "Esp de Portas(Beta)",
+    Name = "Door ESP",
     Default = false,
+    Save = true,
+    Flag = "DoorESPFlag",
     Callback = function(value)
-        doorESPEnabled = value
-        if doorESPEnabled then
-            checkExistingDoors()
+        if value then
+            for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+                Script.Functions.DoorESP(room)
+            end
+        else
+            for _, esp in pairs(Script.ESPTable.Door) do
+                esp:Destroy()
+            end
         end
     end
 })
