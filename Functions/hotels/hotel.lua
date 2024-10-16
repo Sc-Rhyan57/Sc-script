@@ -1580,10 +1580,8 @@ modsSc:AddButton({
 })
 
 --//mods Area\\--
-        local ExportMods = modsSc:AddSection({
-    Name = "Exportar Mod"
-})
-        ExportMods:AddDropdown({
+        modsSc:AddParagraph("Mods(BETA)", "Crie Mods e os Exporte para cá usando os arquivos!")
+        modsSc:AddDropdown({
             Name = "Selecionar Mod",
             Default = "",
             Options = modFiles,
@@ -1599,7 +1597,7 @@ modsSc:AddButton({
             end
         })
         
-        ExportMods:AddButton({
+        modsSc:AddButton({
             Name = "Executar Mod",
             Callback = function()
                 if selectedMod then
