@@ -1587,6 +1587,8 @@ local ESPConfigTab = ConfigTab:AddSection({
     Name = "Configurações do esp"
 })
 
+local tracerDirection = "Bottom" 
+
 ESPConfigTab:AddToggle({
     Name = "Rainbow ESP",
     Default = false,
@@ -1600,26 +1602,56 @@ ESPConfigTab:AddToggle({
     end
 })
 
+ESPConfigTab:AddDropdown({
+    Name = "Direção do Traço",
+    Default = "Bottom",
+    Options = {"Bottom", "Top", "Left", "Right"},
+    Callback = function(direction)
+        tracerDirection = direction
+    end
+})
+
 ESPConfigTab:AddToggle({
-    Name = "Tracers",
+    Name = "Traços",
     Default = false,
     Callback = function(value)
         if value then
             ESPLibrary.Tracers.Set(true)
             ESPLibrary.Tracers.Enable()
+            
+       
+            local tracerSettings = {
+                Color = BrickColor.random().Color,
+                Direction = tracerDirection 
+            }
+            
+            if tracerDirection == "Bottom" then
+    
+            elseif tracerDirection == "Top" then
+
+            elseif tracerDirection == "Left" then
+
+            elseif tracerDirection == "Right" then
+
+            end
         else
             ESPLibrary.Tracers.Disable()
         end
     end
 })
 
-
 ESPConfigTab:AddToggle({
-    Name = "Arrows",
+    Name = "Setas",
     Default = false,
     Callback = function(value)
         if value then
             ESPLibrary.Arrows.Set(true)
+            local Arrow = ESPLibrary.ESP.Arrow({
+                Model = game.Players.LocalPlayer.Character, 
+                MaxDistance = 5000, 
+                CenterOffset = 300, 
+                Color = BrickColor.random().Color 
+            })
             ESPLibrary.Arrows.Enable()
         else
             ESPLibrary.Arrows.Disable()
