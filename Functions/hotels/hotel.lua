@@ -1611,7 +1611,7 @@ ESPConfigTab:AddDropdown({
 
 ESPConfigTab:AddToggle({
     Name = "Traços",
-    Default = false,
+    Default = true,
     Callback = function(value)
         if value then
             ESPLibrary.Tracers.Set(true)
