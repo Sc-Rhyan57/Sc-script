@@ -383,7 +383,7 @@ local portas_esp = {
 
 local espAtivosPortas = {}
 local doorEspAtivo = false
-local conexaoMonitoramento = nil
+local verificarEspPortas = false
 
 local function encontrarPortasESP(nomePorta)
     local portasEncontradas = {}
@@ -460,31 +460,12 @@ local function desativarDoorESP()
     espAtivosPortas = {}
 end
 
-local function monitorarNovasPortas()
-    conexaoMonitoramento = workspace.CurrentRooms.ChildAdded:Connect(function(room)
-        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
-            local door = room.Door.Door
-            local doorNumber = tonumber(room.Name) + 1
-            local opened = room.Door:GetAttribute("Opened")
-            local locked = room:GetAttribute("RequiresKey")
-    
-            local doorState = opened and "[Aberta]" or (locked and "[Trancada]" or "")
-            local espElementos = aplicarESPPorta(door, "Porta " .. doorNumber .. " " .. doorState, Color3.fromRGB(241, 196, 15))
-    
-            room.Door:GetAttributeChangedSignal("Opened"):Connect(function()
-                if espElementos.Billboard then
-                    espElementos.Billboard:SetText("Porta " .. doorNumber .. " [Aberta]")
-                end
-            end)
-            table.insert(espAtivosPortas, espElementos)
+local function verificarNovasPortas()
+    while verificarEspPortas do
+        if doorEspAtivo then
+            ativarDoorESP()
         end
-    end)
-end
-
-local function pararMonitoramentoNovasPortas()
-    if conexaoMonitoramento then
-        conexaoMonitoramento:Disconnect() 
-        conexaoMonitoramento = nil
+        wait(5)
     end
 end
 
@@ -736,17 +717,18 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 --[BOTÕES ORGANIZADOS POR rhyan57]--
 
 -- DOORS ESP
+
 VisualsEsp:AddToggle({
     Name = "Door ESP",
     Default = false,
     Callback = function(state)
         doorEspAtivo = state
         if doorEspAtivo then
-            ativarDoorESP() 
-            monitorarNovasPortas() 
+            verificarEspPortas = true
+            spawn(verificarNovasPortas)
         else
+            verificarEspPortas = false
             desativarDoorESP()
-            pararMonitoramentoNovasPortas()
         end
     end
 })
