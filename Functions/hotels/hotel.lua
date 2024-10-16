@@ -152,7 +152,7 @@ local function aplicarESPObjetos(objeto, nome, cor)
     local Tracer = ESPLibrary.ESP.Tracer({
         Model = objeto,
         MaxDistance = 5000,
-        From = "Bottom",
+        From = "tracerDirection",
         Color = highlightColor
     })
 
@@ -672,7 +672,7 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 local doorESPEnabled = false
 
 VisualsEsp:AddToggle({
-    Name = "Esp de Portad",
+    Name = "Esp de Portas(Beta)",
     Default = false,
     Callback = function(value)
         doorESPEnabled = value
@@ -1658,8 +1658,6 @@ ESPConfigTab:AddToggle({
         end
     end
 })
-
-
 
 listModFiles()
 OrionLib:Init()
