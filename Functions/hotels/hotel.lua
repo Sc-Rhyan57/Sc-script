@@ -376,17 +376,29 @@ local function verificarNovoLoot()
     end
 end
 
-local doorEspAtivo = false
-local verificarDoorEsp = false
-local ESPColors = {
-    Door = Color3.fromRGB(241, 196, 15),
+-- Door Esp
+local portas_esp = {
+    {"Door", "Porta", Color3.fromRGB(241, 196, 15)}
 }
 
-local function aplicarESPObjetos(objeto, nome, cor)
+local espAtivosPortas = {}
+local doorEspAtivo = false
+
+local function encontrarPortasESP(nomePorta)
+    local portasEncontradas = {}
+    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+        if room:FindFirstChild(nomePorta) and room[nomePorta]:FindFirstChild(nomePorta) then
+            table.insert(portasEncontradas, room[nomePorta][nomePorta])
+        end
+    end
+    return portasEncontradas
+end
+
+local function aplicarESPPorta(porta, nome, cor)
     local highlightColor = cor or BrickColor.random().Color
 
     local Tracer = ESPLibrary.ESP.Tracer({
-        Model = objeto,
+        Model = porta,
         MaxDistance = 5000,
         From = "Bottom",
         Color = highlightColor
@@ -394,14 +406,14 @@ local function aplicarESPObjetos(objeto, nome, cor)
 
     local Billboard = ESPLibrary.ESP.Billboard({
         Name = nome,
-        Model = objeto,
+        Model = porta,
         MaxDistance = 5000,
         Color = highlightColor
     })
 
     local Highlight = ESPLibrary.ESP.Highlight({
         Name = nome,
-        Model = objeto,
+        Model = porta,
         MaxDistance = 5000,
         FillColor = highlightColor,
         OutlineColor = highlightColor,
@@ -411,56 +423,61 @@ local function aplicarESPObjetos(objeto, nome, cor)
     return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
-local function DoorESP(room)
-    local door = room:WaitForChild("Door", 5)
-
-    if door then
-        local doorNumber = tonumber(room.Name) + 1
-        if isMines then
-            doorNumber += 100
-        end
-
-        local opened = door:GetAttribute("Opened")
-        local locked = room:GetAttribute("RequiresKey")
-
-        local doorState = opened and "[Aberta]" or (locked and "[Trancada]" or "")
-        local highlightColor = ESPColors.Door
-
-        local doorEspElements = aplicarESPObjetos(door:WaitForChild("Door"), "Porta " .. doorNumber .. " " .. doorState, highlightColor)
-
-        door:GetAttributeChangedSignal("Opened"):Connect(function()
-            doorState = "[Aberta]"
-            if doorEspElements.Billboard then
-                doorEspElements.Billboard:SetText("Porta " .. doorNumber .. " " .. doorState)
-            end
-        end)
-    end
-end
-
 local function ativarDoorESP()
-    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-        if room:FindFirstChild("Door") then
-            DoorESP(room)
+    for _, portaData in ipairs(portas_esp) do
+        local portasEncontradas = encontrarPortasESP(portaData[1])
+        if #portasEncontradas > 0 then
+            for _, porta in ipairs(portasEncontradas) do
+                local room = porta.Parent.Parent 
+                local doorNumber = tonumber(room.Name) + 1
+                local opened = room.Door:GetAttribute("Opened")
+                local locked = room:GetAttribute("RequiresKey")
+
+                local doorState = opened and "[Aberta]" or (locked and "[Trancada]" or "")
+                local espElementos = aplicarESPPorta(porta, portaData[2] .. " " .. doorNumber .. " " .. doorState, portaData[3])
+
+                room.Door:GetAttributeChangedSignal("Opened"):Connect(function()
+                    if espElementos.Billboard then
+                        espElementos.Billboard:SetText(portaData[2] .. " " .. doorNumber .. " [Aberta]")
+                    end
+                end)
+
+                table.insert(espAtivosPortas, espElementos)
+            end
+        else
+            warn("[Seeker Logs] A Porta " .. portaData[1] .. " não foi encontrada!")
         end
     end
 end
 
 local function desativarDoorESP()
-    for _, espElementos in ipairs(espAtivosObjetos) do
+    for _, espElementos in ipairs(espAtivosPortas) do
         if espElementos.Tracer then espElementos.Tracer:Destroy() end
         if espElementos.Billboard then espElementos.Billboard:Destroy() end
         if espElementos.Highlight then espElementos.Highlight:Destroy() end
     end
-    espAtivosObjetos = {}
+    espAtivosPortas = {}
 end
 
-local function verificarNovasPortas()
-    while verificarDoorEsp do
-        if doorEspAtivo then
-            ativarDoorESP()
+local function monitorarNovasPortas()
+    workspace.CurrentRooms.ChildAdded:Connect(function(room)
+        if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
+            local door = room.Door.Door
+            local doorNumber = tonumber(room.Name) + 1
+            local opened = room.Door:GetAttribute("Opened")
+            local locked = room:GetAttribute("RequiresKey")
+    
+            local doorState = opened and "[Aberta]" or (locked and "[Trancada]" or "")
+            local espElementos = aplicarESPPorta(door, "Porta " .. doorNumber .. " " .. doorState, Color3.fromRGB(241, 196, 15))
+    
+            room.Door:GetAttributeChangedSignal("Opened"):Connect(function()
+                if espElementos.Billboard then
+                    espElementos.Billboard:SetText("Porta " .. doorNumber .. " [Aberta]")
+                end
+            end)
+            table.insert(espAtivosPortas, espElementos)
         end
-        wait(5)
-    end
+    end)
 end
 
 --[ FUNÇÕES ]--
@@ -717,15 +734,13 @@ VisualsEsp:AddToggle({
     Callback = function(state)
         doorEspAtivo = state
         if doorEspAtivo then
-            verificarDoorEsp = true
-            spawn(verificarNovasPortas)
+            ativarDoorESP() 
+            monitorarNovasPortas()
         else
-            verificarDoorEsp = false
             desativarDoorESP()
         end
     end
 })
-
 
 --[ esp functions ]--
 VisualsEsp:AddToggle({
