@@ -376,67 +376,90 @@ local function verificarNovoLoot()
     end
 end
 
--- DOOR ESP
+local doorEspAtivo = false
+local verificarDoorEsp = false
+local ESPColors = {
+    Door = Color3.fromRGB(241, 196, 15),
+}
 
-local DoorEspColor = Color3.fromRGB(241, 196, 15)
-local doorEspActive = false
-local activeDoorEsps = {}
+local function aplicarESPObjetos(objeto, nome, cor)
+    local highlightColor = cor or BrickColor.random().Color
 
+    local Tracer = ESPLibrary.ESP.Tracer({
+        Model = objeto,
+        MaxDistance = 5000,
+        From = "Bottom",
+        Color = highlightColor
+    })
+
+    local Billboard = ESPLibrary.ESP.Billboard({
+        Name = nome,
+        Model = objeto,
+        MaxDistance = 5000,
+        Color = highlightColor
+    })
+
+    local Highlight = ESPLibrary.ESP.Highlight({
+        Name = nome,
+        Model = objeto,
+        MaxDistance = 5000,
+        FillColor = highlightColor,
+        OutlineColor = highlightColor,
+        TextColor = highlightColor
+    })
+
+    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+end
 
 local function DoorESP(room)
-    local door = room:FindFirstChild("Door")
-    
+    local door = room:WaitForChild("Door", 5)
+
     if door then
         local doorNumber = tonumber(room.Name) + 1
+        if isMines then
+            doorNumber += 100
+        end
+
         local opened = door:GetAttribute("Opened")
         local locked = room:GetAttribute("RequiresKey")
-        
-        local doorState = if opened then "[Aberta]" elseif locked then "[Trancada]" else ""
-        local doorIdx = tostring(math.random(1, 1e9)) 
-        
 
-        local doorEsp = ESPLibrary.ESP.Highlight({
-            Name = string.format("Porta %s %s", doorNumber, doorState),
-            Model = door,
-            FillColor = DoorEspColor,
-            OutlineColor = DoorEspColor,
-            TextColor = DoorEspColor,
-            Tracer = {
-                Enabled = true,
-                Color = DoorEspColor
-            }
-        })
-        
-        -- Armazenar o ESP criado
-        table.insert(activeDoorEsps, doorEsp)
-        
-        -- Conectar evento para monitorar mudanças na porta
+        local doorState = opened and "[Aberta]" or (locked and "[Trancada]" or "")
+        local highlightColor = ESPColors.Door
+
+        local doorEspElements = aplicarESPObjetos(door:WaitForChild("Door"), "Porta " .. doorNumber .. " " .. doorState, highlightColor)
+
         door:GetAttributeChangedSignal("Opened"):Connect(function()
-            if door:GetAttribute("Opened") then
-                doorEsp.SetText(string.format("Porta %s [Aberta]", doorNumber))
+            doorState = "[Aberta]"
+            if doorEspElements.Billboard then
+                doorEspElements.Billboard:SetText("Porta " .. doorNumber .. " " .. doorState)
             end
         end)
     end
 end
 
-local function ToggleDoorESP(enable)
-    doorEspActive = enable
-    if enable then
-        for _, room in ipairs(workspace.CurrentRooms:GetChildren()) do
+local function ativarDoorESP()
+    for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+        if room:FindFirstChild("Door") then
             DoorESP(room)
         end
+    end
+end
 
-        workspace.CurrentRooms.ChildAdded:Connect(function(room)
-            if doorEspActive then
-                DoorESP(room)
-            end
-        end)
-    else
+local function desativarDoorESP()
+    for _, espElementos in ipairs(espAtivosObjetos) do
+        if espElementos.Tracer then espElementos.Tracer:Destroy() end
+        if espElementos.Billboard then espElementos.Billboard:Destroy() end
+        if espElementos.Highlight then espElementos.Highlight:Destroy() end
+    end
+    espAtivosObjetos = {}
+end
 
-        for _, esp in ipairs(activeDoorEsps) do
-            esp:Destroy()
+local function verificarNovasPortas()
+    while verificarDoorEsp do
+        if doorEspAtivo then
+            ativarDoorESP()
         end
-        activeDoorEsps = {}
+        wait(5)
     end
 end
 
@@ -691,12 +714,17 @@ VisualsEsp:AddParagraph("Esp", "Ver objetos através da parede.")
 VisualsEsp:AddToggle({
     Name = "Door ESP",
     Default = false,
-    Callback = function(value)
-        ToggleDoorESP(value)
+    Callback = function(state)
+        doorEspAtivo = state
+        if doorEspAtivo then
+            verificarDoorEsp = true
+            spawn(verificarNovasPortas)
+        else
+            verificarDoorEsp = false
+            desativarDoorESP()
+        end
     end
 })
-
-ToggleDoorESP(false)
 
 
 --[ esp functions ]--
