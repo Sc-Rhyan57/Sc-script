@@ -82,7 +82,6 @@ local PromptTable = {
 }
 --// VARIÁVEIS \\--
 local autoLootEnabled = false
-
 -- AUTO LOOT
 local autoLootAtivo = false
 local function AutoLoot()
@@ -1571,6 +1570,7 @@ local ConfigTab= Window:MakeTab({
     PremiumOnly = false
 })
 
+local tracerDirection = "Bottom"
 ConfigTab:AddToggle({
     Name = "Mods",
     Default = false,
@@ -1586,8 +1586,6 @@ ConfigTab:AddToggle({
 local ESPConfigTab = ConfigTab:AddSection({
     Name = "Configurações do esp"
 })
-
-local tracerDirection = "Bottom" 
 
 ESPConfigTab:AddToggle({
     Name = "Rainbow ESP",
@@ -1618,15 +1616,14 @@ ESPConfigTab:AddToggle({
         if value then
             ESPLibrary.Tracers.Set(true)
             ESPLibrary.Tracers.Enable()
-            
-       
+
             local tracerSettings = {
                 Color = BrickColor.random().Color,
-                Direction = tracerDirection 
+                Direction = tracerDirection
             }
-            
+
             if tracerDirection == "Bottom" then
-    
+
             elseif tracerDirection == "Top" then
 
             elseif tracerDirection == "Left" then
