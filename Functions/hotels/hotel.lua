@@ -376,13 +376,14 @@ local function verificarNovoLoot()
     end
 end
 
--- Door Esp
+-- DOOR ESP
 local portas_esp = {
     {"Door", "Porta", Color3.fromRGB(241, 196, 15)}
 }
 
 local espAtivosPortas = {}
 local doorEspAtivo = false
+local conexaoMonitoramento = nil
 
 local function encontrarPortasESP(nomePorta)
     local portasEncontradas = {}
@@ -460,7 +461,7 @@ local function desativarDoorESP()
 end
 
 local function monitorarNovasPortas()
-    workspace.CurrentRooms.ChildAdded:Connect(function(room)
+    conexaoMonitoramento = workspace.CurrentRooms.ChildAdded:Connect(function(room)
         if room:FindFirstChild("Door") and room.Door:FindFirstChild("Door") then
             local door = room.Door.Door
             local doorNumber = tonumber(room.Name) + 1
@@ -478,6 +479,13 @@ local function monitorarNovasPortas()
             table.insert(espAtivosPortas, espElementos)
         end
     end)
+end
+
+local function pararMonitoramentoNovasPortas()
+    if conexaoMonitoramento then
+        conexaoMonitoramento:Disconnect() 
+        conexaoMonitoramento = nil
+    end
 end
 
 --[ FUNÇÕES ]--
@@ -735,9 +743,10 @@ VisualsEsp:AddToggle({
         doorEspAtivo = state
         if doorEspAtivo then
             ativarDoorESP() 
-            monitorarNovasPortas()
+            monitorarNovasPortas() 
         else
             desativarDoorESP()
+            pararMonitoramentoNovasPortas()
         end
     end
 })
