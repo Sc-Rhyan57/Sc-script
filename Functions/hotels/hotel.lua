@@ -170,8 +170,15 @@ local function aplicarESPObjetos(objeto, nome, cor)
         OutlineColor = highlightColor,
         TextColor = highlightColor
     })
-
-    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    
+    local Arrow = ESPLibrary.ESP.Arrow({
+                Model = nome, 
+                MaxDistance = 5000, 
+                CenterOffset = 300, 
+                Color = highlightColor
+            })
+    
+    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarESPObjetos()
@@ -260,8 +267,14 @@ local function aplicarESP(entidade, nome, cor)
         OutlineColor = highlightColor,
         TextColor = highlightColor
     })
-
-    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    local Arrow = ESPLibrary.ESP.Arrow({
+                Model = nome, 
+                MaxDistance = 5000, 
+                CenterOffset = 300, 
+                Color = highlightColor
+            })
+    
+    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarESP()
@@ -421,7 +434,14 @@ local function aplicarESPPorta(porta, nome, cor)
         TextColor = highlightColor
     })
 
-    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    local Arrow = ESPLibrary.ESP.Arrow({
+                Model = nome, 
+                MaxDistance = 5000, 
+                CenterOffset = 300, 
+                Color = highlightColor
+            })
+
+    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarDoorESP()
@@ -1694,12 +1714,7 @@ ESPConfigTab:AddToggle({
     Callback = function(value)
         if value then
             ESPLibrary.Arrows.Set(true)
-            local Arrow = ESPLibrary.ESP.Arrow({
-                Model = game.Players.LocalPlayer.Character, 
-                MaxDistance = 5000, 
-                CenterOffset = 300, 
-                Color = BrickColor.random().Color 
-            })
+
             ESPLibrary.Arrows.Enable()
         else
             ESPLibrary.Arrows.Disable()
