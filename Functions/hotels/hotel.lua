@@ -41,6 +41,15 @@ local LocalPlayer = Players.LocalPlayer
 local LatestRoom = ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 
 
+--// Variáveis \\--
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local SeekEntity = nil
+local SeekTrigger = nil
+local SeekDeleted = false
+
+
 --// Tabela de Itens Prompt \\--
 local PromptTable = {
     GamePrompts = {},
@@ -1111,7 +1120,7 @@ end
 
 --//BOTÃO\\--
 ExploitsTab:AddToggle({
-    Name = "Solucionador de Disjuntor Automático",
+    Name = "Disjuntor Automático",
     Default = false,
     Callback = function(value)
         _G.AutoBreakerSolver = value
@@ -1120,6 +1129,94 @@ ExploitsTab:AddToggle({
         end
     end    
 })
+
+
+--[[DELETE SEEK]]--
+
+ExploitsTab:AddToggle({
+    Name = "Delete Seek",
+    Default = false,
+    Callback = function(Value)
+        SeekDeleted = Value
+        if SeekDeleted then
+            OrionLib:MakeNotification({
+                Name = "Delete Seek Ativado",
+                Content = "Delete Seek está ativado.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        else
+            OrionLib:MakeNotification({
+                Name = "Delete Seek Desativado",
+                Content = "Delete Seek foi desativado.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+})
+
+--// Funções \\--
+
+local function RemoveSeek()
+    if SeekEntity and SeekEntity:IsDescendantOf(Workspace) then
+        for _, part in pairs(SeekEntity:GetDescendants()) do
+            if part:IsA("BasePart") and part.Name == "TriggerEventCollision" then
+                SeekTrigger = part
+                break
+            end
+        end
+
+        if SeekTrigger then
+            SeekTrigger:Destroy()
+
+            local SeekTween = TweenService:Create(SeekEntity, TweenInfo.new(0.5), {Transparency = 1})
+            SeekTween:Play()
+            task.wait(0.5)
+
+            SeekEntity:Destroy()
+
+            OrionLib:MakeNotification({
+                Name = "Seek Removido",
+                Content = "Seek foi removido com sucesso.",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+        end
+    end
+end
+
+local function DeleteSeek()
+    if not SeekDeleted then return end
+
+    for _, entity in pairs(Workspace:GetDescendants()) do
+        if entity.Name == "Seek" then
+            SeekEntity = entity
+            break
+        end
+    end
+
+    if SeekEntity and SeekEntity:IsDescendantOf(Workspace) then
+        RemoveSeek()
+    end
+end
+
+local function TeleportPlayer()
+    if SeekEntity and RootPart then
+        RootPart.CFrame = RootPart.CFrame * CFrame.new(0, 50, 0)
+        task.wait(0.25)
+        RootPart.Anchored = true
+        task.wait(0.25)
+        RootPart.Anchored = false
+    end
+end
+
+RunService.Heartbeat:Connect(function()
+    if SeekDeleted then
+        DeleteSeek()
+        TeleportPlayer()
+    end
+end)
 
 --[EM BREVE]--
 
