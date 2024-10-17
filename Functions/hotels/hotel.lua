@@ -40,16 +40,6 @@ local Workspace = game:GetService("Workspace")
 local LocalPlayer = Players.LocalPlayer
 local LatestRoom = ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 
-
---// Variáveis \\--
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local RootPart = Character:WaitForChild("HumanoidRootPart")
-local SeekEntity = nil
-local SeekTrigger = nil
-local SeekDeleted = false
-
-
 --// Tabela de Itens Prompt \\--
 local PromptTable = {
     GamePrompts = {},
@@ -431,14 +421,8 @@ local function aplicarESPPorta(porta, nome, cor)
         TextColor = highlightColor
     })
 
-    local Arrow = ESPLibrary.ESP.Arrow({
-                Model = nome, 
-                MaxDistance = 5000, 
-                CenterOffset = 300, 
-                Color = highlightColor
-            })
 
-    return {Arrow = Arrow, Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
+    return {Tracer = Tracer, Billboard = Billboard, Highlight = Highlight}
 end
 
 local function ativarDoorESP()
@@ -683,10 +667,8 @@ end)
     end
 end
 
--- Variável para controlar se as notificações estão ativas
 local notificationsEnabled = false
 
--- Função para monitorar a aparição de entidades e notificá-las
 function MonitorEntities()
     game:GetService("RunService").Stepped:Connect(function()
         if notificationsEnabled then
@@ -1132,6 +1114,15 @@ ExploitsTab:AddToggle({
 
 
 --[[DELETE SEEK]]--
+--// Variáveis \\--
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local SeekEntity = nil
+local SeekTrigger = nil
+local SeekDeleted = false
+local fireTouch = firetouchinterest or firetouchtransmitter
+
 
 ExploitsTab:AddToggle({
     Name = "Delete Seek",
@@ -1158,63 +1149,94 @@ ExploitsTab:AddToggle({
 
 --// Funções \\--
 
-local function RemoveSeek()
-    if SeekEntity and SeekEntity:IsDescendantOf(Workspace) then
-        for _, part in pairs(SeekEntity:GetDescendants()) do
-            if part:IsA("BasePart") and part.Name == "TriggerEventCollision" then
-                SeekTrigger = part
-                break
-            end
-        end
+local function DeleteSeek(collision)
+    if not RootPart then return end
 
-        if SeekTrigger then
-            SeekTrigger:Destroy()
+    task.spawn(function()
+        local attemps = 0
+        repeat
+            task.wait()
+            attemps += 1
+        until collision.Parent or attemps > 200
 
-            local SeekTween = TweenService:Create(SeekEntity, TweenInfo.new(0.5), {Transparency = 1})
-            SeekTween:Play()
-            task.wait(0.5)
-
-            SeekEntity:Destroy()
-
+        if collision:IsDescendantOf(Workspace) and (collision.Parent and collision.Parent.Name == "TriggerEventCollision") then
             OrionLib:MakeNotification({
-                Name = "Seek Removido",
-                Content = "Seek foi removido com sucesso.",
+                Name = "Delete Seek",
+                Content = "Deletando o trigger de Seek...",
                 Image = "rbxassetid://4483345998",
                 Time = 5
             })
+
+            task.delay(4, function()
+                if collision:IsDescendantOf(Workspace) then
+                    OrionLib:MakeNotification({
+                        Name = "Falha ao Deletar Seek",
+                        Content = "Falha ao deletar o trigger de Seek!",
+                        Image = "rbxassetid://4483345998",
+                        Time = 5
+                    })
+                end
+            end)
+
+            if fireTouch then
+                RootPart.Anchored = true
+                task.delay(0.25, function() RootPart.Anchored = false end)
+
+                repeat
+                    if collision:IsDescendantOf(Workspace) then fireTouch(collision, RootPart, 1) end
+                    task.wait()
+                    if collision:IsDescendantOf(Workspace) then fireTouch(collision, RootPart, 0) end
+                    task.wait()
+                until not collision:IsDescendantOf(Workspace) or not SeekDeleted
+            else
+                collision:PivotTo(CFrame.new(RootPart.Position))
+                RootPart.Anchored = true
+                repeat task.wait() until not collision:IsDescendantOf(Workspace) or not SeekDeleted
+                RootPart.Anchored = false
+            end
+
+            if not collision:IsDescendantOf(Workspace) then
+                OrionLib:MakeNotification({
+                    Name = "Seek Removido",
+                    Content = "Trigger de Seek deletado com sucesso!",
+                    Image = "rbxassetid://4483345998",
+                    Time = 5
+                })
+            end
         end
-    end
+    end)
 end
 
-local function DeleteSeek()
-    if not SeekDeleted then return end
+local function AvoidEntity(value, oldNoclip)
+    if not RootPart or not SeekTrigger then return end
 
-    for _, entity in pairs(Workspace:GetDescendants()) do
-        if entity.Name == "Seek" then
-            SeekEntity = entity
-            break
-        end
-    end
+    local lastCFrame = RootPart.CFrame
+    task.wait()
 
-    if SeekEntity and SeekEntity:IsDescendantOf(Workspace) then
-        RemoveSeek()
-    end
-end
-
-local function TeleportPlayer()
-    if SeekEntity and RootPart then
-        RootPart.CFrame = RootPart.CFrame * CFrame.new(0, 50, 0)
-        task.wait(0.25)
+    if value then
         RootPart.Anchored = true
-        task.wait(0.25)
+        SeekTrigger.Position += Vector3.new(0, 24, 0)
+        task.wait()
+        Character:PivotTo(lastCFrame)
+    else
+        SeekTrigger.Position -= Vector3.new(0, 24, 0)
+        task.wait()
+        Character:PivotTo(lastCFrame)
         RootPart.Anchored = false
     end
 end
 
 RunService.Heartbeat:Connect(function()
     if SeekDeleted then
-        DeleteSeek()
-        TeleportPlayer()
+        for _, entity in pairs(Workspace:GetDescendants()) do
+            if entity.Name == "Seek" then
+                SeekEntity = entity
+                SeekTrigger = entity:FindFirstChild("TriggerEventCollision", true)
+                if SeekTrigger then
+                    DeleteSeek(SeekTrigger)
+                end
+            end
+        end
     end
 end)
 
