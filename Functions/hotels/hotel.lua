@@ -1310,8 +1310,86 @@ local FloorTab = Window:MakeTab({
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
 })
+--//BEAT DOOR 200\\--
+local LocalPlayer = Players.LocalPlayer
+local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+local RootPart = Character:WaitForChild("HumanoidRootPart")
+local latestRoom = Workspace:WaitForChild("GameData"):WaitForChild("LatestRoom")
+local Toggles = {
+    SpeedBypass = {Value = false, SetValue = function(self, val) self.Value = val end}
+}
+
+local function forceFirePrompt(prompt)
+    if prompt and prompt:IsA("ProximityPrompt") then
+        fireproximityprompt(prompt)
+    end
+end
 
 
+FloorTab:AddButton({
+    Name = "Beat Door 200",
+    Callback = function()
+        if latestRoom.Value < 99 then
+            OrionLib:MakeNotification({
+                Name = "Beat Door 200",
+                Content = "Você ainda não chegou à porta 200...",
+                Image = "rbxassetid://4483345998",
+                Time = 5
+            })
+            return
+        end
+
+        local bypassing = Toggles.SpeedBypass.Value
+        local startPos = RootPart.CFrame
+        Toggles.SpeedBypass:SetValue(false)
+
+        local damHandler = Workspace.CurrentRooms[latestRoom.Value]:FindFirstChild("_DamHandler")
+        if damHandler then
+            if damHandler:FindFirstChild("PlayerBarriers1") then
+                for _, pump in pairs(damHandler.Flood1.Pumps:GetChildren()) do
+                    Character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    forceFirePrompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(8)
+            end
+
+            if damHandler:FindFirstChild("PlayerBarriers2") then
+                for _, pump in pairs(damHandler.Flood2.Pumps:GetChildren()) do
+                    Character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    forceFirePrompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(8)
+            end
+
+            if damHandler:FindFirstChild("PlayerBarriers3") then
+                for _, pump in pairs(damHandler.Flood3.Pumps:GetChildren()) do
+                    Character:PivotTo(pump.Wheel.CFrame)
+                    task.wait(0.25)
+                    forceFirePrompt(pump.Wheel.ValvePrompt)
+                    task.wait(0.25)
+                end
+                task.wait(10)
+            end
+        end
+
+        local generator = Workspace.CurrentRooms[latestRoom.Value]:FindFirstChild("MinesGenerator", true)
+        if generator then
+            Character:PivotTo(generator.PrimaryPart.CFrame)
+            task.wait(0.25)
+            forceFirePrompt(generator.Lever.LeverPrompt)
+            task.wait(0.25)
+        end
+
+        Toggles.SpeedBypass:SetValue(bypassing)
+        Character:PivotTo(startPos)
+    end
+})
+
+--[MODS]--
 local ModFolder = ".seeker/mods/"
 local modFiles = {}
 local loadedMods = {}
