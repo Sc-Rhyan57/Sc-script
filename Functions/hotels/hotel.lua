@@ -623,6 +623,13 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
 
 --// Tabela de Entidades \\--
 local EntityTable = {
@@ -656,18 +663,7 @@ function NotifyEntity(entityName)
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
-
-        
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
-    if isActive then
-        sendChatMessage(chatMessage)
-        end
+    if isActiveNot the
         
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://10469938989"
@@ -828,7 +824,7 @@ local notifsTab = VisualsEsp:AddSection({
     Name = "Notificações"
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
-local section = tab:AddSection({
+local section = notifsTab:AddSection({
     Name = "Chat Control"
 })
 
