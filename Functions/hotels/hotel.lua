@@ -623,6 +623,27 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
+local isActive = false
+local chatMessage = "A entidade nasceu!"
+
+-- Função para enviar notificações no chat
+local function sendNotification(notification)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer("[ Seeker ] " .. notification, "All")
+    end
+end
+
+-- Função para enviar mensagens no chat
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
+
 
 -- Tabela de Entidades
 local EntityTable = {
@@ -859,9 +880,6 @@ local chatTabN = VisualsEsp:AddSection({
     Name = "Chat Control"
 })
 
-local isActive = false
-local chatMessage = "A entidade nasceu!"
-
 chatTanN:AddTextbox({
     Name = "Mensagem Personalizada",
     Default = "A entidade nasceu!",
@@ -884,24 +902,6 @@ chatTabN:AddToggle({
         end
     end
 })
--- Função para enviar notificações no chat
-local function sendNotification(notification)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer("[ Seeker ] " .. notification, "All")
-    end
-end
-
--- Função para enviar mensagens no chat
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
-
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
     Name = "Automoção",
