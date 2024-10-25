@@ -689,6 +689,15 @@ end
 MonitorEntities()
 
 
+--// here\\-+
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
+
 --[ ORION LIB - MENU ]--
 --// CRÉDITOS \\--
 local CreditsTab = Window:MakeTab({
@@ -818,13 +827,10 @@ local notifsTab = VisualsEsp:AddSection({
     Name = "Notificações"
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
-local section = notifsTab:AddSection({
-    Name = "Chat Control"
-})
 
 local isActiveNot = false
 
-section:AddTextbox({
+notifsTab:AddTextbox({
     Name = "Mensagem Personalizada",
     Default = "A entidade nasceu!",
     TextDisappear = false,
@@ -833,21 +839,13 @@ section:AddTextbox({
     end
 })
 
-section:AddToggle({
+notifsTab:AddToggle({
     Name = "Avisar no chat",
     Default = false,
     Callback = function(state)
         isActiveNot = state
     end
 })
---// here\\-+
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
 
 notifsTab:AddToggle({
     Name = "Notificar Entidades",
