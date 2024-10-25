@@ -623,7 +623,25 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
---// Tabela de Entidades \\--
+-- Função para enviar notificações no chat
+local function sendNotification(notification)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer("[ Seeker ] " .. notification, "All")
+    end
+end
+
+-- Função para enviar mensagens no chat
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
+
+-- Tabela de Entidades
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
     ["NotifyReason"] = {
@@ -646,23 +664,20 @@ function NotifyEntity(entityName)
         local notificationData = EntityTable.NotifyReason[entityName]
         local notifyTitle = entityName
         local notifyMessage = "Entidade Detectada!"
-
         OrionLib:MakeNotification({
             Name = notifyTitle,
             Content = notifyMessage,
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
-        
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://10469938989"
-sound.Volume = 3
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-        
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://10469938989"
+        sound.Volume = 3
+        sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        sound:Play()
+        sound.Ended:Connect(function()
+            sound:Destroy()
+        end)
     end
 end
 
@@ -676,13 +691,16 @@ function MonitorEntities()
                 if entity and not entity:GetAttribute("Notified") then
                     entity:SetAttribute("Notified", true)
                     NotifyEntity(entityName)
+                    if isActive then
+                        sendChatMessage(chatMessage)
+                    end
                 end
             end
         end
     end)
 end
-MonitorEntities()
 
+MonitorEntities()
 
 
 --[ ORION LIB - MENU ]--
@@ -815,47 +833,74 @@ local notifsTab = VisualsEsp:AddSection({
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
 
-
 notifsTab:AddToggle({
     Name = "Notificar Entidades",
     Default = false,
     Callback = function(value)
         notificationsEnabled = value
         if value then
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades ativas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
-
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://4590657391"
+            sound.Volume = 1
+            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            sound:Play()
+            sound.Ended:Connect(function()
+                sound:Destroy()
+            end)
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = " Notificação",
+                Text = "Notificações de Entidades ativas!",
+                Icon = "rbxassetid://13264701341",
+                Duration = 3
+            })
         else
             local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades desativadas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
+            sound.SoundId = "rbxassetid://4590662766"
+            sound.Volume = 1
+            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            sound:Play()
+            sound.Ended:Connect(function()
+                sound:Destroy()
+            end)
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = " Notificação",
+                Text = "Notificações de Entidades desativadas!",
+                Icon = "rbxassetid://13264701341",
+                Duration = 3
+            })
         end
     end
 })
 
+local chatTabN = VisualsEsp:AddSection({
+    Name = "Chat Control"
+})
+
+local isActive = false
+local chatMessage = "A entidade nasceu!"
+
+chatTanN:AddTextbox({
+    Name = "Mensagem Personalizada",
+    Default = "A entidade nasceu!",
+    TextDisappear = false,
+    Callback = function(value)
+        chatMessage = value
+    end
+})
+chatTabN:AddToggle({
+    Name = "Ativar Chat",
+    Default = false,
+    Callback = function(state)
+        isActive = state
+        if isActive then
+            sendNotification("Notificação de Entidades ativo para todos!")
+            print("[ Rseeker Logs ] Notificação de Entidades foi ativada.")
+        else
+            sendNotification("Notificação de Entidades desativado.")
+            print("[ Rseeker Logs ] Notificação de Entidades foi desativada.")
+        end
+    end
+})
 
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
