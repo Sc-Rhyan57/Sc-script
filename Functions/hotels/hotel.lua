@@ -625,14 +625,7 @@ latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
 local isActive = false
 local chatMessage = "A entidade nasceu!"
-chatTanN:AddTextbox({
-    Name = "Mensagem Personalizada",
-    Default = "A entidade nasceu!",
-    TextDisappear = false,
-    Callback = function(value)
-        chatMessage = value
-    end
-})
+
 chatTabN:AddToggle({
     Name = "Ativar Chat",
     Default = false,
