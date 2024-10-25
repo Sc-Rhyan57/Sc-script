@@ -1014,231 +1014,86 @@ local ExploitsTab = Window:MakeTab({
     Icon = "rbxassetid://13264701341",
     PremiumOnly = false
 })
+--// Anti Entity Tab \\--
+local AntiEntitySection = ExploitsTab:AddSection({Name = "Anti-Entity"})
 
-
---[ AUTO BREAKER ]--
-local function EnableBreaker(breaker, value)
-    breaker:SetAttribute("Enabled", value)
-    
-    if value then
-        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = -0.2
-        breaker.Light.Material = Enum.Material.Neon
-        breaker.Light.Attachment.Spark:Emit(1)
-        breaker.Sound.Pitch = 1.3
-    else
-        breaker:FindFirstChild("PrismaticConstraint", true).TargetPosition = 0.2
-        breaker.Light.Material = Enum.Material.Glass
-        breaker.Sound.Pitch = 1.2
-    end
-    
-    breaker.Sound:Play()
-end
-
-local function SolveBreakerBox(breakerBox)
-    if not breakerBox then return end
-    
-    local code = breakerBox:FindFirstChild("Code", true)
-    local correct = breakerBox:FindFirstChild("Correct", true)
-    
-    repeat task.wait() until code.Text ~= "..." or not breakerBox:IsDescendantOf(workspace)
-    if not breakerBox:IsDescendantOf(workspace) then return end
-
-    -- Alerta
-    OrionLib:MakeNotification({
-        Name = "Auto Breaker Solver",
-        Content = "Solving the breaker box...",
-        Time = 5
-    })
-    
-    if _G.AutoBreakerSolverMethod == "Legit" then
-        local breakers = {}
-        for _, breaker in pairs(breakerBox:GetChildren()) do
-            if breaker.Name == "BreakerSwitch" then
-                local id = string.format("%02d", breaker:GetAttribute("ID"))
-                breakers[id] = breaker
-            end
-        end
-
-        if code:FindFirstChild("Frame") then
-            AutoBreaker(code, breakers)
-        end
-    else
-        repeat task.wait(0.1)
-            remotesFolder.EBF:FireServer()
-        until not workspace.CurrentRooms["100"]:FindFirstChild("DoorToBreakDown")
-
-        -- Notificação de sucesso
-        OrionLib:MakeNotification({
-            Name = "Auto Breaker Solver",
-            Content = "The breaker box has been successfully solved.",
-            Time = 5
-        })
-    end
-end
-
-local function AutoBreaker(code, breakers)
-    local newCode = code.Text
-    if not tonumber(newCode) and newCode ~= "??" then return end
-
-    local isEnabled = code.Frame.BackgroundTransparency == 0
-    local breaker = breakers[newCode]
-
-    if newCode == "??" and #_G.UsedBreakers == 9 then
-        for i = 1, 10 do
-            local id = string.format("%02d", i)
-            if not table.find(_G.UsedBreakers, id) then
-                breaker = breakers[id]
-            end
-        end
-    end
-
-    if breaker then
-        table.insert(_G.UsedBreakers, newCode)
-        if breaker:GetAttribute("Enabled") ~= isEnabled then
-            EnableBreaker(breaker, isEnabled)
-        end
-    end
-end
-
---//BOTÃO\\--
-ExploitsTab:AddToggle({
-    Name = "Disjuntor Automático",
+AntiEntitySection:AddToggle({
+    Name = "Anti-Dread",
     Default = false,
     Callback = function(value)
-        _G.AutoBreakerSolver = value
-        if value then
-            SolveBreakerBox()
+        if not Script.MainGame then return end
+        local modules = Script.MainGame:FindFirstChild("Modules", true)
+        local module = modules and (modules:FindFirstChild("Dread", true) or modules:FindFirstChild("_Dread", true))
+        if module then
+            module.Name = value and "_Dread" or "Dread"
         end
-    end    
+    end
 })
 
-
---[[DELETE SEEK]]--
---// Variáveis \\--
-local LocalPlayer = Players.LocalPlayer
-local Character = LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
-local RootPart = Character:WaitForChild("HumanoidRootPart")
-local SeekEntity = nil
-local SeekTrigger = nil
-local SeekDeleted = false
-local fireTouch = firetouchinterest or firetouchtransmitter
-
-
-ExploitsTab:AddToggle({
-    Name = "Delete Seek",
+AntiEntitySection:AddToggle({
+    Name = "Anti-Halt",
     Default = false,
-    Callback = function(Value)
-        SeekDeleted = Value
-        if SeekDeleted then
-            OrionLib:MakeNotification({
-                Name = "Delete Seek Ativado",
-                Content = "Delete Seek está ativado.",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
-        else
-            OrionLib:MakeNotification({
-                Name = "Delete Seek Desativado",
-                Content = "Delete Seek foi desativado.",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
+    Callback = function(value)
+        if not Script.EntityModules then return end
+        local module = Script.EntityModules:FindFirstChild("Shade") or Script.EntityModules:FindFirstChild("_Shade")
+        if module then
+            module.Name = value and "_Shade" or "Shade"
         end
     end
 })
 
---// Funções \\--
-
-local function DeleteSeek(collision)
-    if not RootPart then return end
-
-    task.spawn(function()
-        local attemps = 0
-        repeat
-            task.wait()
-            attemps += 1
-        until collision.Parent or attemps > 200
-
-        if collision:IsDescendantOf(Workspace) and (collision.Parent and collision.Parent.Name == "TriggerEventCollision") then
-            OrionLib:MakeNotification({
-                Name = "Delete Seek",
-                Content = "Deletando o trigger de Seek...",
-                Image = "rbxassetid://4483345998",
-                Time = 5
-            })
-
-            task.delay(4, function()
-                if collision:IsDescendantOf(Workspace) then
-                    OrionLib:MakeNotification({
-                        Name = "Falha ao Deletar Seek",
-                        Content = "Falha ao deletar o trigger de Seek!",
-                        Image = "rbxassetid://4483345998",
-                        Time = 5
-                    })
-                end
-            end)
-
-            if fireTouch then
-                RootPart.Anchored = true
-                task.delay(0.25, function() RootPart.Anchored = false end)
-
-                repeat
-                    if collision:IsDescendantOf(Workspace) then fireTouch(collision, RootPart, 1) end
-                    task.wait()
-                    if collision:IsDescendantOf(Workspace) then fireTouch(collision, RootPart, 0) end
-                    task.wait()
-                until not collision:IsDescendantOf(Workspace) or not SeekDeleted
-            else
-                collision:PivotTo(CFrame.new(RootPart.Position))
-                RootPart.Anchored = true
-                repeat task.wait() until not collision:IsDescendantOf(Workspace) or not SeekDeleted
-                RootPart.Anchored = false
-            end
-
-            if not collision:IsDescendantOf(Workspace) then
-                OrionLib:MakeNotification({
-                    Name = "Seek Removido",
-                    Content = "Trigger de Seek deletado com sucesso!",
-                    Image = "rbxassetid://4483345998",
-                    Time = 5
-                })
-            end
+AntiEntitySection:AddToggle({
+    Name = "Anti-Screech",
+    Default = false,
+    Callback = function(value)
+        if not Script.MainGame then return end
+        local module = Script.MainGame:FindFirstChild("Screech", true) or Script.MainGame:FindFirstChild("_Screech", true)
+        if module then
+            module.Name = value and "_Screech" or "Screech"
         end
-    end)
-end
-
-local function AvoidEntity(value, oldNoclip)
-    if not RootPart or not SeekTrigger then return end
-
-    local lastCFrame = RootPart.CFrame
-    task.wait()
-
-    if value then
-        RootPart.Anchored = true
-        SeekTrigger.Position += Vector3.new(0, 24, 0)
-        task.wait()
-        Character:PivotTo(lastCFrame)
-    else
-        SeekTrigger.Position -= Vector3.new(0, 24, 0)
-        task.wait()
-        Character:PivotTo(lastCFrame)
-        RootPart.Anchored = false
     end
-end
+})
 
-RunService.Heartbeat:Connect(function()
-    if SeekDeleted then
-        for _, entity in pairs(Workspace:GetDescendants()) do
-            if entity.Name == "Seek" then
-                SeekEntity = entity
-                SeekTrigger = entity:FindFirstChild("TriggerEventCollision", true)
-                if SeekTrigger then
-                    DeleteSeek(SeekTrigger)
+AntiEntitySection:AddToggle({
+    Name = "Anti-Dupe",
+    Default = false,
+    Callback = function(value)
+        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+            for _, dupeRoom in pairs(room:GetChildren()) do
+                if dupeRoom:GetAttribute("LoadModule") == "DupeRoom" or dupeRoom:GetAttribute("LoadModule") == "SpaceSideroom" then
+                    task.spawn(function()
+                        Script.Functions.DisableDupe(dupeRoom, value, dupeRoom:GetAttribute("LoadModule") == "SpaceSideroom")
+                    end)
                 end
             end
         end
     end
-end)
+})
+
+AntiEntitySection:AddToggle({
+    Name = "Anti-Snare",
+    Default = false,
+    Callback = function(value)
+        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
+            if not room:FindFirstChild("Assets") then continue end
+            for _, snare in pairs(room.Assets:GetChildren()) do
+                if snare.Name == "Snare" then
+                    snare:WaitForChild("Hitbox", 5).CanTouch = not value
+                end
+            end
+        end
+    end
+})
+
+AntiEntitySection:AddToggle({
+    Name = "Anti-Hearing",
+    Default = false,
+    Callback = function(value)
+        if Script.IsFools then return end
+        Script.RemotesFolder.Crouch:FireServer(value)
+    end
+})
+
 
 --[EM BREVE]--
 
