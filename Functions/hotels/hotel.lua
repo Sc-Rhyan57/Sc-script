@@ -623,23 +623,6 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
--- Função para enviar notificações no chat
-local function sendNotification(notification)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer("[ Seeker ] " .. notification, "All")
-    end
-end
-
--- Função para enviar mensagens no chat
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
 
 -- Tabela de Entidades
 local EntityTable = {
@@ -901,6 +884,23 @@ chatTabN:AddToggle({
         end
     end
 })
+-- Função para enviar notificações no chat
+local function sendNotification(notification)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer("[ Seeker ] " .. notification, "All")
+    end
+end
+
+-- Função para enviar mensagens no chat
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
 
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
