@@ -646,12 +646,7 @@ function NotifyEntity(entityName)
         local notificationData = EntityTable.NotifyReason[entityName]
         local notifyTitle = entityName
         local notifyMessage = "Entidade Detectada!"
-        local chatMessage = "notifyTitle .. A entidade nasceu!"
 
-        
-    if isActiveNot then
-        sendChatMessage(chatMessage)
-    end
         OrionLib:MakeNotification({
             Name = notifyTitle,
             Content = notifyMessage,
@@ -689,14 +684,6 @@ end
 MonitorEntities()
 
 
---// here\\-+
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
 
 --[ ORION LIB - MENU ]--
 --// CRÉDITOS \\--
@@ -828,24 +815,6 @@ local notifsTab = VisualsEsp:AddSection({
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
 
-local isActiveNot = false
-
-notifsTab:AddTextbox({
-    Name = "Mensagem Personalizada",
-    Default = "A entidade nasceu!",
-    TextDisappear = false,
-    Callback = function(value)
-        chatMessage = notifyEntity .. value
-    end
-})
-
-notifsTab:AddToggle({
-    Name = "Avisar no chat",
-    Default = false,
-    Callback = function(state)
-        isActiveNot = state
-    end
-})
 
 notifsTab:AddToggle({
     Name = "Notificar Entidades",
@@ -1049,71 +1018,6 @@ local ExploitsTab = Window:MakeTab({
 --// Anti Entity Tab \\--
 local AntiEntitySection = ExploitsTab:AddSection({Name = "Anti-Entity"})
 
-
-
-AntiEntitySection:AddToggle({
-    Name = "Anti-Halt",
-    Default = false,
-    Callback = function(value)
-        if not Script.EntityModules then return end
-        local module = Script.EntityModules:FindFirstChild("Shade") or Script.EntityModules:FindFirstChild("_Shade")
-        if module then
-            module.Name = value and "_Shade" or "Shade"
-        end
-    end
-})
-
-AntiEntitySection:AddToggle({
-    Name = "Anti-Screech",
-    Default = false,
-    Callback = function(value)
-        if not Script.MainGame then return end
-        local module = Script.MainGame:FindFirstChild("Screech", true) or Script.MainGame:FindFirstChild("_Screech", true)
-        if module then
-            module.Name = value and "_Screech" or "Screech"
-        end
-    end
-})
-
-AntiEntitySection:AddToggle({
-    Name = "Anti-Dupe",
-    Default = false,
-    Callback = function(value)
-        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-            for _, dupeRoom in pairs(room:GetChildren()) do
-                if dupeRoom:GetAttribute("LoadModule") == "DupeRoom" or dupeRoom:GetAttribute("LoadModule") == "SpaceSideroom" then
-                    task.spawn(function()
-                        Script.Functions.DisableDupe(dupeRoom, value, dupeRoom:GetAttribute("LoadModule") == "SpaceSideroom")
-                    end)
-                end
-            end
-        end
-    end
-})
-
-AntiEntitySection:AddToggle({
-    Name = "Anti-Snare",
-    Default = false,
-    Callback = function(value)
-        for _, room in pairs(workspace.CurrentRooms:GetChildren()) do
-            if not room:FindFirstChild("Assets") then continue end
-            for _, snare in pairs(room.Assets:GetChildren()) do
-                if snare.Name == "Snare" then
-                    snare:WaitForChild("Hitbox", 5).CanTouch = not value
-                end
-            end
-        end
-    end
-})
-
-AntiEntitySection:AddToggle({
-    Name = "Anti-Hearing",
-    Default = false,
-    Callback = function(value)
-        if Script.IsFools then return end
-        Script.RemotesFolder.Crouch:FireServer(value)
-    end
-})
 
 
 --[EM BREVE]--
