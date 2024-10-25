@@ -683,6 +683,41 @@ function MonitorEntities()
 end
 MonitorEntities()
 
+--[[ SPEED BYPPAS ]]--
+local speedBypassActive = false
+local speedBypassDelayActive = false
+local runService = game:GetService("RunService")
+
+local function speedBypass(enable)
+    speedBypassActive = enable
+    if enable then
+        runService.Heartbeat:Connect(function()
+            if speedBypassActive then
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+            else
+                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+            end
+        end)
+    else
+        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+    end
+end
+
+local function speedBypassWithDelay(enable, delay)
+    speedBypassDelayActive = enable
+    if enable then
+        task.delay(delay, function()
+            if speedBypassDelayActive then
+                speedBypass(true)
+            end
+        end)
+    else
+        speedBypassDelayActive = false
+    end
+end
+
+
+
 --[ ORION LIB - MENU ]--
 --// CRÉDITOS \\--
 local CreditsTab = Window:MakeTab({
@@ -1079,6 +1114,27 @@ GameLocal:AddToggle({
         noclipEnabled = value
         Noclip()
     end
+})
+
+GameLocal:AddToggle({
+    Name = "Speed Bypass",
+    Default = false,
+    Callback = function(value)
+        speedBypass(value)
+    end    
+})
+
+GameLocal:AddToggle({
+    Name = "Speed Bypass Delay",
+    Default = false,
+    Callback = function(value)
+        if value then
+            speedBypassWithDelay(true, 2)
+        else
+            speedBypassWithDelay(false, 0)
+            speedBypass(false) 
+        end
+    end    
 })
 
 local FloorTab = Window:MakeTab({
