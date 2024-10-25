@@ -623,14 +623,6 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
-local function sendChatMessage(message)
-    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
-    if sayMessageRequest then
-        sayMessageRequest:FireServer(message, "All")
-    end
-end
-
 --// Tabela de Entidades \\--
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
@@ -653,17 +645,19 @@ function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
         local notifyTitle = entityName
-        local notifyEntity = entityName
         local notifyMessage = "Entidade Detectada!"
-        local chatMessage = "notifyEntity .. A entidade nasceu!"
+        local chatMessage = "notifyTitle .. A entidade nasceu!"
+
         
+    if isActiveNot then
+        sendChatMessage(chatMessage)
+    end
         OrionLib:MakeNotification({
             Name = notifyTitle,
             Content = notifyMessage,
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
-    if isActiveNot the
         
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://10469938989"
@@ -846,6 +840,14 @@ section:AddToggle({
         isActiveNot = state
     end
 })
+--// here\\-+
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
 
 notifsTab:AddToggle({
     Name = "Notificar Entidades",
