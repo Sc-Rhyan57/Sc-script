@@ -1017,18 +1017,7 @@ local ExploitsTab = Window:MakeTab({
 --// Anti Entity Tab \\--
 local AntiEntitySection = ExploitsTab:AddSection({Name = "Anti-Entity"})
 
-AntiEntitySection:AddToggle({
-    Name = "Anti-Dread",
-    Default = false,
-    Callback = function(value)
-        if not Script.MainGame then return end
-        local modules = Script.MainGame:FindFirstChild("Modules", true)
-        local module = modules and (modules:FindFirstChild("Dread", true) or modules:FindFirstChild("_Dread", true))
-        if module then
-            module.Name = value and "_Dread" or "Dread"
-        end
-    end
-})
+
 
 AntiEntitySection:AddToggle({
     Name = "Anti-Halt",
