@@ -646,14 +646,28 @@ function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
         local notifyTitle = entityName
+        local notifyEntity = entityName
         local notifyMessage = "Entidade Detectada!"
-
+        local chatMessage = "notifyEntity .. A entidade nasceu!"
+        
         OrionLib:MakeNotification({
             Name = notifyTitle,
             Content = notifyMessage,
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
+
+        
+local function sendChatMessage(message)
+    local chatEvents = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    local sayMessageRequest = chatEvents and chatEvents:FindFirstChild("SayMessageRequest")
+    if sayMessageRequest then
+        sayMessageRequest:FireServer(message, "All")
+    end
+end
+    if isActive then
+        sendChatMessage(chatMessage)
+        end
         
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://10469938989"
@@ -814,6 +828,28 @@ local notifsTab = VisualsEsp:AddSection({
     Name = "Notificações"
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
+local section = tab:AddSection({
+    Name = "Chat Control"
+})
+
+local isActiveNot = false
+
+section:AddTextbox({
+    Name = "Mensagem Personalizada",
+    Default = "A entidade nasceu!",
+    TextDisappear = false,
+    Callback = function(value)
+        chatMessage = notifyEntity .. value
+    end
+})
+
+section:AddToggle({
+    Name = "Avisar no chat",
+    Default = false,
+    Callback = function(state)
+        isActiveNot = state
+    end
+})
 
 notifsTab:AddToggle({
     Name = "Notificar Entidades",
