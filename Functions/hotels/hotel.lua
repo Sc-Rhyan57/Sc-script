@@ -625,6 +625,28 @@ latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
 local isActive = false
 local chatMessage = "A entidade nasceu!"
+chatTanN:AddTextbox({
+    Name = "Mensagem Personalizada",
+    Default = "A entidade nasceu!",
+    TextDisappear = false,
+    Callback = function(value)
+        chatMessage = value
+    end
+})
+chatTabN:AddToggle({
+    Name = "Ativar Chat",
+    Default = false,
+    Callback = function(state)
+        isActive = state
+        if isActive then
+            sendNotification("Notificação de Entidades ativo para todos!")
+            print("[ Rseeker Logs ] Notificação de Entidades foi ativada.")
+        else
+            sendNotification("Notificação de Entidades desativado.")
+            print("[ Rseeker Logs ] Notificação de Entidades foi desativada.")
+        end
+    end
+})
 
 -- Função para enviar notificações no chat
 local function sendNotification(notification)
@@ -880,28 +902,7 @@ local chatTabN = VisualsEsp:AddSection({
     Name = "Chat Control"
 })
 
-chatTanN:AddTextbox({
-    Name = "Mensagem Personalizada",
-    Default = "A entidade nasceu!",
-    TextDisappear = false,
-    Callback = function(value)
-        chatMessage = value
-    end
-})
-chatTabN:AddToggle({
-    Name = "Ativar Chat",
-    Default = false,
-    Callback = function(state)
-        isActive = state
-        if isActive then
-            sendNotification("Notificação de Entidades ativo para todos!")
-            print("[ Rseeker Logs ] Notificação de Entidades foi ativada.")
-        else
-            sendNotification("Notificação de Entidades desativado.")
-            print("[ Rseeker Logs ] Notificação de Entidades foi desativada.")
-        end
-    end
-})
+
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
     Name = "Automoção",
