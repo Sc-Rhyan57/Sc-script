@@ -536,7 +536,7 @@ local function SetupElevatorUI()
     MainTab:AddDropdown({
         Name = "Destino do Elevador",
         Default = "Hotel",
-        Options = {"Hotel","", "Backdoor"},
+        Options = {"Hotel","RetroMode", "Backdoor"},
         Callback = function(Value)
             destination = Value
         end
