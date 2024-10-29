@@ -70,7 +70,7 @@ CopyButton.BackgroundColor3 = Color3.fromRGB(115, 0, 255)
 CopyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
 
 
-local contentToCopy = "https://dsc.gg/betterstar"
+local contentToCopy = "https://discord.gg/MqAdfVkhuR"
 CopyButton.MouseButton1Click:Connect(function()
     setclipboard(contentToCopy)
     CopyButton.Text = "Link Copiado!"
