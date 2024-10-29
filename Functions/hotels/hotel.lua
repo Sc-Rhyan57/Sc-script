@@ -645,7 +645,7 @@ local EntityTable = {
 local function DoorsNotify(options)
     local title = options.Title or "No Title"
     local description = options.Description or "No Text"
-    local image = options.Image or "rbxassetid://6023426923"
+    local image = options.Image or "rbxassetid://76411928845479"
     local time = options.Time or 5
 
     local mainUI = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainUI", 2.5)
@@ -667,7 +667,6 @@ local function DoorsNotify(options)
     end
 end
 
--- Função para notificar sobre entidades usando OrionLib
 function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
@@ -706,41 +705,6 @@ function MonitorEntities()
     end)
 end
 MonitorEntities()
-
---[[ SPEED BYPPAS ]]--
-local speedBypassActive = false
-local speedBypassDelayActive = false
-local runService = game:GetService("RunService")
-
-local function speedBypass(enable)
-    speedBypassActive = enable
-    if enable then
-        runService.Heartbeat:Connect(function()
-            if speedBypassActive then
-                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
-            else
-                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-            end
-        end)
-    else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-    end
-end
-
-local function speedBypassWithDelay(enable, delay)
-    speedBypassDelayActive = enable
-    if enable then
-        task.delay(delay, function()
-            if speedBypassDelayActive then
-                speedBypass(true)
-            end
-        end)
-    else
-        speedBypassDelayActive = false
-    end
-end
-
-
 
 --[ ORION LIB - MENU ]--
 --// CRÉDITOS \\--
@@ -1076,11 +1040,33 @@ local AntiEntitySection = ExploitsTab:AddSection({Name = "Anti-Entity"})
 
 --[EM BREVE]--
 
---[[ Byppas Area ]]--
-local ByTab = Window:MakeTab({
+--[[ Bypasss Area ]]--
+local BypassTab = Window:MakeTab({
     Name = "Byppas",
     Icon = "rbxassetid://14255000409",
     PremiumOnly = false
+})
+local function ToggleGodMode(value)
+    if not Script.Collision then return end
+    
+    if value then
+        Script.Collision.CanCollide = false
+        Script.Collision.CollisionCrouch.CanCollide = false
+    else
+        if Script.Collision.Position ~= shared.RootPart.Position then
+            Script.Collision.Position = shared.RootPart.Position
+            Script.CollisionClone.Position = Script.Collision.Position + Vector3.new(0, 2.5, 0)
+            shared.RootPart.CFrame = CFrame.new(Script.Collision.Position)
+        end
+    end
+end
+
+BypassTab:AddToggle({
+    Name = "GodMode",
+    Default = false,
+    Callback = function(value)
+        ToggleGodMode(value)
+    end
 })
 
 --[ EM BREVE ]--
@@ -1139,26 +1125,6 @@ GameLocal:AddToggle({
     end
 })
 
-GameLocal:AddToggle({
-    Name = "Speed Bypass",
-    Default = false,
-    Callback = function(value)
-        speedBypass(value)
-    end    
-})
-
-GameLocal:AddToggle({
-    Name = "Speed Bypass Delay",
-    Default = false,
-    Callback = function(value)
-        if value then
-            speedBypassWithDelay(true, 2)
-        else
-            speedBypassWithDelay(false, 0)
-            speedBypass(false) 
-        end
-    end    
-})
 
 local FloorTab = Window:MakeTab({
     Name = "Floors",
