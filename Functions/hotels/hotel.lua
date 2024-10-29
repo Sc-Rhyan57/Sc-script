@@ -623,46 +623,70 @@ end
 local latestRoom = game.ReplicatedStorage:WaitForChild("GameData"):WaitForChild("LatestRoom")
 latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 
---// Tabela de Entidades \\--
+--// Tabela de Entidades para notificação.\\--
 local EntityTable = {
     ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
+
     ["NotifyReason"] = {
-        ["A60"] = { ["Image"] = "12350986086" },
-        ["A120"] = { ["Image"] = "12351008553" },
-        ["HaltRoom"] = { ["image"] = "11331795398" },
-        ["BackdoorRush"] = { ["Image"] = "11102256553" },
-        ["RushMoving"] = { ["Image"] = "11102256553" },
-        ["AmbushMoving"] = { ["Image"] = "10938726652" },
-        ["Eyes"] = { ["Image"] = "10865377903", ["Spawned"] = true },
-        ["BackdoorLookman"] = { ["Image"] = "16764872677", ["Spawned"] = true },
-        ["JeffTheKiller"] = { ["Image"] = "98993343", ["Spawned"] = true },
-        ["GloombatSwarm"] = { ["Image"] = "108578770251369", ["Spawned"] = true }
+        ["A60"] = { ["Image"] = "12350986086", ["Title"] = "Alerta A-60", ["Description"] = "Entidade A-60 detectada!" },
+        ["A120"] = { ["Image"] = "12351008553", ["Title"] = "Cuidado com A-120", ["Description"] = "Entidade A-120 se aproximando!" },
+        ["HaltRoom"] = { ["Image"] = "11331795398", ["Title"] = "Halt Detected", ["Description"] = "Prepare-se para o Halt!" },
+        ["BackdoorRush"] = { ["Image"] = "11102256553", ["Title"] = "Backdoor Rush", ["Description"] = "Rush se aproximando pelo backdoor!" },
+        ["RushMoving"] = { ["Image"] = "11102256553", ["Title"] = "Rush em Movimento", ["Description"] = "Rush foi visto se movendo." },
+        ["AmbushMoving"] = { ["Image"] = "10938726652", ["Title"] = "Ambush em Movimento", ["Description"] = "Ambush está ativo." },
+        ["Eyes"] = { ["Image"] = "10865377903", ["Title"] = "Olhos!", ["Description"] = "Não olhe para os olhos!", ["Spawned"] = true },
+        ["BackdoorLookman"] = { ["Image"] = "16764872677", ["Title"] = "Backdoor Lookman", ["Description"] = "Lookman foi visto!", ["Spawned"] = true },
+        ["JeffTheKiller"] = { ["Image"] = "98993343", ["Title"] = "Jeff está Aqui", ["Description"] = "Fuja do Jeff the Killer!" }
     }
 }
+
+-- Função para criar notificação.
+
+local function DoorsNotify(options)
+    local title = options.Title or "No Title"
+    local description = options.Description or "No Text"
+    local image = options.Image or "rbxassetid://6023426923"
+    local time = options.Time or 5
+
+    local mainUI = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainUI", 2.5)
+    if mainUI then
+        local achievement = mainUI.AchievementsHolder.Achievement:Clone()
+        achievement.Size = UDim2.new(0, 0, 0, 0)
+        achievement.Frame.Position = UDim2.new(1.1, 0, 0, 0)
+        achievement.Name = "LiveAchievement"
+        achievement.Visible = true
+
+        achievement.Frame.Details.Desc.Text = description
+        achievement.Frame.Details.Title.Text = title
+        achievement.Frame.ImageLabel.Image = image
+        achievement.Parent = mainUI.AchievementsHolder
+
+        achievement.Size = UDim2.new(0, 400, 0, 100)
+        achievement.Frame:TweenPosition(UDim2.new(0.5, -200, 0, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Bounce, 1, true)
+        game:GetService("Debris"):AddItem(achievement, time)
+    end
+end
 
 -- Função para notificar sobre entidades usando OrionLib
 function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
-        local notifyTitle = entityName
-        local notifyMessage = "Entidade Detectada!"
-
-        OrionLib:MakeNotification({
-            Name = notifyTitle,
-            Content = notifyMessage,
+        
+        DoorsNotify({
+            Title = notificationData.Title,
+            Description = notificationData.Description,
             Image = "rbxassetid://" .. notificationData.Image,
             Time = 5
         })
         
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://10469938989"
-sound.Volume = 3
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-        
+        local sound = Instance.new("Sound")
+        sound.SoundId = "rbxassetid://10469938989"
+        sound.Volume = 3
+        sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+        sound:Play()
+        sound.Ended:Connect(function()
+            sound:Destroy()
+        end)
     end
 end
 
@@ -854,36 +878,35 @@ notifsTab:AddToggle({
     Callback = function(value)
         notificationsEnabled = value
         if value then
-local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590657391"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades ativas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
-
+            local sound = Instance.new("Sound")
+            sound.SoundId = "rbxassetid://4590657391"
+            sound.Volume = 1
+            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            sound:Play()
+            sound.Ended:Connect(function()
+                sound:Destroy()
+            end)
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "🔔 Notificação",
+                Text = "Notificações de Entidades ativas!",
+                Icon = "rbxassetid://13264701341",
+                Duration = 3
+            })
         else
             local sound = Instance.new("Sound")
-sound.SoundId = "rbxassetid://4590662766"
-sound.Volume = 1
-sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-sound:Play()
-sound.Ended:Connect(function()
-    sound:Destroy()
-end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação",
-    Text = "Notificações de Entidades desativadas!",
-    Icon = "rbxassetid://13264701341",
-    Duration = 3
-})
+            sound.SoundId = "rbxassetid://4590662766"
+            sound.Volume = 1
+            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+            sound:Play()
+            sound.Ended:Connect(function()
+                sound:Destroy()
+            end)
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "🔔 Notificação",
+                Text = "Notificações de Entidades desativadas!",
+                Icon = "rbxassetid://13264701341",
+                Duration = 3
+            })
         end
     end
 })
