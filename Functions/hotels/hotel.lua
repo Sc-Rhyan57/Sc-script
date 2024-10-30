@@ -27,7 +27,6 @@ if game.PlaceId == 6516141723 then
         Content = "Por favor, execute quando estiver no jogo, não no lobby.",
         Time = 2
     })
-    LogNotification("SUCESSO", "Tente Executar enquanto estivee no Jogo não no Lobby!")
 end
 
 --// Serviços \\--
