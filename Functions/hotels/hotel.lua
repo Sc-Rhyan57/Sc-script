@@ -636,6 +636,8 @@ local EntityTable = {
         ["AmbushMoving"] = { ["Image"] = "10938726652", ["Title"] = "Ambush em Movimento", ["Description"] = "Ambush está ativo." },
         ["Eyes"] = { ["Image"] = "10865377903", ["Title"] = "Olhos!", ["Description"] = "Não olhe para os olhos!", ["Spawned"] = true },
         ["BackdoorLookman"] = { ["Image"] = "16764872677", ["Title"] = "Backdoor Lookman", ["Description"] = "Lookman foi visto!", ["Spawned"] = true },
+        ["GloombatSwarm"] = { ["Image"] = "79221203116470", ["Title"] = "Gloombats", ["Description"] = "Gloombats no chão atento a onde pisa!", ["Spawned"] = true},
+        ["HaltRoom"] = { ["Image"] = "11331795398", ["Title"] = "Halt Room!", ["Description"] = "Se prepare para o desafio!", ["Spawned"] = true},
         ["JeffTheKiller"] = { ["Image"] = "98993343", ["Title"] = "Jeff está Aqui", ["Description"] = "Fuja do Jeff the Killer!" }
     }
 }
