@@ -706,40 +706,96 @@ function MonitorEntities()
     end)
 end
 MonitorEntities()
+--[[ Auto Library Code ]]---
+local mainUI = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainUI", 2.5)
+local function DoorsNotify(options)
+    local title = options.Title or "No Title"
+    local description = options.Description or "No Text"
+    local image = options.Image or "rbxassetid://6023426923"
+    local time = options.Time or 5
+    local color = options.Color
 
---[[ SPEED BYPPAS ]]--
-local speedBypassActive = false
-local speedBypassDelayActive = false
-local runService = game:GetService("RunService")
+    if mainUI then
+        local achievement = mainUI.AchievementsHolder.Achievement:Clone()
+        achievement.Size = UDim2.new(0, 0, 0, 0)
+        achievement.Frame.Position = UDim2.new(1.1, 0, 0, 0)
+        achievement.Name = "LiveAchievement"
+        achievement.Visible = true
 
-local function speedBypass(enable)
-    speedBypassActive = enable
-    if enable then
-        runService.Heartbeat:Connect(function()
-            if speedBypassActive then
-                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 50
+        achievement.Frame.Details.Desc.Text = description
+        achievement.Frame.Details.Title.Text = title
+        achievement.Frame.ImageLabel.Image = image
+
+        if color then
+            achievement.Frame.TextLabel.TextColor3 = color
+            achievement.Frame.UIStroke.Color = color
+            achievement.Frame.Glow.ImageColor3 = color
+        end
+
+        achievement.Parent = mainUI.AchievementsHolder
+        achievement.Sound.SoundId = "rbxassetid://10469938989"
+        achievement.Sound.Volume = 1
+        achievement.Sound:Play()
+
+        achievement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.8, true)
+        task.wait(0.8)
+        achievement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
+
+        task.delay(time, function()
+            achievement.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
+            task.wait(0.5)
+            achievement:Destroy()
+        end)
+    end
+end
+
+local function LogNotification(level, message)
+    local title, color, icon
+    if level == "SUCESSO" then
+        title, color, icon = "🟩 | Rseeker", Color3.fromRGB(0, 255, 0), "rbxassetid://success_image_id"
+    elseif level == "ERRO" then
+        title, color, icon = "🟥 | Rseeker", Color3.fromRGB(255, 0, 0), "rbxassetid://error_image_id"
+    else -- Em análise
+        title, color, icon = "🟨 | Rseeker", Color3.fromRGB(255, 255, 0), "rbxassetid://analysis_image_id"
+    end
+
+    DoorsNotify({
+        Title = title,
+        Description = message,
+        Image = icon,
+        Time = 5,
+        Color = color
+    })
+end
+
+local function AutoLibrarySolver(value)
+    if value then
+        for _, otherPlayer in pairs(Players:GetPlayers()) do
+            if not otherPlayer.Character then continue end
+            local tool = otherPlayer.Character:FindFirstChildOfClass("Tool")
+
+            if tool and tool.Name:match("LibraryHintPaper") then
+                local code = Script.Functions.GetPadlockCode(tool)
+                local padlock = Workspace:FindFirstChild("Padlock", true)
+
+                if tonumber(code) then
+                    if Script.Functions.DistanceFromCharacter(padlock) <= Options.AutoLibraryDistance then
+                        Script.RemotesFolder.PL:FireServer(code)
+                        LogNotification("SUCESSO", "Cadeado desbloqueado com o código correto.")
+                    else
+                        LogNotification("ERRO", "Distância insuficiente para desbloquear o cadeado.")
+                    end
+                else
+                    LogNotification("ERRO", "Código inválido detectado.")
+                end
             else
-                game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+                LogNotification("+-", "Procurando LibraryHintPaper...")
             end
-        end)
+        end
     else
-        game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
+        LogNotification("ERRO", "Auto Library Solver desativado.")
     end
 end
-
-local function speedBypassWithDelay(enable, delay)
-    speedBypassDelayActive = enable
-    if enable then
-        task.delay(delay, function()
-            if speedBypassDelayActive then
-                speedBypass(true)
-            end
-        end)
-    else
-        speedBypassDelayActive = false
-    end
-end
-
 
 
 --[ ORION LIB - MENU ]--
@@ -916,6 +972,14 @@ local autoIn = Window:MakeTab({
     Name = "Automoção",
     Icon = "rbxassetid://4483345998",
     PremiumOnly = false
+})
+
+autoIn:Toggle({
+    Name = "Auto Library Code",
+    Default = false,
+    Callback = function(value)
+        AutoLibrarySolver(value)
+    end
 })
 
 local function PromptCondition(prompt)
