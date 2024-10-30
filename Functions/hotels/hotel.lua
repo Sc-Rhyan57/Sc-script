@@ -2,6 +2,48 @@ local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
 --// APIS \\--
 --[[ MSDOORS API ]]--
+local function MsdoorsNotify(title, description, image, color, time)
+    title = title or "Sem Título"
+    description = description or "Sem Descrição"
+    image = image or "rbxassetid://6023426923"
+    color = color or Color3.new(1, 1, 1) 
+    time = time or 5
+
+    local mainUI = game.Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainUI", 2.5)
+    if mainUI then
+        local achievement = mainUI.AchievementsHolder.Achievement:Clone()
+        achievement.Size = UDim2.new(0, 0, 0, 0)
+        achievement.Frame.Position = UDim2.new(1.1, 0, 0, 0)
+        achievement.Name = "LiveAchievement"
+        achievement.Visible = true
+
+        achievement.Frame.Details.Desc.Text = description
+        achievement.Frame.Details.Title.Text = title
+        achievement.Frame.ImageLabel.Image = image
+
+        if color then
+            achievement.Frame.TextLabel.TextColor3 = color
+            achievement.Frame.UIStroke.Color = color
+            achievement.Frame.Glow.ImageColor3 = color
+        end
+
+        achievement.Parent = mainUI.AchievementsHolder
+        achievement.Sound.SoundId = "rbxassetid://10469938989"
+        achievement.Sound.Volume = 1
+        achievement.Sound:Play()
+
+        achievement:TweenSize(UDim2.new(1, 0, 0.2, 0), "In", "Quad", 0.8, true)
+        task.wait(0.8)
+        achievement.Frame:TweenPosition(UDim2.new(0, 0, 0, 0), "Out", "Quad", 0.5, true)
+
+        task.delay(time, function()
+            achievement.Frame:TweenPosition(UDim2.new(1.1, 0, 0, 0), "In", "Quad", 0.5, true)
+            task.wait(0.5)
+            achievement:Destroy()
+        end)
+    end
+end
+
 
 --[[[ MS ESP(@mstudio45) - thanks for the API! ]]--
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
@@ -27,6 +69,7 @@ if game.PlaceId == 6516141723 then
         Content = "Por favor, execute quando estiver no jogo, não no lobby.",
         Time = 2
     })
+MsdoorsNotify("Aviso", "Por favor, execute quando estiver no jogo, não no lobby.", "rbxassetid://123071339850669", Color3.new(1, 0, 0), 5)
 end
 
 --// Serviços \\--
