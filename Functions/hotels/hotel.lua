@@ -643,7 +643,7 @@ local EntityTable = {
         ["JeffTheKiller"] = { ["Image"] = "98993343", ["Title"] = "Jeff está Aqui", ["Description"] = "Fuja do Jeff the Killer!" }
     }
 }
-MsdoorsNotify function NotifyEntity(entityName)
+function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
 
