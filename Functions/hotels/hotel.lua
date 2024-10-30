@@ -624,66 +624,6 @@ latestRoom:GetPropertyChangedSignal("Value"):Connect(onRoomChanged)
 --[[ Notificar Entidades ]]--
 
 
--- Tabela de Entidades para notificação.
-
-local EntityTable = {
-
-    ["Names"] = {"BackdoorRush", "BackdoorLookman", "RushMoving", "AmbushMoving", "Eyes", "JeffTheKiller", "A60", "A120"},
-
-    ["NotifyReason"] = {
-
-        ["A60"] = { ["Image"] = "12350986086", ["Title"] = "Alerta A-60", ["Description"] = "Entidade A-60 detectada!" },
-        ["A120"] = { ["Image"] = "12351008553", ["Title"] = "Cuidado com A-120", ["Description"] = "Entidade A-120 se aproximando!" },
-        ["HaltRoom"] = { ["Image"] = "11331795398", ["Title"] = "Halt Detected", ["Description"] = "Prepare-se para o Halt!" },
-        ["BackdoorRush"] = { ["Image"] = "11102256553", ["Title"] = "Backdoor Rush", ["Description"] = "Rush se aproximando pelo backdoor!" },
-        ["RushMoving"] = { ["Image"] = "11102256553", ["Title"] = "Rush em Movimento", ["Description"] = "Rush foi visto se movendo." },
-        ["AmbushMoving"] = { ["Image"] = "10938726652", ["Title"] = "Ambush em Movimento", ["Description"] = "Ambush está ativo." },
-        ["Eyes"] = { ["Image"] = "10865377903", ["Title"] = "Olhos!", ["Description"] = "Não olhe para os olhos!", ["Spawned"] = true },
-        ["BackdoorLookman"] = { ["Image"] = "16764872677", ["Title"] = "Backdoor Lookman", ["Description"] = "Lookman foi visto!", ["Spawned"] = true },
-        ["JeffTheKiller"] = { ["Image"] = "98993343", ["Title"] = "Jeff está Aqui", ["Description"] = "Fuja do Jeff the Killer!" }
-    }
-}
-function NotifyEntity(entityName)
-    if EntityTable.NotifyReason[entityName] then
-        local notificationData = EntityTable.NotifyReason[entityName]
-
-        -- Use MsdoorsNotify for notifications
-        MsdoorsNotify(
-            notificationData.Title,
-            notificationData.Description,
-            "rbxassetid://" .. notificationData.Image,
-            Color3.new(1, 1, 1),
-            5
-        )
-
-        -- Sound effect
-        local sound = Instance.new("Sound")
-        sound.SoundId = "rbxassetid://10469938989"
-        sound.Volume = 3
-        sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-        sound:Play()
-        sound.Ended:Connect(function()
-            sound:Destroy()
-        end)
-    end
-end
-
-local notificationsEnabled = false
-
-function MonitorEntities()
-    game:GetService("RunService").Stepped:Connect(function()
-        if notificationsEnabled then
-            for _, entityName in ipairs(EntityTable.Names) do
-                local entity = workspace:FindFirstChild(entityName)
-                if entity and not entity:GetAttribute("Notified") then
-                    entity:SetAttribute("Notified", true)
-                    NotifyEntity(entityName)
-                end
-            end
-        end
-    end)
-end
-MonitorEntities()
 
 --[[ Auto Library Code ]]---
 local mainUI = Players.LocalPlayer:WaitForChild("PlayerGui"):WaitForChild("MainUI", 2.5)
@@ -907,36 +847,6 @@ local notifsTab = VisualsEsp:AddSection({
 })
 notifsTab:AddParagraph("Notificações", "Aba de Notificações de entidades ou outros.")
 
-
-notifsTab:AddToggle({
-    Name = "Notificar Entidades",
-    Default = false,
-    Callback = function(value)
-        notificationsEnabled = value
-        local sound = Instance.new("Sound")
-        if value then
-            sound.SoundId = "rbxassetid://4590657391"
-            sound.Volume = 1
-            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-            sound:Play()
-            sound.Ended:Connect(function()
-            sound:Destroy()
-            end)
-            -- Enable notification through MsdoorsNotify
-            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades ativas!", "rbxassetid://123071339850669", Color3.new(0, 1, 0), 3)
-        else
-            sound.SoundId = "rbxassetid://4590662766"
-            sound.Volume = 1
-            sound.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-            sound:Play()
-            sound.Ended:Connect(function()
-            sound:Destroy()
-            end)
-            -- Disable notification through MsdoorsNotify
-            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades desativadas!", "rbxassetid://13264701341", Color3.new(1, 0, 0), 3)
-        end
-    end
-})
 
 --[ Funções de automação ]--
 local autoIn = Window:MakeTab({
