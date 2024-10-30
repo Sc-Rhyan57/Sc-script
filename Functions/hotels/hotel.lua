@@ -22,12 +22,7 @@ game:GetService("StarterGui"):SetCore("SendNotification", {
 })
 
 if game.PlaceId == 6516141723 then
-    OrionLib:MakeNotification({
-        Name = "Error",
-        Content = "Por favor, execute quando estiver no jogo, não no lobby.",
-        Time = 2
-    })
-MsdoorsNotify("Aviso", "Por favor, execute quando estiver no jogo, não no lobby.", "rbxassetid://123071339850669", Color3.new(1, 0, 0), 5)
+MsdoorsNotify("Aviso", "Por favor, execute quando estiver no jogo, não no lobby.", "rbxassetid://123071339850669", Color3.new(0.5, 0, 0.5), 6)
 end
 
 --// Serviços \\--
