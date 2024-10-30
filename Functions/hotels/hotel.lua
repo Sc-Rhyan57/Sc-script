@@ -976,7 +976,7 @@ local autoIn = Window:MakeTab({
     PremiumOnly = false
 })
 
-autoIn:Toggle({
+autoIn:AddToggle({
     Name = "Auto Library Code",
     Default = false,
     Callback = function(value)
