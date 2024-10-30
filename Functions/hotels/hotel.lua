@@ -754,11 +754,11 @@ end
 local function LogNotification(level, message)
     local title, color, icon
     if level == "SUCESSO" then
-        title, color, icon = "🟩 | Rseeker", Color3.fromRGB(0, 255, 0), "rbxassetid://success_image_id"
+        title, color, icon = "🟩 | Rseeker", Color3.fromRGB(0, 255, 0), "rbxassetid://13311697821"
     elseif level == "ERRO" then
-        title, color, icon = "🟥 | Rseeker", Color3.fromRGB(255, 0, 0), "rbxassetid://error_image_id"
+        title, color, icon = "🟥 | Rseeker", Color3.fromRGB(255, 0, 0), "rbxassetid://13369776727"
     else -- Em análise
-        title, color, icon = "🟨 | Rseeker", Color3.fromRGB(255, 255, 0), "rbxassetid://analysis_image_id"
+        title, color, icon = "🟨 | Rseeker", Color3.fromRGB(255, 255, 0), "rbxassetid://97983317580515"
     end
 
     DoorsNotify({
