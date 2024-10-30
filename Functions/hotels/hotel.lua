@@ -1,5 +1,10 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua'))()
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "👁️ | RSeeKer Hub", HidePremium = false, SaveConfig = true, ConfigFolder = ".seeker"})
+--// APIS \\--
+--[[ MSDOORS API ]]--
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Sc-Rhyan57/Notification-doorsAPI/refs/heads/main/Msdoors/doors-API.lua"))()
+--[[[ MS ESP(@mstudio45) - thanks for the API! ]]--
+local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
@@ -22,6 +27,12 @@ if game.PlaceId == 6516141723 then
         Content = "Por favor, execute quando estiver no jogo, não no lobby.",
         Time = 2
     })
+    DoorsEmblem({
+    type = "alert",
+    Title = "Alerta!",
+    Description = "Por favor, execute quando estiver no jogo, não no lobby.",
+    Time = 5
+})
 end
 
 --// Serviços \\--
@@ -113,9 +124,6 @@ local function AutoLoot()
 end
 
 -- [ ESP, TRAÇOS ETC... ]--
--- MS ESP(@mstudio45) - thanks for the API!
--- OBJETOS ESP
-local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
 -- OBJETOS ESP
 local objetos_esp = { 
     {"KeyObtain", "Chave", Color3.fromRGB(0, 255, 0)},
