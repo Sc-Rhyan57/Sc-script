@@ -1,17 +1,4 @@
-local window = OrionLib:MakeWindow({
-    Name = "Custom Notifications",
-    HidePremium = false,
-    SaveConfig = true,
-    ConfigFolder = "OrionTest"
-})
-
-local tab = window:MakeTab({
-    Name = "Notification Tab",
-    Icon = "rbxassetid://4483345998",
-    PremiumOnly = false
-})
-
-local section = tab:AddSection({
+local section = VisualsEsp:AddSection({
     Name = "Notification Controls"
 })
 
