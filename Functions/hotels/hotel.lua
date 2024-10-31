@@ -916,7 +916,7 @@ notifsTab:AddToggle({
             sound.Ended:Connect(function()
                 sound:Destroy()
             end)
-            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades ativas!", "rbxassetid://123071339850669", Color3.new(0, 1, 0), 3)
+            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades ativas!", "", "rbxassetid://123071339850669", Color3.new(0, 1, 0), 3)
         else
             sound.SoundId = "rbxassetid://4590662766"
             sound.Volume = 1
@@ -925,7 +925,7 @@ notifsTab:AddToggle({
             sound.Ended:Connect(function()
                 sound:Destroy()
             end)
-            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades desativadas!", "rbxassetid://13264701341", Color3.new(1, 0, 0), 3)
+            MsdoorsNotify("🔔 Notificação", "Notificações de Entidades desativadas!", "", "rbxassetid://13264701341", Color3.new(1, 0, 0), 3)
         end
     end
 })
