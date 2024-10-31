@@ -12,7 +12,7 @@ sound:Play()
 sound.Ended:Connect(function()
     sound:Destroy()
 end)
-MsdoorsNotify("Sistema", "Rseeker carregado com sucesso! ", "rbxassetid://130949777442519", Color3.new(128, 0, 128), 6)
+MsdoorsNotify("Sistema", "Rseeker carregado com sucesso! ", "", "rbxassetid://130949777442519", Color3.new(128, 0, 128), 6)
 
 --//Serviços\\--
 local HttpService = game:GetService("HttpService")
