@@ -658,13 +658,16 @@ MonitorEntities()
 function NotifyEntity(entityName)
     if EntityTable.NotifyReason[entityName] then
         local notificationData = EntityTable.NotifyReason[entityName]
-        MsdoorsNotify(
+        
+            MsdoorsNotify(
             notificationData.Title,
             notificationData.Description,
+            "Entidade nasceu!",
             "rbxassetid://" .. notificationData.Image,
-            Color3.new(1, 1, 1),
-            5
+            Color3.new(1, 1, 1), 
+            6
         )
+        
         local sound = Instance.new("Sound")
         sound.SoundId = "rbxassetid://10469938989"
         sound.Volume = 3
