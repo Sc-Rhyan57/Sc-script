@@ -1,6 +1,9 @@
 local OrionLib = loadstring(game:HttpGetAsync('https://raw.githubusercontent.com/Giangplay/Script/main/Orion_Library_PE_V2.lua'))()
 local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "🚪 Rseeker Lobby", HidePremium = false, SaveConfig = true, ConfigFolder = ".seekerLobby"})
 
+--[[ APIS ]]--
+local MsdoorsNotify = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sc-Rhyan57/Notification-doorsAPI/refs/heads/main/Msdoors/MsdoorsApi.lua"))()
+
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590656842"
 sound.Volume = 2
@@ -9,13 +12,7 @@ sound:Play()
 sound.Ended:Connect(function()
     sound:Destroy()
 end)
-game:GetService("StarterGui"):SetCore("SendNotification", {
-    Title = "🔔 Notificação | Rseeker System",
-    Text = "⚙️ • Rseeker Lobby Carregado.",
-    Icon = "rbxassetid://123071339850669",
-    Duration = 5
-})
-
+MsdoorsNotify("Sistema", "Rseeker carregado com sucesso! ", "rbxassetid://130949777442519", Color3.new(128, 0, 128), 6)
 
 --//Serviços\\--
 local HttpService = game:GetService("HttpService")
