@@ -1,8 +1,4 @@
-local section = VisualsEsp:AddSection({
-    Name = "Notification Controls"
-})
-
-section:AddButton({
+VisualsEsp:AddButton({
     Name = "Enviar Notificação",
     Callback = function()
         OrionLib:MakeNotification({
