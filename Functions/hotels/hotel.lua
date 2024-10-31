@@ -5,6 +5,20 @@ local Window = OrionLib:MakeWindow({IntroText = "Seeker Hub × Paint", Name = "�
 local MsdoorsNotify = loadstring(game:HttpGet("https://raw.githubusercontent.com/Sc-Rhyan57/Notification-doorsAPI/refs/heads/main/Msdoors/MsdoorsApi.lua"))()
 --[[ MS ESP(@mstudio45) - thanks for the API! ]]--
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
+--[[ ELEMENTOS ]]--
+local arquivos = {
+    ["test"] = "",
+    ["hotel"] = "",
+}
+
+function carregarArquivo(nome)
+    if arquivos[nome] then
+        loadstring(game:HttpGet(arquivos[nome]))()
+    else
+        warn("[ Rseeker Warns ] Arquivo não encontrado para o nome:", nome)
+    end
+end
+
 
 local sound = Instance.new("Sound")
 sound.SoundId = "rbxassetid://4590657171"
