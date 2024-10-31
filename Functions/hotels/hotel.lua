@@ -7,7 +7,7 @@ local MsdoorsNotify = loadstring(game:HttpGet("https://raw.githubusercontent.com
 local ESPLibrary = loadstring(game:HttpGet("https://raw.githubusercontent.com/deividcomsono/MS-ESP/refs/heads/main/source.lua"))()
 --[[ ELEMENTOS ]]--
 local arquivos = {
-    ["test"] = "",
+    ["test"] = "https://raw.githubusercontent.com/Sc-Rhyan57/Sc-script/refs/heads/main/Functions/Tabs/TabTest.lua",
     ["hotel"] = "",
 }
 
@@ -910,6 +910,8 @@ VisualsEsp:AddToggle({
         end
     end
 })
+
+carregarArquivo("test")
 
 local notifsTab = VisualsEsp:AddSection({
     Name = "Notificações"
