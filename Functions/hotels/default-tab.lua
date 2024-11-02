@@ -27,7 +27,7 @@ UICorner.Parent = MainFrame
 Title.Parent = MainFrame
 Title.Size = UDim2.new(0, 300, 0, 50)
 Title.Position = UDim2.new(0, 0, 0, 0)
-Title.Text = "Rseeker Scripts"
+Title.Text = "Deprecated Alert!"
 Title.Font = Enum.Font.GothamBlack
 Title.TextSize = 24
 Title.BackgroundTransparency = 1
@@ -75,7 +75,7 @@ CopyButton.MouseButton1Click:Connect(function()
     setclipboard(contentToCopy)
     CopyButton.Text = "Link Copiado!"
     wait(2)
-    CopyButton.Text = "entrar"
+    CopyButton.Text = "Obter Nova versão"
 end)
 
 CloseButton.Parent = MainFrame
@@ -113,7 +113,7 @@ sound.Ended:Connect(function()
 end)
 game:GetService("StarterGui"):SetCore("SendNotification", {
     Title = "🔔 RSeeker",
-    Text = "RSeeker Hub iniciado com sucesso!",
-    Icon = "rbxassetid://123071339850669",
+    Text = "RSeeker Hub obteve falha ao carregar!",
+    Icon = "rbxassetid://111591503022732",
     Duration = 5
 })
