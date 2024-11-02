@@ -48,12 +48,12 @@ animateTitleColor()
 Image.Parent = MainFrame
 Image.Size = UDim2.new(0, 100, 0, 100)
 Image.Position = UDim2.new(0.5, -50, 0, 60)
-Image.Image = "rbxassetid://123071339850669" 
+Image.Image = "rbxassetid://111591503022732" 
 
 Description.Parent = MainFrame
 Description.Size = UDim2.new(0, 280, 0, 50)
 Description.Position = UDim2.new(0.5, -140, 0.5, 20)
-Description.Text = "Gostou desse script? então entre na comunidade da RSeeker Scripts!"
+Description.Text = "RseekerHub Foi cancelado e não pode mais ser acessado!"
 Description.Font = Enum.Font.FredokaOne 
 Description.TextSize = 18
 Description.BackgroundTransparency = 1
@@ -63,7 +63,7 @@ Description.TextColor3 = Color3.fromRGB(255, 255, 255)
 CopyButton.Parent = MainFrame
 CopyButton.Size = UDim2.new(0, 150, 0, 40)
 CopyButton.Position = UDim2.new(0.5, -75, 1, -60)
-CopyButton.Text = "Entrar"
+CopyButton.Text = "Discord"
 CopyButton.Font = Enum.Font.GothamBold
 CopyButton.TextSize = 20
 CopyButton.BackgroundColor3 = Color3.fromRGB(115, 0, 255)
@@ -75,7 +75,7 @@ CopyButton.MouseButton1Click:Connect(function()
     setclipboard(contentToCopy)
     CopyButton.Text = "Link Copiado!"
     wait(2)
-    CopyButton.Text = "Obter Nova versão"
+    CopyButton.Text = "Discord"
 end)
 
 CloseButton.Parent = MainFrame
