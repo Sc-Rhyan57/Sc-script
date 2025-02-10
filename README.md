@@ -1,8 +1,8 @@
-# ⚠️ **Atenção!**
-> Rseeker Hub foi cancelado! mas não se preocupe continuaremos ele como "MsDoors", em breve disponível.
-[ **Essa Versão será excluída** ]
+> [!caution]
+> Está versão de Rseeker hub foi cancelada e não será de forma alguma atualizada, migre para [Msdoors](https://msdoors-gg.vercel.app/)[ [**GITHUB**](https://github.com/Sc-rhyan57/msdoors) ]
 
-# **Rseeker Hub**
+
+# **RSHUB**
 - ⭐ **APRESENTAÇÃO**
 > 📄 Um Script Simples que Source Code que usa Orion Lib para Funcionar, fique a vontade para Utilizar os códigos desse Script para fazer o seu.
 
